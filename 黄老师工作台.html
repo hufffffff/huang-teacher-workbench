@@ -6,11 +6,11 @@
 <meta name="theme-color" content="#07c160">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="黄老师工作台">
+<meta name="apple-mobile-web-app-title" content="NICO小记">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="icon" type="image/png" href="favicon-32.png">
-<title>黄老师工作台</title>
+<title>NICO小记</title>
 <style>
   :root{
     --wx:#07c160; --wx-dark:#06ad56; --wx-bubble:#95ec69;
@@ -750,7 +750,7 @@ function editTeacher(){openSheet({title:'教师信息',body:'<div class="fcell">
 function exportData(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='黄老师工作台备份-'+todayStr()+'.json'; a.click(); toast('已导出备份');}
 function importData(){const inp=document.createElement('input'); inp.type='file'; inp.accept='.json'; inp.onchange=()=>{const f=inp.files[0]; if(!f)return; const rd=new FileReader(); rd.onload=()=>{try{const data=JSON.parse(rd.result); if(!data.students||!data.dictations)throw 0; db=data; save(); render(); toast('导入成功');}catch(e){toast('文件格式不正确');}}; rd.readAsText(f);}; inp.click();}
 function resetData(){confirmBox('将清空全部数据并恢复示例班级，确定吗？',()=>{db=defaultData(); save(); render(); toast('已重置');});}
-function aboutApp(){openSheet({title:'关于',body:'<div style="padding:8px 0"><p style="line-height:1.7;color:#555">黄老师教学助手，专为高中英语老师/班主任设计。<br>默写登记 · 作业收缴 · 考勤 · 打卡 · 班级日志 · 家长沟通。</p></div>',ok:'知道了',onSave:()=>{}});}
+function aboutApp(){openSheet({title:'关于',body:'<div style="padding:8px 0"><p style="line-height:1.7;color:#555">NICO小记，专为高中英语老师/班主任设计。<br>默写登记 · 作业收缴 · 考勤 · 打卡 · 班级日志 · 家长沟通。</p></div>',ok:'知道了',onSave:()=>{}});}
 
 
 let deferredPrompt=null;
