@@ -261,6 +261,7 @@ function patchData(){
   (db.students||[]).forEach(function(s){ if(!s.cls) s.cls='2612'; });
   (db.students10||[]).forEach(function(s){ if(!s.cls) s.cls='2610'; });
   if(!Array.isArray(db.exams)) db.exams=[];
+  if(!Array.isArray(db.dormDeducts)) db.dormDeducts=[];
   if(!db.classes){ db.classes=['2612','2610']; }
   if(!Array.isArray(db.times)||db.times.length<9){ db.times=S2612_TIMES.slice(); }
   var eveByDay=['晚自习听力/黄思敏','晚自习听力/黄思敏','晚自习','班会/黄思敏','晚自习'];
@@ -351,6 +352,7 @@ function pageMeta(){
   if(route==='work:hw')return{title:'作业管理',back:1};
   if(route==='work:exam')return{title:'考试分数登记',back:1};
   if(route==='work:check')return{title:'教师打卡',back:1};
+  if(route==='work:dorm')return{title:'宿舍扣分登记',back:1};
   if(route==='chat')return{title:'家长沟通'};
   if(route.slice(0,5)==='chat:'){const s=getStudent(route.slice(5)); return{title:s?s.name:'沟通',back:1};}
   if(route==='me')return{title:'我的'};
@@ -374,6 +376,7 @@ function render(){
   else if(route==='work:hw')content=hwHTML();
   else if(route==='work:exam')content=examHTML();
   else if(route==='work:check')content=checkHTML();
+  else if(route==='work:dorm')content=dormDeductHTML();
   else if(route==='chat')content=chatListHTML();
   else if(route.slice(0,5)==='chat:')content=chatThreadHTML(route.slice(5));
   else if(route==='me')content=meHTML();
@@ -565,11 +568,13 @@ function workListHTML(){
   const dictT=db.dictations.filter(d=>d.date===today); let dOpen=0; dictT.forEach(d=>{dOpen+=Object.values(d.records||{}).filter(r=>r.status==='un').length;});
   let hwOpen=0; db.homeworks.forEach(h=>{if(h.dueDate<=today)hwOpen+=Object.values(h.records||{}).filter(x=>x.status==='pending'||x.status==='missing').length;});
   const chk=db.checkins.find(c=>c.date===today); const chkT=chk?chk.tasks.length:db.checkinTasks.length; const chkD=chk?chk.tasks.filter(x=>x.done).length:0;
+  const ddTotal=(db.dormDeducts||[]).reduce(function(a,d){return a+(+d.score||0);},0);
   return '<div class="cgroup"><div class="gtitle">日常教学</div>'
     +'<div class="cell" onclick="nav(\'work:dict\')"><div class="ic" style="background:#e8f7ed">✍️</div><div class="t">默写管理<small class="sub" style="color:#999;display:block">英语默写 · 完成登记 · 错词统计</small></div>'+(dOpen?'<span class="bdg">'+dOpen+'</span>':'<span class="val">'+dictT.length+'场</span>')+'<span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'work:hw\')"><div class="ic" style="background:#eef3ff">📚</div><div class="t">作业管理<small class="sub" style="color:#999;display:block">布置 · 收缴 · 逾期提醒</small></div>'+(hwOpen?'<span class="bdg">'+hwOpen+'</span>':'')+'<span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'work:exam\')"><div class="ic" style="background:#fff2e0">📝</div><div class="t">考试分数登记<small class="sub" style="color:#999;display:block">月考/期中/期末 · 分数录入 · 班级统计</small></div>'+(db.exams&&db.exams.length?'<span class="val">'+db.exams.length+'场</span>':'')+'<span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'work:check\')"><div class="ic" style="background:#f4edff">✅</div><div class="t">教师打卡<small class="sub" style="color:#999;display:block">每日任务 · 连续打卡</small></div>'+(chkT>0 && chkD<chkT?'<span class="val">'+chkD+'/'+chkT+'</span>':'<span class="val">✓</span>')+'<span class="chev">›</span></div>'
+    +'<div class="cell" onclick="nav(\'work:dorm\')"><div class="ic" style="background:#ffe9e9">🚩</div><div class="t">宿舍扣分登记<small class="sub" style="color:#999;display:block">按寝室号 · 床位 · 逐人登记</small></div>'+(ddTotal?'<span class="val" style="color:#fa5151">累计 '+ddTotal+'分</span>':'')+'<span class="chev">›</span></div>'
     +'</div>';
 }
 function initWork(){}
@@ -1035,6 +1040,51 @@ function dormStudents(room){
   const box=openSheet({title:'寝室 '+room,body:'<div class="ts" style="padding:4px 0">'+((db.dormSex||{})[room]||'')+'宿舍 · '+list.length+'人</div>'+rows,onSave:function(){},ok:'关闭'});
 }
 function initSchedule(){} function initDorm(){}
+/* ================== 宿舍扣分登记 ================== */
+function dormDeductHTML(){
+  const dorm=db.dorm||{}; const sex=db.dormSex||{}; const deducts=db.dormDeducts||[];
+  const total=deducts.reduce(function(a,d){return a+(+d.score||0);},0);
+  const rooms=Object.keys(dorm).sort(function(a,b){return a-b;}).map(function(room){
+    const list=dorm[room]||[];
+    const rd=deducts.filter(function(d){return d.room===room;});
+    const pts=rd.reduce(function(a,d){return a+(+d.score||0);},0);
+    const beds=list.map(function(name,i){return esc(name)+'(床'+(i+1)+')';}).join('、');
+    return '<div class="cell dorm-room" onclick="dormDeductRoom(\''+room+'\')"><div class="ic" style="background:#ffe9e9">🚩</div><div class="t">'+esc(room)+'号寝室<small class="sub" style="color:#999;display:block">'+(sex[room]||'')+'宿舍 · '+list.length+'人 · 已扣'+rd.length+'次'+(pts?(' · '+pts+'分'):'')+'</small></div><div class="val">'+beds+'</div><span class="chev">›</span></div>';
+  }).join('');
+  return '<div class="gtitle" style="padding:14px 16px 0">宿舍扣分登记 · 累计 '+total+' 分</div><div class="cgroup">'+(rooms||emptyHTML('🛏️','暂无住宿生'))+'</div><div class="seat-tip">点击寝室号进入，按床位给每位同学登记扣分。</div>';
+}
+function dormDeductRoom(room){
+  const dorm=db.dorm||{}; const list=dorm[room]||[];
+  const deducts=(db.dormDeducts||[]).filter(function(d){return d.room===room;});
+  const rows=list.map(function(name,i){
+    const dd=deducts.filter(function(d){return d.name===name;});
+    const pts=dd.reduce(function(a,d){return a+(+d.score||0);},0);
+    return '<div class="cell"><div class="av round" style="background:'+avC(name)+'">'+esc(name.slice(0,1))+'</div><div class="t">'+esc(name)+'<div class="sub" style="color:#999">床位'+(i+1)+(dd.length?(' · 已扣'+dd.length+'次 '+pts+'分'):' · 暂无扣分')+'</div></div>'+(pts?'<span class="val" style="color:#fa5151">'+pts+'分</span>':'<span class="val"></span>')+'<button class="chip" style="padding:3px 8px;flex-shrink:0" onclick="event.stopPropagation();dormDeductAdd(\''+room+'\','+(i+1)+',\''+name+'\')">扣分</button></div>';
+  }).join('');
+  const hist=deducts.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');}).slice(0,10).map(function(d){
+    return '<div class="cell"><div class="t">'+fmtCN(d.date)+' · '+esc(d.name)+'<div class="sub" style="color:#999">床'+esc(String(d.bed))+' · '+esc(d.reason||'未填原因')+(d.note?(' · '+esc(d.note)):'')+'</div></div><span class="val" style="color:#fa5151">'+esc(String(d.score))+'分</span><span class="chev" style="cursor:pointer" onclick="dormDeductDel(\''+d.id+'\')">删</span></div>';
+  }).join('');
+  openSheet({title:'寝室 '+room+' · 扣分登记',
+    body:'<div class="ts" style="padding:4px 0">'+list.length+'位同学 · 按床位登记</div>'+rows+'<div class="gtitle" style="padding:12px 0 2px">最近记录</div>'+(hist||emptyHTML('📋','暂无扣分记录')),
+    onSave:function(){},ok:'关闭'});
+}
+function dormDeductAdd(room,bed,name){
+  openSheet({title:'登记扣分',
+    body:'<div class="fcell"><label>学生</label><input value="'+esc(name)+'（床'+bed+'）" readonly style="background:#f5f5f5"></div>'
+      +'<div class="fcell"><label>日期</label><input id="dd_date" type="date" value="'+todayStr()+'"></div>'
+      +'<div class="fcell"><label>原因</label><select id="dd_reason"><option>晚归</option><option>卫生差</option><option>就寝吵闹</option><option>违规电器</option><option>未整理床铺</option><option>偷玩手机</option><option>其他</option></select></div>'
+      +'<div class="fcell"><label>扣分</label><select id="dd_score"><option value="-1">-1</option><option value="-2">-2</option><option value="-3">-3</option><option value="-5">-5</option><option value="-10">-10</option></select></div>'
+      +'<div class="fcell"><label>备注</label><input id="dd_note" placeholder="可选"></div>',
+    onSave:function(){
+      const d={id:uid(),date:($('#dd_date').value||todayStr()),room:room,bed:bed,name:name,reason:$('#dd_reason').value,score:parseInt($('#dd_score').value,10)||-1,note:($('#dd_note').value||'').trim()};
+      (db.dormDeducts=db.dormDeducts||[]).push(d); save(); render(); toast('已登记扣分 '+d.score+' 分');
+    },ok:'保存'});
+}
+function dormDeductDel(id){
+  confirmBox('删除这条扣分记录？',function(){
+    db.dormDeducts=(db.dormDeducts||[]).filter(function(d){return d.id!==id;}); save(); render(); toast('已删除');
+  });
+}
 
 
 
@@ -1098,7 +1148,7 @@ function makeClass2612(){
     students:students,students10:students10,classes:['2612','2610'],exams:[],
     dictations:[],homeworks:[],attendance:{},
     checkinTasks:[{id:uid(),name:'早读英语带读'},{id:uid(),name:'检查学生背诵'},{id:uid(),name:'批改今日默写'},{id:uid(),name:'处理班级事务'},{id:uid(),name:'备课/教学反思'}],
-    checkins:[],logs:[],contacts:[],dutyPlan:dutyPlan,
+    checkins:[],logs:[],contacts:[],dutyPlan:dutyPlan,dormDeducts:[],
     seatPreset:{groups:8,rows:7},seat:{groups:gLabels,matrix:seatMatrix,rows:7},
     dorm:S2612_DORM,dormSex:S2612_DORM_SEX,
     classSchedule:classSchedule,classSchedule10:classSchedule10,teacherSchedule:S2612_TEACHER,times:S2612_TIMES};
