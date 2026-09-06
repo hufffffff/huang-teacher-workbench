@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#07c160">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="黄老师工作台">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<title>黄老师工作台</title>
+<style>
+  :root{
+    --wx:#07c160; --wx-dark:#06ad56; --wx-bubble:#95ec69;
+    --bg:#ededed; --nav:#ededed; --cell:#ffffff;
+    --ink:#111; --ink2:#888; --line:#ececec;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",Roboto,sans-serif; background:var(--bg); color:var(--ink);
+    font-size:16px; max-width:480px; margin:0 auto; min-height:100%; -webkit-font-smoothing:antialiased;}
+  #app{padding-bottom:60px; min-height:100vh;}
+  /* 顶部导航栏（微信样式） */
+  .topbar{position:sticky; top:0; z-index:20; background:var(--nav); height:50px; display:flex; align-items:center;
+    padding:0 8px; border-bottom:1px solid var(--line);}
+  .topbar .back{font-size:22px; padding:6px 12px; cursor:pointer; color:#111; line-height:1;}
+  .topbar .title{flex:1; text-align:center; font-size:17px; font-weight:500; margin-right:40px;}
+  .topbar .title small{font-size:12px; color:var(--ink2); margin-left:6px; font-weight:400;}
+  .topbar .sp{width:46px;}
+  /* 英雄区 */
+  .hero{padding:14px 14px 6px;}
+  .hero .box{background:linear-gradient(135deg,#07c160,#06ad56); color:#fff; border-radius:14px; padding:18px 18px 16px; box-shadow:0 6px 18px rgba(7,193,96,.22);}
+  .hero .greet{font-size:14px; opacity:.92;}
+  .hero h1{font-size:22px; font-weight:700; margin:4px 0 2px;}
+  .hero .sub{font-size:12px; opacity:.9;}
+  /* 统计块 */
+  .statrow{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:12px 14px 4px;}
+  .stat{background:var(--cell); border-radius:12px; padding:14px 6px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .stat .num{font-size:22px; font-weight:700; color:var(--wx);}
+  .stat .lbl{font-size:11px; color:var(--ink2); margin-top:3px;}
+  /* 微信单元格 */
+  .cgroup{background:var(--cell); margin:10px 0; }
+  .cgroup .gtitle{padding:10px 16px 2px; font-size:13px; color:var(--ink2);}
+  .cell{display:flex; align-items:center; padding:13px 16px; position:relative;}
+  .cell::after{content:""; position:absolute; left:16px; right:0; bottom:0; height:1px; background:var(--line);}
+  .cell:last-child::after{display:none;}
+  .cell .ic{width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; margin-right:12px;}
+  .cell .t{flex:1; font-size:16px; min-width:0;}
+  .cell .t .sub{font-size:12px; color:var(--ink2); margin-top:1px;}
+  .cell .val{color:var(--ink2); font-size:13px; margin-right:4px;}
+  .cell.dorm-room{min-height:60px;}
+  .cell.dorm-room .t{min-width:120px;}
+  .cell.dorm-room .val{flex:0 1 auto; min-width:0; white-space:normal; word-break:break-word; line-height:1.5; text-align:left; padding-left:10px; color:#333;}
+  .cell .chev{color:#c8c8c8; font-size:18px; flex-shrink:0;}
+  .cell .bdg{background:#fa5151; color:#fff; font-size:11px; border-radius:10px; padding:1px 7px; margin-right:6px; flex-shrink:0; font-weight:600;}
+  /* 头像 */
+  .av{width:44px; height:44px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:17px; flex-shrink:0;}
+  .av.round{border-radius:50%;}
+  /* 按钮 */
+  .btn{display:inline-flex; align-items:center; justify-content:center; border:none; background:var(--wx); color:#fff;
+    font-size:16px; font-weight:500; padding:11px 0; border-radius:8px; width:100%; cursor:pointer;}
+  .btn:active{background:var(--wx-dark);}
+  .btn.ghost{background:#fff; color:#111; border:1px solid #d9d9d9;}
+  .btn.blue{background:#576b95;} .btn.red{background:#fa5151;}
+  .btn-row{display:flex; gap:10px;} .btn-row .btn{margin:0;}
+  /* 表单（微信风格） */
+  .fgroup{background:#fff; margin:10px 0;}
+  .fcell{padding:12px 16px; display:flex; align-items:center; border-bottom:1px solid var(--line);}
+  .fcell:last-child{border-bottom:none;}
+  .fcell label{width:86px; color:#333; font-size:15px; flex-shrink:0;}
+  .fcell input,.fcell select,.fcell textarea{flex:1; border:none; outline:none; font-size:15px; box-shadow:none; background:transparent; color:#111;}
+  .fcell textarea{min-height:70px; resize:vertical; padding:2px 0;}
+  .fcell select{color:#111; appearance:auto;}
+  .fgroup .hint{padding:6px 16px; font-size:12px; color:var(--ink2);}
+  /* 微信标签 */
+  .wx-badge{background:#fa5151; color:#fff; border-radius:10px; min-width:18px; height:18px; font-size:11px; display:inline-flex; align-items:center; justify-content:center; padding:0 5px;}
+  /* 聊天 */
+  .chatwrap{background:#ededed; min-height:calc(100vh - 50px - 52px);}
+  .chat-day{text-align:center; font-size:12px; color:#888; padding:14px 0 6px;}
+  .msgs{padding:0 14px 14px;}
+  .msg{display:flex; margin-bottom:14px;}
+  .msg .av{width:40px; height:40px; border-radius:6px; margin-right:10px;}
+  .msg.right{flex-direction:row-reverse;}
+  .msg.right .av{margin-right:0; margin-left:10px;}
+  .b{max-width:72%; padding:10px 12px; border-radius:8px; font-size:15px; line-height:1.4; word-break:break-word; position:relative;}
+  .msg.left .b{background:#fff; color:#111;}
+  .msg.right .b{background:var(--wx-bubble); color:#0a0a0a;}
+  .b .when{display:block; font-size:10px; color:#999; margin-top:5px;}
+  .inputbar{position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:#f5f5f5;
+    display:flex; align-items:center; gap:8px; padding:9px 10px calc(9px + env(safe-area-inset-bottom)); border-top:1px solid var(--line); z-index:30;}
+  .inputbar input{flex:1; border:none; border-radius:8px; padding:9px 12px; font-size:15px; background:#fff; outline:none;}
+  .inputbar .send{background:var(--wx); color:#fff; border:none; border-radius:8px; padding:9px 16px; font-size:15px; cursor:pointer;}
+  /* 底部 Tab（微信样式） */
+  .tabbar{position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:#f7f7f7;
+    border-top:1px solid #ddd; display:grid; grid-template-columns:repeat(5,1fr); padding:5px 0 calc(5px + env(safe-area-inset-bottom)); z-index:40;}
+  .tabbar .tab{display:flex; flex-direction:column; align-items:center; gap:2px; background:none; border:none; cursor:pointer; color:#c3c3c3;}
+  .tabbar .tab .ti{font-size:22px; line-height:1;}
+  .tabbar .tab .tl{font-size:11px;}
+  .tabbar .tab.on{color:var(--wx);}
+  .tabbar .tab.on .ti{color:var(--wx);}
+  .list-msg{display:flex; align-items:center; padding:12px 16px; background:#fff; border-bottom:1px solid var(--line);}
+  .list-msg .mid{flex:1; margin-left:12px; min-width:0;}
+  .list-msg .mid .name{font-size:16px;}
+  .list-msg .mid .prev{font-size:13px; color:#999; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .list-msg .right{text-align:right; flex-shrink:0;}
+  .list-msg .right .time{font-size:12px; color:#c3c3c3;}
+  .list-msg .right .dot{display:inline-block; width:9px; height:9px; background:#fa5151; border-radius:50%; margin-top:6px;}
+  .empty{text-align:center; color:#999; padding:60px 0; font-size:14px;}
+  .empty .eic{font-size:42px; display:block; margin-bottom:8px;}
+  .seg{display:flex; background:#fff; margin-bottom:10px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .seg button{flex:1; background:none; border:none; padding:11px 0; font-size:15px; color:var(--ink2); cursor:pointer; border-bottom:2px solid transparent;}
+  .seg button.on{color:var(--wx); border-bottom-color:var(--wx); font-weight:600;}
+  .modal-bg{position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:60; display:none; align-items:flex-end; justify-content:center;}
+  .modal-bg.show{display:flex;}
+  .sheet{background:#fff; width:100%; max-width:480px; border-radius:14px 14px 0 0; padding:16px 0 calc(16px + env(safe-area-inset-bottom)); max-height:88vh; overflow-y:auto;}
+  .sheet .sh{text-align:center; font-size:16px; font-weight:600; padding:0 16px 12px; position:relative;}
+  .sheet .sh .close{position:absolute; right:16px; top:-2px; font-size:24px; color:#999; cursor:pointer;}
+  .sheet .fd{padding:0 16px;}
+  .sheet .acts{display:flex; gap:10px; padding:16px 16px 0;}
+  .toast{position:fixed; left:50%; bottom:80px; transform:translateX(-50%); background:rgba(0,0,0,.8); color:#fff; padding:10px 18px; border-radius:10px; font-size:14px; z-index:90; opacity:0; transition:.25s; pointer-events:none; max-width:80%; text-align:center;}
+  .toast.show{opacity:1;}
+  .profile-hd{background:#fff; padding:26px 0; display:flex; align-items:center; justify-content:center; gap:16px;}
+  .profile-hd .av{width:64px; height:64px; border-radius:12px; font-size:28px;}
+  .profile-hd .pt .n{font-size:19px; font-weight:600;}
+  .profile-hd .pt .s{font-size:13px; color:var(--ink2); margin-top:4px;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{padding:7px 15px; border-radius:6px; background:#f2f2f2; font-size:14px; cursor:pointer;}
+  .chip.on{background:var(--wx); color:#fff;}
+  .pillrow{display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;}
+  .tag{font-size:11px; padding:2px 8px; border-radius:4px; background:#f0f0f0; color:#666;}
+  .bar{height:6px; border-radius:3px; background:#f0f0f0; overflow:hidden; margin-top:8px;}
+  .bar i{display:block; height:100%; background:var(--wx); border-radius:3px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .ts{font-size:13px; color:var(--ink2);}
+  .mt{margin-top:10px;}
+
+  /* ===== 班级工具 / 生成器 ===== */
+  .ctools{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px 0;}
+  .ctool{background:#fff;border-radius:12px;padding:16px 12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.04);cursor:pointer;}
+  .ctool:active{background:#f2f2f2;}
+  .ctool .ci{font-size:26px;line-height:1;}
+  .ctool .cn{font-size:15px;font-weight:600;margin-top:8px;}
+  .ctool .cs{font-size:11px;color:var(--ink2);margin-top:2px;}
+  .gen-tools{padding:12px 14px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .gen-tools .field{display:flex;align-items:center;gap:6px;background:#fff;border-radius:8px;padding:6px 10px;font-size:14px;border:1px solid #ececec;}
+  .gen-tools .field label{color:var(--ink2);font-size:13px;white-space:nowrap;}
+  .gen-tools .field input,.gen-tools .field select{width:70px;border:1px solid #e5e5e5;border-radius:6px;padding:6px 8px;font-size:14px;background:#fff;}
+  .gen-tools .seg{flex-basis:100%;margin:0 0 2px;}
+  .seat-table{margin:12px 14px;background:#fff;border-radius:12px;padding:14px 8px;overflow-x:auto;border:1px solid #ececec;}
+  .seat-grid{display:grid;gap:4px 8px;justify-content:center;min-width:480px;margin:0 auto;}
+  .seat-grid .ghead{text-align:center;font-size:12px;color:#666;padding:8px 0 2px;font-weight:600;border-top:2px solid #07c160;}
+  .seat-cell{border:1px solid #cfcfcf;background:#fff;min-height:38px;display:flex;align-items:center;justify-content:center;font-size:13px;border-radius:3px;padding:4px 6px;white-space:nowrap;}
+  .seat-cell.sp{background:#fdf3c2;border-color:#e0c860;color:#a9791a;font-weight:600;}
+  .seat-cell .star{color:#e1870b;margin-left:2px;}
+  .seat-cell.empty{background:#f7f7f7;color:#bbb;border-style:dashed;}
+  .podium{margin:14px auto 4px;width:130px;text-align:center;border:2px solid #333;border-radius:4px;padding:8px 0;font-weight:600;background:#fff;}
+  .seat-tip{font-size:12px;color:var(--ink2);padding:0 16px 10px;text-align:center;}
+  .duty-table-wrap{margin:12px 14px;background:#fff;border-radius:12px;padding:6px;overflow-x:auto;border:1px solid #ececec;}
+  table.duty{width:100%;border-collapse:collapse;font-size:14px;min-width:560px;}
+  table.duty th,table.duty td{border:1px solid #cfcfcf;padding:8px 6px;text-align:center;vertical-align:middle;}
+  table.duty th{background:#eef3ff;font-weight:600;}
+  table.duty td .nm{color:#333;}
+  .check-mini{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:5px 8px;font-size:13px;color:#333;}
+  .check-mini input{width:auto;}
+  .btn.mini{width:auto;padding:8px 14px;font-size:14px;}
+  .btn.soft{background:#576b95;}
+  .seat-cell{position:relative;}
+  .seat-cell.sel{border:2px solid #07c160;background:#eef7f1;}
+  .seat-cell .seat-x{position:absolute;top:1px;right:1px;width:16px;height:16px;background:rgba(250,81,81,.92);color:#fff;border-radius:50%;font-size:11px;line-height:16px;text-align:center;cursor:pointer;}
+  .seat-cell .seat-add{color:#07c160;font-weight:700;margin-right:2px;}
+
+  /* 课表 */
+  .sched-scroll{overflow-x:auto;}
+  table.sched{width:100%;border-collapse:collapse;font-size:13px;min-width:520px;}
+  table.sched th,table.sched td{border:1px solid #e3e3e3;padding:7px 6px;text-align:center;vertical-align:middle;}
+  table.sched thead th{background:#eef3ff;font-weight:600;}
+  table.sched td.daycol,table.sched th.daycol{background:#fafafa;font-weight:600;color:#576b95;width:84px;}
+  table.sched td.daycol{font-size:12px;}
+  .sched-cell{min-height:46px;font-size:13px;}
+  .sched-cell small{display:block;color:#999;font-size:11px;margin-top:2px;}
+  .sched-cell.mine{background:#e8f7ed;border-color:#8fd6a5;font-weight:700;color:#0a7a43;}
+  .sched-wrap{background:#fff;margin:12px 0;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.04);overflow:hidden;}
+  .sched-wrap .gtitle{background:#fff;}
+  /* 家长沟通 · 号码 */
+  .prow{font-size:12px;color:#576b95;margin-top:3px;}
+  .chat-contact{display:flex;align-items:center;gap:12px;background:#fff;margin:10px 14px;border-radius:12px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .chat-contact .av{flex-shrink:0;}
+  .chat-contact .cinfo{flex:1;min-width:0;}
+  .chat-contact .cn{font-size:16px;font-weight:600;}
+  .chat-contact .ctag{font-size:12px;color:#999;font-weight:400;margin-left:4px;}
+  .chat-contact .crow{font-size:14px;color:#576b95;margin-top:3px;}
+  .chat-contact .call{background:#07c160;color:#fff;border-radius:18px;padding:8px 14px;font-size:14px;text-decoration:none;flex-shrink:0;}
+  /* 搜索弹层 */
+  .searchwrap{padding:6px 0 2px;}
+  .search-input{width:100%;border:1px solid #e3e3e3;border-radius:10px;padding:11px 14px;font-size:15px;outline:none;background:#f5f5f5;box-sizing:border-box;}
+  .search-input:focus{border-color:#07c160;background:#fff;}
+  .search-results{margin-top:8px;max-height:60vh;overflow-y:auto;}
+  .printable{display:none;}
+  @media print{
+    body{background:#fff;}
+    .tabbar,.topbar,.gen-tools,.no-print,.toast,.modal-bg{display:none!important;}
+    #app{padding:0!important;}
+    .seat-table,.duty-table-wrap{box-shadow:none;border:none;margin:0;padding:0;}
+    .printable{display:block;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="modal-bg" id="modal"></div>
+<div class="toast" id="toast"></div>
+<div class="toast" id="toast2"></div>
+<script>
+/* ================== 工具 ================== */
+const $ = s=>document.querySelector(s);
+const $$ = s=>document.querySelectorAll(s);
+const esc = s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function uid(){return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function pad(n){return String(n).padStart(2,'0');}
+function fmtDate(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function todayStr(){return fmtDate(new Date());}
+function addDays(ds,n){const d=new Date(ds+'T00:00:00'); d.setDate(d.getDate()+n); return fmtDate(d);}
+function weekdayCN(ds){const w=new Date(ds+'T00:00:00').getDay(); return ['周日','周一','周二','周三','周四','周五','周六'][w];}
+function fmtCN(ds){if(!ds)return''; return (ds||'').replace(/^(\d{4})-(\d{2})-(\d{2})$/,'$1年$2月$3日');}
+function fromNow(ds){if(!ds)return''; if(ds===todayStr())return'今天'; if(ds===addDays(todayStr(),1))return'明天'; if(ds===addDays(todayStr(),-1))return'昨天'; return (ds||'').slice(5);}
+function hashName(n){let h=0; for(const c of (n||''))h=(h*31+c.charCodeAt(0))%360; return h;}
+const AVC=['#07c160','#576b95','#fa9d3b','#e73b3b','#8a38f5','#f0766f','#57be6a','#10aeff'];
+function avC(n){return AVC[hashName(n)%AVC.length];}
+function toast(m){const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),1800);}
+function confirmBox(m,fn){openSheet({title:'确认操作',body:'<p style="padding:12px 0">'+esc(m)+'</p>',onSave:fn,ok:'确认'});}
+/*__APP__*/
+/* ================== 数据 ================== */
+const KEY='huang_teacher_workbench_v3';
+let db=null;
+const D_ST={un:'未交',done:'已交',full:'已订正'};
+const H_ST={pending:'待收',submitted:'已交',late:'迟交',missing:'缺交'};
+const A_ST={present:'到',late:'迟到',leave:'请假',absent:'缺勤'};
+/* ====== 2612班 真实数据（来自官方表格） ====== */
+const S2612_ROSTER=[["唐有","女","18674877808",""],["詹乐萱","女","13007488298",""],["周逸巧","女","17343605717",""],["杨妍雨","女","13298680831",""],["曹睿涵","女","13974866708",""],["许思怡","女","15697363753",""],["谭明煦","男","13973140710",""],["李嘉泉","男","13874977241",""],["冯宇萱","女","18274899500",""],["文希妍","女","13507487844",""],["毛品荣","男","18973110748",""],["盛雨芊","女","15111496860",""],["王思涵","女","13973146660",""],["李琢言","男","18607311655",""],["朱炫宇","男","13822891808",""],["李晓涵","女","15084909610",""],["朱家骏","男","15387487832",""],["杨曦晨","男","15111032135",""],["李诺欣","女","13787033049",""],["周顺","男","13437404934",""],["章佳宸","男","18218228418",""],["周馨","女","18163618062",""],["曹钰洁","女","13348682098",""],["陈紫萱","女","19573736178",""],["黄思妍","女","13517312935",""],["刘欣琳","女","18173151111",""],["胡锦程","男","13507437820",""],["张佳音","女","15173154305",""],["李家旭","男","15387579890",""],["林梓兴","男","13510551246",""],["张博霖","男","17775861012",""],["张玉玺","男","15874151606",""],["李兆芬","女","18373157878",""],["胡思彤","女","13786125731",""],["石昊然","男","15116376436",""],["夏振博","男","13319579768",""],["罗晨希","男","18374800988",""],["蒲欣语","女","18874061693",""],["耿梓晨","男","18611157953",""],["毛雅茜","女","18175975531",""],["梁宸瑜","男","13755074078",""],["吴子涵","男","17749686382",""],["闫家辉","男","15343310234",""],["范妙言","女","15874001555",""],["周思琪","女","17708454878",""],["周蔚","女","13367312348",""],["段诗画","女","13818895487",""],["张嘉乐","男","18874086958",""],["杨紫萱","女","15802581366",""],["李思远","男","13548941556",""],["周嘉怡","女","15907303649",""],["冷雨馨","女","15874115216",""],["袁文灿","男","19386691265",""],["黄子豪","男","18670752221",""],["罗媛妮","女","15116430766","罗树"]];
+const S2612_DORM={"512":["耿梓晨","闫家辉","张嘉乐","夏振博","袁文灿","吴子涵"],"513":["梁宸瑜","谭明煦","朱家骏","杨曦晨","李家旭","罗晨希"],"514":["李嘉泉","李琢言","朱炫宇","章佳宸","张博霖","石昊然"],"515":["毛品荣","周顺","胡锦程","林梓兴","李思远","黄子豪","张玉玺"],"516":["周嘉怡","王思涵","曹钰洁","蒲欣语","周蔚","罗媛妮"],"517":["曹睿涵","盛雨芊","周馨","陈紫萱","李兆芬","周思琪","段诗画","冷雨馨"],"518":["冯雨萱","周逸巧","许思怡","李晓涵","李诺欣","毛雅茜","范妙言","杨紫萱"],"519":["唐有","詹乐萱","黄思妍","刘欣琳","张佳音","杨妍雨"]};
+const S2612_DORM_SEX={"512":"男","513":"男","514":"男","515":"男","516":"女","517":"女","518":"女","519":"女"};
+const S2612_SEAT=[["张玉玺","冯宇萱","夏振博","段诗画","李思远","胡思彤","袁文灿"],["吴子涵","陈紫萱","张博霖","周蔚","胡锦程","文希妍","耿梓晨"],["罗媛妮","蒲欣语","朱家骏","石昊然","周逸巧","冷雨馨","刘欣琳"],["杨妍雨","毛雅茜","周顺","张嘉乐","李晓涵","王思涵","曹钰洁"],["李兆芬","杨曦晨","盛雨芊","黄思妍","章佳宸","曹睿涵","李家旭"],["张佳音","梁宸瑜","周馨","李诺欣","李嘉泉","詹乐萱","林梓兴"],["闫家辉","罗晨希","许思怡","李琢言","杨紫萱","朱炫宇","周思琪"],[null,"毛品荣","范妙言","黄子豪","周嘉怡","谭明煦","唐有"]];
+const S2612_DUTY=[{"sweep":["唐有","詹乐萱"],"corridor":["周逸巧"],"window":["杨妍雨"],"trash":["李琢言","朱炫宇"]},{"sweep":["盛雨芊","冯宇萱"],"corridor":["文希妍"],"window":["王思涵"],"trash":["李嘉泉","毛品荣"]},{"sweep":["曹睿涵","许思怡"],"corridor":["李晓涵"],"window":["李诺欣"],"trash":["杨曦晨","朱家骏"]},{"sweep":["陈紫萱","黄思妍"],"corridor":["周馨"],"window":["曹钰洁"],"trash":["周顺","章佳宸"]},{"sweep":["刘欣琳","胡锦程"],"corridor":["张佳音"],"window":["李家旭"],"trash":["林梓兴","张博霖"]},{"sweep":["张玉玺","李兆芬"],"corridor":["胡思彤"],"window":["杨紫萱"],"trash":["夏振博","罗晨希"]},{"sweep":["蒲欣语","耿梓晨"],"corridor":["毛雅茜"],"window":["梁宸瑜"],"trash":["吴子涵","闫家辉"]},{"sweep":["范妙言","周思琪"],"corridor":["周蔚"],"window":["段诗画"],"trash":["张嘉乐","石昊然"]},{"sweep":["罗媛妮","周嘉怡"],"corridor":["冷雨馨"],"window":["袁文灿"],"trash":["黄子豪","李思远","谭明煦"]}];
+const S2612_CLASS12=[["数学/杜家睿","数学/杜家睿","英语/黄思敏","英语/黄思敏","政治/易马当先","物理/周俏","语文/陈缀缀","YM/龚平"],["物理/周俏","数学/杜家睿","语文/陈缀缀","语文/陈缀缀","生物/黄任衡","化学/姚品品","体育/汪点","英语/黄思敏"],["政治/易马当先","英语/黄思敏","地理/吴晶晴","历史/钟仪璇","物理/周俏","数学/杜家睿","语文/陈缀缀","体育/汪点"],["数学/杜家睿","物理/周俏","生物/黄任衡","语文/陈缀缀","历史/钟仪璇","XX/覃笠","化学/姚品品","英语/黄思敏"],["数学/杜家睿","数学/杜家睿","化学/姚品品","英语/黄思敏","语文/陈缀缀","TW/陈武","地理/吴晶晴","班会/"]];
+const S2612_TEACHER={"2610班":[[0,0],[0,1],[1,4],[2,3],[3,6],[4,1]],"2612班":[[0,2],[0,3],[1,7],[2,1],[3,7],[4,3]]};
+const S2612_TIMES=["7:30-7:50","8:00-8:40","9:30-9:55","9:55-10:35","14:00-14:40","14:50-15:30","15:40-16:25","16:35-17:15"];
+function load(){try{const r=localStorage.getItem(KEY); if(r){db=JSON.parse(r); return true;}}catch(e){} return false;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db)); return true;}catch(e){toast('保存失败'); return false;}}
+function patchData(){
+  const PATCH={'陈紫萱':'19573736178'};
+  (db.students||[]).forEach(function(s){ const p=PATCH[s.name]; if(p&&!s.phone) s.phone=p; });
+}
+function seedIfNeeded(){ if(load()){ patchData(); save(); return; } db=makeClass2612(); save(); }
+function getStudent(id){return db.students.find(s=>s.id===id);}
+function makeDictation(title,type,date,words,students){const rec={}; students.forEach(s=>rec[s.id]={status:'un',score:null,wrong:''}); return {id:uid(),title,type,date,words:words||[],records:rec,note:''};}
+function defaultData(){
+  const names=['张伟','李娜','王强','刘洋','陈静','赵磊','孙悦','周杰','吴昊','郑爽'];
+  const students=names.map((n,i)=>({id:uid(),name:n,no:String(i+1).padStart(2,'0'),group:['A组','B组'][i%2],gender:i%2?'女':'男',phone:''}));
+  const tasks=[{id:uid(),name:'早读英语带读'},{id:uid(),name:'检查学生背诵'},{id:uid(),name:'批改今日默写'},{id:uid(),name:'处理班级事务'},{id:uid(),name:'备课/教学反思'}];
+  const today=todayStr();
+  const d=makeDictation('Unit 1 单词过关','单词',today,['abandon','ability','absorb','academic','access','account','accurate','achieve','active','adapt'],students);
+  d.records[students[0].id]={status:'done',score:90,wrong:''}; d.records[students[1].id]={status:'full',score:100,wrong:''}; d.records[students[2].id]={status:'done',score:72,wrong:'abandon;active'};
+  const hw={id:uid(),title:'Unit 1 单词抄写',subject:'英语',assignDate:addDays(today,-1),dueDate:today,desc:'抄写2遍并背诵',records:{}};
+  students.forEach((s,i)=>{hw.records[s.id]={status:i%5===0?'missing':(i%4===0?'late':'submitted')};});
+  const att={}; att[today]={}; students.forEach((s,i)=>{att[today][s.id]={status:i%5===0?'late':(i%6===0?'leave':'present')};});
+  const checkin={id:uid(),date:today,tasks:tasks.map(t=>({name:t.name,done:false})),mood:'😊',note:''};
+  const logs=[
+    {id:uid(),date:addDays(today,-1),type:'class',content:'运动会报名开始，提醒同学本周五前找体育委员报名。',studentId:''},
+    {id:uid(),date:addDays(today,-2),type:'student',content:'张伟最近默写状态有进步，给予肯定，鼓励保持。',studentId:students[0].id},
+  ];
+  const contacts=[
+    {id:uid(),studentId:students[0].id,date:addDays(today,-1),method:'微信',direction:'in',content:'家长：孩子最近英语课状态怎么样？',followUp:'',followDone:false},
+    {id:uid(),studentId:students[0].id,date:addDays(today,-1),method:'微信',direction:'out',content:'整体不错，就是单词默写不太稳，周末多复习一下。',followUp:'',followDone:false},
+    {id:uid(),studentId:students[1].id,date:addDays(today,-1),method:'电话',direction:'out',content:'反馈近期英语成绩波动，家长表示会加强监督。',followUp:addDays(today,2),followDone:false},
+  ];
+  return {teacherName:'黄思敏',school:'一中',className:'高一(3)班',seeded:true,students,dictations:[d],homeworks:[hw],attendance:att,checkinTasks:tasks,checkins:[checkin],logs,contacts};
+}
+/* ================== 底部弹层 ================== */
+let sheetSave=null;
+function openSheet({title,body,onSave,ok='保存',hint=''}){sheetSave=onSave;
+  $('#modal').innerHTML='<div class="sheet"><div class="sh">'+esc(title)+'<span class="close" onclick="closeSheet()">×</span></div>'+(hint?'<div class="ts" style="padding:0 16px 4px">'+esc(hint)+'</div>':'')+'<div class="fd">'+body+'</div><div class="acts"><button class="btn ghost" onclick="closeSheet()">取消</button><button class="btn" onclick="saveSheet()">'+esc(ok)+'</button></div></div>';
+  $('#modal').classList.add('show');}
+function closeSheet(){$('#modal').classList.remove('show'); $('#modal').innerHTML=''; sheetSave=null;}
+function saveSheet(){if(sheetSave){const f=sheetSave; sheetSave=null; try{f();}catch(e){console.error(e);} closeSheet();}}
+document.addEventListener('click',e=>{if(e.target.id==='modal')closeSheet();});
+/* ================== 路由 ================== */
+let route='home', stack=[];
+const TABS=[{k:'home',i:'🧰',l:'首页'},{k:'class',i:'🏫',l:'班级'},{k:'work',i:'🗂️',l:'工作'},{k:'chat',i:'💬',l:'沟通'},{k:'me',i:'👤',l:'我的'}];
+function goTab(k){stack=[]; route=k; render(); window.scrollTo(0,0);}
+function nav(r){if(r!==route){stack.push(route);} route=r; render(); window.scrollTo(0,0);}
+function back(){if(stack.length){route=stack.pop(); render();}else goTab('home');}
+function activeTab(){return route.split(':')[0];}
+function pageMeta(){
+  if(route==='home')return{title:'工作台'};
+  if(route==='class')return{title:'班级',sub:db.className};
+  if(route==='class:stu')return{title:'学生名单',back:1};
+  if(route==='class:att')return{title:'考勤',back:1};
+  if(route==='class:log')return{title:'班级日志',back:1};
+  if(route==='class:seat')return{title:'座位表生成',back:1};
+  if(route==='class:duty')return{title:'值日表生成',back:1};
+  if(route==='class:schedule')return{title:'班级课表',back:1};
+  if(route==='class:dorm')return{title:'住宿生',back:1};
+  if(route==='work')return{title:'工作台工具'};
+  if(route==='work:dict')return{title:'默写管理',back:1};
+  if(route==='work:hw')return{title:'作业管理',back:1};
+  if(route==='work:check')return{title:'教师打卡',back:1};
+  if(route==='chat')return{title:'家长沟通'};
+  if(route.slice(0,5)==='chat:'){const s=getStudent(route.slice(5)); return{title:s?s.name:'沟通',back:1};}
+  if(route==='me')return{title:'我的'};
+  return{title:''};
+}
+function render(){
+  const t=activeTab(), m=pageMeta(); const isDetail=route.includes(':');
+  const topbar='<div class="topbar">'+(m.back?'<span class="back" onclick="back()">‹</span>':'<span class="sp"></span>')+'<div class="title">'+esc(m.title)+(m.sub?'<small>'+esc(m.sub)+'</small>':'')+'</div>'+(m.back?'<span class="sp"></span>':'<span class="sp"></span>')+'</div>';
+  let content='';
+  if(route==='home')content=homeHTML();
+  else if(route==='class')content=classListHTML();
+  else if(route==='class:stu')content=stuHTML();
+  else if(route==='class:att')content=attHTML();
+  else if(route==='class:log')content=logHTML();
+  else if(route==='class:seat')content=seatHTML();
+  else if(route==='class:duty')content=dutyHTML();
+  else if(route==='class:schedule')content=scheduleHTML();
+  else if(route==='class:dorm')content=dormHTML();
+  else if(route==='work')content=workListHTML();
+  else if(route==='work:dict')content=dictHTML();
+  else if(route==='work:hw')content=hwHTML();
+  else if(route==='work:check')content=checkHTML();
+  else if(route==='chat')content=chatListHTML();
+  else if(route.slice(0,5)==='chat:')content=chatThreadHTML(route.slice(5));
+  else if(route==='me')content=meHTML();
+  const tabbar=isDetail?'':'<div class="tabbar">'+TABS.map(x=>'<button class="tab '+(t===x.k?'on':'')+'" onclick="goTab(\''+x.k+'\')"><span class="ti">'+x.i+'</span><span class="tl">'+x.l+'</span></button>').join('')+'</div>';
+  $('#app').innerHTML=topbar+content+tabbar;
+  const init={home:initHome,class:initClass,stu:initStu,att:initAtt,log:initLog,work:initWork,dict:initDict,hw:initHW,check:initCheck,chat:initChat,me:initMe,seat:initSeat,duty:initDuty,schedule:initSchedule,dorm:initDorm}[route]||null;
+  if(init)init();
+  if(route.slice(0,5)==='chat:')initChatThread(route.slice(5));
+}
+/* 常用小部件 */
+function seg(list,cur,onK){return '<div class="seg">'+list.map(x=>'<button class="'+(x.k===cur?'on':'')+'" onclick="'+onK+'(\''+x.k+'\')">'+x.n+'</button>').join('')+'</div>';}
+function emptyHTML(ic,text){return '<div class="empty"><span class="eic">'+ic+'</span>'+text+'</div>';}
+/* 首页 */
+function homeHTML(){
+  const today=todayStr();
+  const dictT=db.dictations.filter(d=>d.date===today);
+  let dictDone=0, dictTotal=0;
+  dictT.forEach(d=>{const r=Object.values(d.records||{}); dictTotal+=r.length; dictDone+=r.filter(x=>x.status!=='un').length;});
+  let hwOpen=0, hwOvl=0;
+  db.homeworks.forEach(h=>{const r=Object.values(h.records||{}); const open=r.filter(x=>x.status==='pending'||x.status==='missing').length; hwOpen+=open; if(h.dueDate<=today)hwOvl+=open;});
+  const att=db.attendance[today]||{}; const attV=Object.values(att); const attDone=attV.filter(x=>x.status==='present'||x.status==='late').length;
+  const chk=db.checkins.find(c=>c.date===today); const chkDone=chk?chk.tasks.filter(x=>x.done).length:0; const chkTotal=chk?chk.tasks.length:db.checkinTasks.length;
+  const hm=new Date().getHours(); const greet=hm<6?'夜深了':hm<9?'早上好':hm<12?'上午好':hm<14?'中午好':hm<18?'下午好':'晚上好';
+  // 待办
+  let todo='';
+  dictT.forEach(d=>{const r=Object.values(d.records||{}); const n=r.filter(x=>x.status==='un').length; if(n>0)todo+='<div class="list-msg"><div class="av round" style="background:#576b95">默</div><div class="mid"><div class="name">今日默写 · '+esc(d.title)+'</div><div class="prev">还有 <b style="color:#fa5151">'+n+'</b> 人未交，点击去登记</div></div><div class="right" onclick="nav(\'work:dict\')">›</div></div>';});
+  let overdue=db.homeworks.filter(h=>h.dueDate<=today && Object.values(h.records||{}).some(x=>x.status==='pending'||x.status==='missing'));
+  overdue.forEach(h=>{const n=Object.values(h.records||{}).filter(x=>x.status==='pending'||x.status==='missing').length; todo+='<div class="list-msg"><div class="av round" style="background:#fa9d3b">作</div><div class="mid"><div class="name">'+esc(h.title)+'</div><div class="prev">'+(h.dueDate<today?'已逾期·':'今日截止·')+'还有 '+n+' 人未收</div></div><div class="right" onclick="nav(\'work:hw\')">›</div></div>';});
+  let follow=db.contacts.filter(c=>c.followUp&&c.followUp<=today&&!c.followDone);
+  follow.forEach(c=>{const s=getStudent(c.studentId); todo+='<div class="list-msg"><div class="av round" style="background:'+avC(s?s.name:'')+'">'+esc((s?s.name:'').slice(0,1))+'</div><div class="mid"><div class="name">回访 · '+esc(s?s.name:'')+'</div><div class="prev">'+esc((c.content||'').slice(0,18))+'…</div></div><div class="right" onclick="nav(\'chat\')">›</div></div>';});
+  (function(){ const dow=weekdayIdx(); const ts=db.teacherSchedule||{}; let items=[]; if(dow<=4){ Object.keys(ts).forEach(function(cls){ (ts[cls]||[]).forEach(function(x){ if(x[0]===dow)items.push({cls:cls,p:x[1]}); }); }); }
+    if(items.length){ items.sort(function(a,b){return a.p-b.p;}); const txt=items.map(function(x){return esc(x.cls)+' 第'+(x.p+1)+'节';}).join('、'); todo+='<div class="list-msg"><div class="av round" style="background:#07c160">课</div><div class="mid"><div class="name">今日授课 · 黄思敏</div><div class="prev">'+txt+'</div></div><div class="right" onclick="nav(\'class:schedule\')">›</div></div>'; }
+    else { todo+='<div class="list-msg"><div class="av round" style="background:#8a8a8a">休</div><div class="mid"><div class="name">今日无授课</div><div class="prev">'+(dow>4?'周末休息':'今日无我校英语课')+'</div></div><div class="right" onclick="nav(\'class:schedule\')">›</div></div>'; } })();
+  if(!todo)todo=emptyHTML('🎉','今天没有紧急待办，去记录点工作吧');
+  return '<div class="hero"><div class="box"><div class="greet">'+greet+'，'+esc(db.teacherName)+'老师</div><h1>'+esc(db.className)+'</h1><div class="sub">'+fmtCN(today)+' · '+weekdayCN(today)+' · '+esc(db.school)+'</div></div></div>'
+    +'<div class="statrow">'
+    +'<div class="stat"><div class="num">'+dictDone+'/'+dictTotal+'</div><div class="lbl">今日默写</div></div>'
+    +'<div class="stat"><div class="num">'+hwOpen+'</div><div class="lbl">待收作业</div></div>'
+    +'<div class="stat"><div class="num">'+attDone+'/'+db.students.length+'</div><div class="lbl">今日到勤</div></div>'
+    +'<div class="stat"><div class="num">'+chkDone+'/'+chkTotal+'</div><div class="lbl">今日打卡</div></div>'
+    +'</div>'
+    +'<div class="cgroup"><div class="gtitle">待办提醒</div>'+todo+'</div>'
+    +'<div class="cgroup"><div class="gtitle">快捷入口</div>'
+    +'<div class="cell" onclick="nav(\'work:dict\')"><div class="ic" style="background:#e8f7ed">✍️</div><div class="t">默写登记<small class="sub" style="color:#999">记录每人的完成与错词</small></div><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="nav(\'work:hw\')"><div class="ic" style="background:#eef3ff">📚</div><div class="t">作业收缴<small class="sub" style="color:#999">已交/未交/迟交/缺交</small></div><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="nav(\'class:att\')"><div class="ic" style="background:#fff5e6">🧭</div><div class="t">今日考勤<small class="sub" style="color:#999">到勤/迟到/请假/缺勤</small></div><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="nav(\'class:schedule\')"><div class="ic" style="background:#e6f7ff">📅</div><div class="t">班级课表<small class="sub" style="color:#999">2612 一周课程 · 教师安排</small></div><span class="chev">›</span></div>'
+  +'<div class="cell" onclick="nav(\'class:dorm\')"><div class="ic" style="background:#fff2e0">🛏️</div><div class="t">住宿生<small class="sub" style="color:#999">寝室名单 · 男女分配</small></div><span class="chev">›</span></div>'
++'<div class="cell" onclick="nav(\'work:check\')"><div class="ic" style="background:#f4edff">✅</div><div class="t">教师打卡<small class="sub" style="color:#999">今日任务与心情</small></div><span class="chev">›</span></div>'
+    +'</div>';
+}
+function initHome(){}
+/*__APP__*/
+/* ================== 班级 ================== */
+function classListHTML(){
+  const today=todayStr();
+  const att=db.attendance[today]||{}; const attV=Object.values(att); const attDone=attV.filter(x=>x.status==='present'||x.status==='late').length;
+  const logN=db.logs.length;
+  const rows=db.students.map(s=>'<div class="cell" data-name="'+esc(s.name)+'" onclick="showStudent(\''+s.id+'\')"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'</div><div class="val">'+esc(s.group||'')+' · '+esc(s.no||'')+'</div><span class="chev">›</span></div>').join('');
+  return '<div class="cgroup">'
+    +'<div class="cell" style="background:#fff"><div style="flex:1;background:#f0f0f0;border-radius:8px;padding:8px 12px;color:#999;font-size:14px" onclick="openSearch()">🔍 搜索学生</div></div>'
+    +'</div>'
+    +'<div class="grid2" style="padding:0 14px 0">'
+      +'<div class="stat" onclick="nav(\'class:att\')"><div class="num" style="font-size:18px">'+attDone+'/'+db.students.length+'</div><div class="lbl">今日考勤 ›</div></div>'
+      +'<div class="stat" onclick="nav(\'class:log\')"><div class="num" style="font-size:18px">'+logN+'</div><div class="lbl">班级日志 ›</div></div>'
+    +'</div>'
+    +'<div class="gtitle" style="padding:14px 16px 0">班级工具</div>'
+    +'<div class="ctools">'
+      +'<div class="ctool" onclick="nav(\'class:seat\')"><div class="ci">🪑</div><div class="cn">座位表生成</div><div class="cs">按组排座 · 导出图片</div></div>'
+      +'<div class="ctool" onclick="nav(\'class:duty\')"><div class="ci">🧹</div><div class="cn">值日表生成</div><div class="cs">轮流值日 · 任务分工</div></div>'
+      +'<div class="ctool" onclick="nav(\'class:stu\')"><div class="ci">👥</div><div class="cn">学生名单</div><div class="cs">'+db.students.length+'人 · 编辑</div></div>'
+      +'<div class="ctool" onclick="nav(\'class:schedule\')"><div class="ci">📅</div><div class="cn">班级课表</div><div class="cs">一周课程 · 教师安排</div></div>'
+  +'<div class="ctool" onclick="nav(\'class:dorm\')"><div class="ci">🛏️</div><div class="cn">住宿生</div><div class="cs">寝室名单</div></div>'
++'<div class="ctool" onclick="classSettings()"><div class="ci">⚙️</div><div class="cn">班级设置</div><div class="cs">名称 / 模板</div></div>'
+    +'</div>'
++'<div class="cgroup"><div class="gtitle">学生名单 · '+db.students.length+'人　<span style="color:#07c160;float:right;font-size:14px;font-weight:600" onclick="stuAdd()">＋ 添加</span></div>'
+    +(rows||emptyHTML('👤','还没有学生，点击右上角添加'))+'</div>';
+}
+function initClass(){}
+function openSearch(){
+  const mode = (route.slice(0,4)==='chat') ? 'chat' : 'class';
+  const label = mode==='chat' ? '搜索家长' : '搜索学生';
+  const body='<div class="searchwrap"><input id="search_input" class="search-input" placeholder="输入姓名 / 电话 / 组 / 家长" value="" oninput="searchDo(this.value, \''+mode+'\')" autocomplete="off"><div id="search_results" class="search-results">'+searchRows('',mode)+'</div></div>';
+  openSheet({title:label, body:body, onSave:function(){}, ok:'关闭'});
+  setTimeout(function(){ var i=$('#search_input'); if(i)i.focus(); },80);
+}
+function searchRows(q,mode){
+  q=(q||'').trim().toLowerCase();
+  var list=db.students.filter(function(s){
+    if(!q)return true;
+    return (s.name||'').toLowerCase().indexOf(q)>=0 || (s.phone||'').indexOf(q)>=0 || (s.group||'').toLowerCase().indexOf(q)>=0 || (s.parent||'').indexOf(q)>=0;
+  });
+  if(!list.length)return emptyHTML('🔍','没有找到匹配的学生');
+  return list.slice(0,80).map(function(s){
+    var onClick = mode==='chat' ? "searchPick('"+s.id+"')" : "closeSheet();showStudent('"+s.id+"')";
+    return '<div class="cell" onclick="'+onClick+'"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'<small class="sub" style="color:#999;display:block">'+(s.phone?'📞 '+esc(s.phone):'')+(s.parent?' · '+esc(s.parent):'')+' · '+esc(s.group||'')+'</small></div><span class="chev">›</span></div>';
+  }).join('');
+}
+function searchDo(v,mode){ var r=$('#search_results'); if(r)r.innerHTML=searchRows(v,mode); }
+function searchPick(id){ try{closeSheet();}catch(e){} nav('chat:'+id); }
+/* 学生管理（管理页） */
+function stuHTML(){
+  const rows=db.students.map(s=>'<div class="cell" data-name="'+esc(s.name)+'" onclick="showStudent(\''+s.id+'\')"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'<small class="sub" style="color:#999;display:block">'+esc(s.no||'')+' · '+esc(s.group||'')+' · '+(s.gender||'')+'</small></div><span class="chev">›</span></div>').join('');
+  return '<div class="btn-row" style="padding:12px 14px"><button class="btn" onclick="stuAdd()">＋ 添加学生</button><button class="btn ghost" onclick="stuImport()">批量导入</button></div>'
+    +'<div class="cgroup">'+(rows||emptyHTML('👤','还没有学生'))+'</div>';
+}
+function initStu(){}
+function stuFormHTML(v){v=v||{};return '<div class="fcell"><label>姓名</label><input id="s_name" placeholder="学生姓名" value="'+esc(v.name||'')+'"></div>'
+  +'<div class="fcell"><label>学号</label><input id="s_no" placeholder="例如 01" value="'+esc(v.no||'')+'"></div>'
+  +'<div class="fcell"><label>性别</label><select id="s_gender"><option value="男"'+(v.gender==='女'?'':'')+'>男</option><option value="女"'+(v.gender==='女'?' selected':'')+'>女</option></select></div>'
+  +'<div class="fcell"><label>分组</label><input id="s_group" placeholder="例如 第一组 / A组" value="'+esc(v.group||'')+'"></div>'
+  +'<div class="fcell"><label>家长电话</label><input id="s_phone" placeholder="可选" value="'+esc(v.phone||'')+'"></div>'
+  +'<div class="fcell"><label>特殊座</label><span style="flex:1;display:flex;align-items:center;gap:6px;color:#333;font-size:14px"><input type="checkbox" id="s_special" style="width:auto"'+(v.special?' checked':'')+'> 坐前排（黄色标★）</span></div>';}
+function stuAdd(){openSheet({title:'添加学生',body:stuFormHTML(),onSave:()=>{const n=$('#s_name').value.trim(); if(!n){toast('请填写姓名'); return;}; db.students.push({id:uid(),name:n,no:$('#s_no').value.trim(),gender:$('#s_gender').value,group:$('#s_group').value.trim(),phone:$('#s_phone').value.trim(),special:$('#s_special').checked?1:0}); save(); render(); toast('已添加 '+n);}});}
+function stuEdit(id){const s=getStudent(id); if(!s)return; openSheet({title:'编辑 '+s.name,body:stuFormHTML(s),onSave:()=>{const n=$('#s_name').value.trim(); if(!n){toast('请填写姓名'); return;}; s.name=n; s.no=$('#s_no').value.trim(); s.gender=$('#s_gender').value; s.group=$('#s_group').value.trim(); s.phone=$('#s_phone').value.trim(); s.special=$('#s_special').checked?1:0; save(); closeSheet(); render(); toast('已保存');}}); }
+function stuDel(id){const s=getStudent(id); confirmBox('删除学生 '+s.name+'？相关记录会保留但不可关联。',()=>{db.students=db.students.filter(x=>x.id!==id); save(); render(); toast('已删除');}); }
+function stuImport(){openSheet({title:'批量导入学生',hint:'每行一个姓名，支持“姓名,学号,组”的格式',body:'<div class="fcell" style="display:block"><label>名单</label><textarea id="imp_text" style="width:100%;min-height:120px" placeholder="张三,01,A组&#10;李四,02,B组"></textarea></div>',onSave:()=>{const lines=($('#imp_text').value||'').split(/\n+/).map(x=>x.trim()).filter(Boolean); if(!lines.length){toast('请输入名单'); return;}; let n=0; lines.forEach(l=>{const p=l.split(/[,，]/).map(x=>x.trim()); const name=p[0]; if(!name)return; db.students.push({id:uid(),name,no:p[1]||'',group:p[2]||'',gender:'',phone:p[3]||''}); n++;}); save(); render(); toast('导入 '+n+' 人');}}); }
+/* 学生档案 */
+function showStudent(id){const s=getStudent(id); if(!s)return;
+  let dc=0,dt=0, ar=0, at=0;
+  db.dictations.forEach(d=>{const r=d.records[id]; if(r){dt++; if(r.status!=='un')dc++;}});
+  Object.values(db.attendance).forEach(day=>{const r=day[id]; if(r){at++; if(r.status==='present'||r.status==='late')ar++;}});
+  const dcP=dt?Math.round(dc/dt*100):0, arP=at?Math.round(ar/at*100):0;
+  const recentLog=db.logs.filter(l=>l.studentId===id).slice(-3).reverse().map(l=>'<div class="cell"><div class="t">'+fmtCN(l.date)+'<div class="sub" style="color:#999">'+esc(l.content)+'</div></div></div>').join('');
+  const recentCt=db.contacts.filter(c=>c.studentId===id).slice(-3).reverse().map(c=>'<div class="cell"><div class="t">'+fmtCN(c.date)+' · '+esc(c.method)+'<div class="sub" style="color:#999">'+esc(c.content)+'</div></div></div>').join('');
+  $('#modal').innerHTML='<div class="sheet"><div class="sh">'+esc(s.name)+'<span class="close" onclick="closeSheet()">×</span></div><div class="fd">'
+    +'<div style="display:flex;align-items:center;gap:14px"><div class="av round" style="width:60px;height:60px;font-size:26px;background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div><div style="font-size:18px;font-weight:600">'+esc(s.name)+'</div><div class="ts">学号 '+esc(s.no||'-')+' · '+esc(s.group||'-')+' · '+(s.gender||'男')+'</div>'+(s.phone?'<div class="ts">📞 '+esc(s.phone)+'</div>':'')+'</div></div>'
+    +'<div class="statrow" style="padding:14px 0 0"><div class="stat"><div class="num">'+dcP+'%</div><div class="lbl">默写完成</div></div><div class="stat"><div class="num">'+arP+'%</div><div class="lbl">到勤率</div></div><div class="stat"><div class="num">'+dt+'</div><div class="lbl">默写次数</div></div><div class="stat"><div class="num">'+at+'</div><div class="lbl">考勤天数</div></div></div>'
+    +'<div class="ts" style="margin-top:16px;font-weight:600">最近日志</div>'+(recentLog||'<div class="ts mt">暂无</div>')
+    +'<div class="ts" style="margin-top:16px;font-weight:600">最近沟通</div>'+(recentCt||'<div class="ts mt">暂无</div>')
+    +'<div class="btn-row mt"><button class="btn ghost" onclick="closeSheet();stuEdit(\''+id+'\')">编辑</button><button class="btn red" onclick="closeSheet();stuDel(\''+id+'\')">删除</button></div>'
+    +'</div><div class="acts"><button class="btn ghost" onclick="closeSheet()">关闭</button></div></div>';
+  $('#modal').classList.add('show');
+}
+/* ================== 考勤 ================== */
+let attDate=null;
+function attHTML(){ if(!attDate) attDate=todayStr(); if(!db.attendance[attDate]) db.attendance[attDate]={};
+  const cur=db.attendance[attDate]; const stats={present:0,late:0,leave:0,absent:0}; Object.values(cur).forEach(r=>{stats[r.status]=(stats[r.status]||0)+1;});
+  const rows=db.students.map(s=>{const st=(cur[s.id]||{}).status||'present'; const curSt=(cur[s.id]||{}).status;
+    const btns=[['present','到'],['late','迟到'],['leave','请假'],['absent','缺勤']].map(([k,l])=>'<button class="chip '+(curSt===k?'on':'')+'" style="font-size:12px" onclick="attSetStatus(\''+s.id+'\',\''+k+'\')">'+l+'</button>').join('');
+    return '<div class="cell"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'</div><div style="display:flex;gap:4px;flex-wrap:wrap">'+btns+'</div></div>';}).join('');
+  // 近7天到勤
+  let wk=0,wkT=0; for(let i=0;i<7;i++){const d=addDays(todayStr(),-i); const dd=db.attendance[d]; if(dd){Object.values(dd).forEach(r=>{wkT++; if(r.status==='present'||r.status==='late')wk++;});}}
+  const wkP=wkT?Math.round(wk/wkT*100):0;
+  return '<div class="cgroup"><div class="cell"><span class="back" style="margin:0" onclick="attNav(-1)">‹</span><div class="t" style="text-align:center">'+fmtCN(attDate)+' '+weekdayCN(attDate)+'</div><span class="chev" onclick="attNav(1)">›</span></div></div>'
+    +'<div class="statrow" style="padding:0 14px 2px">'
+      +'<div class="stat"><div class="num" style="color:#07c160">'+(stats.present||0)+'</div><div class="lbl">到勤</div></div>'
+      +'<div class="stat"><div class="num" style="color:#fa9d3b">'+(stats.late||0)+'</div><div class="lbl">迟到</div></div>'
+      +'<div class="stat"><div class="num" style="color:#576b95">'+(stats.leave||0)+'</div><div class="lbl">请假</div></div>'
+      +'<div class="stat"><div class="num" style="color:#fa5151">'+(stats.absent||0)+'</div><div class="lbl">缺勤</div></div>'
+    +'</div>'
+    +'<div style="padding:0 14px"><div style="background:#fff;border-radius:10px;padding:12px 14px;display:flex;align-items:center"><div class="t">近7天到勤率</div><div style="flex:1;margin:0 12px"><div class="bar"><i style="width:'+wkP+'%"></i></div></div><div class="num" style="font-weight:700;color:#07c160">'+wkP+'%</div></div><button class="btn ghost mt" style="margin-top:10px" onclick="attSetAll()">全部到勤</button></div>'
+    +'<div class="cgroup"><div class="gtitle">学生考勤</div>'+(rows||emptyHTML('🧭','暂无学生'))+'</div>';
+}
+function initAtt(){}
+function attNav(d){attDate=addDays(attDate||todayStr(),d); render();}
+function attSetStatus(id,st){if(!db.attendance[attDate])db.attendance[attDate]={}; db.attendance[attDate][id]={status:st}; save(); render();}
+function attSetAll(){db.students.forEach(s=>{db.attendance[attDate][s.id]={status:'present'};}); save(); render(); toast('已全部标记到勤');}
+function attDayStats(){}
+/* ================== 班级日志 ================== */
+let logType='all';
+function logHTML(){
+  const t=logType; const list=db.logs.filter(l=>t==='all'||l.type===t).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const rows=list.map(l=>{const s=l.studentId?getStudent(l.studentId):null; const tp={class:'班级事务',student:'学生谈话',event:'突发事件',reflect:'教学反思'}[l.type]||'事务';
+    return '<div class="cell" data-type="'+l.type+'"><div class="ic" style="background:#f0f0f0;border-radius:6px">'+({class:'📢',student:'🧑',event:'⚠️',reflect:'💡'}[l.type]||'📔')+'</div><div class="t" style="cursor:pointer" onclick="logDetail(\''+l.id+'\')">'+esc(l.content)+'<div class="sub" style="color:#999">'+fmtCN(l.date)+(s?' · '+esc(s.name):'')+'　<span style="color:#07c160">'+(tp)+'</span></div></div><span class="chev" onclick="event.stopPropagation();logDel(\''+l.id+'\')">✕</span></div>';}).join('');
+  return '<div class="btn-row" style="padding:12px 14px"><button class="btn" onclick="logAdd()">＋ 写日志</button></div>'
+    +'<div class="seg">'+[['all','全部'],['class','班级事务'],['student','学生谈话'],['event','突发'],['reflect','反思']].map(([k,n])=>'<button class="'+(t===k?'on':'')+'" onclick="logSet(\''+k+'\')">'+n+'</button>').join('')+'</div>'
+    +'<div class="cgroup">'+(rows||emptyHTML('📔','暂无相关日志'))+'</div>';
+}
+function initLog(){}
+function logSet(k){logType=k; render();}
+function logAdd(){openSheet({title:'写班级日志',body:'<div class="fcell"><label>类型</label><select id="l_type"><option value="class">班级事务</option><option value="student">学生谈话</option><option value="event">突发事件</option><option value="reflect">教学反思</option></select></div>'
+  +'<div class="fcell"><label>日期</label><input type="date" id="l_date" value="'+todayStr()+'"></div>'
+  +'<div class="fcell"><label>学生</label><select id="l_stu"><option value="">-不关联-</option>'+db.students.map(s=>'<option value="'+s.id+'">'+esc(s.name)+'</option>').join('')+'</select></div>'
+  +'<div class="fcell" style="display:block"><label>内容</label><textarea id="l_content" placeholder="记录一下今天的事…"></textarea></div>',
+  onSave:()=>{const c=$('#l_content').value.trim(); if(!c){toast('请填写内容'); return;}; db.logs.push({id:uid(),date:$('#l_date').value||todayStr(),type:$('#l_type').value,content:c,studentId:$('#l_stu').value}); save(); render(); toast('已记录');}});}
+function logDel(id){confirmBox('删除这条日志？',()=>{db.logs=db.logs.filter(x=>x.id!==id); save(); render();});}
+function logDetail(id){const l=db.logs.find(x=>x.id===id); if(!l)return; const s=l.studentId?getStudent(l.studentId):null; openSheet({title:'日志详情',body:'<div class="fcell" style="display:block"><label style="width:auto">'+fmtCN(l.date)+' · '+({class:'班级事务',student:'学生谈话',event:'突发事件',reflect:'教学反思'}[l.type]||'')+(s?' · '+esc(s.name):'')+'</label><p style="font-size:15px;line-height:1.6">'+esc(l.content)+'</p></div>',ok:'知道了',onSave:()=>{}});}
+/*__APP__*/
+/* ================== 工作 ================== */
+function workListHTML(){
+  const today=todayStr();
+  const dictT=db.dictations.filter(d=>d.date===today); let dOpen=0; dictT.forEach(d=>{dOpen+=Object.values(d.records||{}).filter(r=>r.status==='un').length;});
+  let hwOpen=0; db.homeworks.forEach(h=>{if(h.dueDate<=today)hwOpen+=Object.values(h.records||{}).filter(x=>x.status==='pending'||x.status==='missing').length;});
+  const chk=db.checkins.find(c=>c.date===today); const chkT=chk?chk.tasks.length:db.checkinTasks.length; const chkD=chk?chk.tasks.filter(x=>x.done).length:0;
+  return '<div class="cgroup"><div class="gtitle">日常教学</div>'
+    +'<div class="cell" onclick="nav(\'work:dict\')"><div class="ic" style="background:#e8f7ed">✍️</div><div class="t">默写管理<small class="sub" style="color:#999;display:block">英语默写 · 完成登记 · 错词统计</small></div>'+(dOpen?'<span class="bdg">'+dOpen+'</span>':'<span class="val">'+dictT.length+'场</span>')+'<span class="chev">›</span></div>'
+    +'<div class="cell" onclick="nav(\'work:hw\')"><div class="ic" style="background:#eef3ff">📚</div><div class="t">作业管理<small class="sub" style="color:#999;display:block">布置 · 收缴 · 逾期提醒</small></div>'+(hwOpen?'<span class="bdg">'+hwOpen+'</span>':'')+'<span class="chev">›</span></div>'
+    +'<div class="cell" onclick="nav(\'work:check\')"><div class="ic" style="background:#f4edff">✅</div><div class="t">教师打卡<small class="sub" style="color:#999;display:block">每日任务 · 连续打卡</small></div>'+(chkT>0 && chkD<chkT?'<span class="val">'+chkD+'/'+chkT+'</span>':'<span class="val">✓</span>')+'<span class="chev">›</span></div>'
+    +'</div>';
+}
+function initWork(){}
+/* ================== 默写 ================== */
+function dictHTML(){
+  const list=db.dictations.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const cards=list.map(d=>{const r=Object.values(d.records||{}); const done=r.filter(x=>x.status!=='un').length; const total=r.length; const pct=total?Math.round(done/total*100):0;
+    return '<div class="cell" onclick="dictSheet(\''+d.id+'\')"><div class="ic" style="background:#e8f7ed">✍️</div><div class="t">'+esc(d.title)+'<div class="sub" style="color:#999">'+esc(d.type)+' · '+fmtCN(d.date)+' · '+pct+'%'+(total?' · '+done+'/'+total:'')+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div><span class="chev">›</span></div>';}).join('');
+  return '<div class="btn-row" style="padding:12px 14px"><button class="btn" onclick="dictAdd()">＋ 新建默写</button></div>'
+    +'<div class="cgroup">'+(cards||emptyHTML('✍️','还没有默写记录，点击上方新建'))+'</div>';
+}
+function initDict(){}
+function dictAdd(){openSheet({title:'新建默写',body:'<div class="fcell"><label>标题</label><input id="d_title" placeholder="例如 Unit 2 课文背诵"></div>'
+  +'<div class="fcell"><label>类型</label><select id="d_type"><option value="单词">单词</option><option value="短语">短语</option><option value="课文">课文</option><option value="听写">听写</option></select></div>'
+  +'<div class="fcell"><label>日期</label><input type="date" id="d_date" value="'+todayStr()+'"></div>'
+  +'<div class="fcell" style="display:block"><label>默写内容</label><textarea id="d_words" placeholder="每行一个，例如：&#10;abandon&#10;ability"></textarea></div>',
+  onSave:()=>{const t=$('#d_title').value.trim(); if(!t){toast('请填写标题'); return;}; const ws=($('#d_words').value||'').split(/\n/).map(x=>x.trim()).filter(Boolean); const d=makeDictation(t,$('#d_type').value,$('#d_date').value||todayStr(),ws,db.students); db.dictations.push(d); save(); render(); toast('已创建，点击进入登记');}});}
+function dictSheet(id){const d=db.dictations.find(x=>x.id===id); if(!d)return;
+  const r=Object.values(d.records||{}); const done=r.filter(x=>x.status!=='un').length; const total=r.length; const pct=total?Math.round(done/total*100):0;
+  const rows=db.students.map(s=>{const rec=d.records[s.id]||{status:'un',score:null,wrong:''}; const cur=rec.status;
+    const btns=['un','done','full'].map(k=>'<button class="chip '+(cur===k?'on':'')+'" style="font-size:12px" onclick="dictSetStatus(\''+id+'\',\''+s.id+'\',\''+k+'\')">'+D_ST[k]+'</button>').join('');
+    return '<div class="cell"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'</div><div style="text-align:right"><div style="display:flex;gap:4px;justify-content:flex-end">'+btns+'</div><input type="number" placeholder="分数" value="'+(rec.score==null?'':rec.score)+'" onchange="dictSetScore(\''+id+'\',\''+s.id+'\',this.value)" style="width:60px;border:1px solid #ddd;border-radius:6px;padding:4px 6px;font-size:13px;text-align:center;margin-top:6px"></div></div>';}).join('');
+  $('#modal').innerHTML='<div class="sheet"><div class="sh">'+esc(d.title)+'<span class="close" onclick="closeSheet()">×</span></div><div class="fd">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center"><span class="ts">'+esc(d.type)+' · '+fmtCN(d.date)+'</span></div>'
+    +'<div class="bar mt"><i style="width:'+pct+'%"></i></div><div class="ts mt">完成 '+done+'/'+total+'（'+pct+'%）</div>'
+    +'<div class="btn-row mt"><button class="btn ghost" onclick="dictSetAll(\''+id+'\',\'done\')">全部已交</button><button class="btn ghost" onclick="dictSetAll(\''+id+'\',\'full\')">全部订正</button><button class="btn" onclick="closeSheet()">完成</button></div>'
+    +'<div class="mt">'+rows+'</div></div></div>';
+  $('#modal').classList.add('show');
+}
+function dictSetStatus(did,sid,st){const d=db.dictations.find(x=>x.id===did); if(!d)return; if(!d.records[sid])d.records[sid]={status:'un',score:null,wrong:''}; d.records[sid].status=st; save(); dictSheet(did);}
+function dictSetScore(did,sid,v){const d=db.dictations.find(x=>x.id===did); if(!d)return; if(!d.records[sid])d.records[sid]={status:'un',score:null,wrong:''}; d.records[sid].score=v===''?null:(+v); save();}
+function dictSetAll(did,st){const d=db.dictations.find(x=>x.id===did); if(!d)return; db.students.forEach(s=>{if(!d.records[s.id])d.records[s.id]={status:'un',score:null,wrong:''}; d.records[s.id].status=st;}); save(); dictSheet(did);}
+function dictDel(did){}
+/* ================== 作业 ================== */
+function hwHTML(){
+  const list=db.homeworks.slice().sort((a,b)=>b.dueDate.localeCompare(a.dueDate));
+  const cards=list.map(h=>{const r=Object.values(h.records||{}); const sub=r.filter(x=>x.status==='submitted'||x.status==='late').length; const total=r.length; const open=r.filter(x=>x.status==='pending'||x.status==='missing').length; const ovl=h.dueDate<todayStr()&&open>0;
+    return '<div class="cell" onclick="hwSheet(\''+h.id+'\')"><div class="ic" style="background:#eef3ff">📚</div><div class="t">'+esc(h.title)+'<div class="sub" style="color:#999">'+(ovl?'<span style="color:#fa5151">逾</span> ':'')+esc(h.subject)+' · 截止 '+fromNow(h.dueDate)+' · '+sub+'/'+total+'</div><div class="bar"><i style="width:'+(total?Math.round(sub/total*100):0)+'%"></i></div></div>'+(open?'<span class="bdg">'+open+'</span>':'')+'<span class="chev">›</span></div>';}).join('');
+  return '<div class="btn-row" style="padding:12px 14px"><button class="btn" onclick="hwAdd()">＋ 布置作业</button></div>'
+    +'<div class="cgroup">'+(cards||emptyHTML('📚','还没有布置作业'))+'</div>';
+}
+function initHW(){}
+function hwAdd(){openSheet({title:'布置作业',body:'<div class="fcell"><label>标题</label><input id="h_title" placeholder="例如 练习册 P12"></div>'
+  +'<div class="fcell"><label>科目</label><select id="h_sub"><option>英语</option><option>数学</option><option>语文</option><option>其他</option></select></div>'
+  +'<div class="fcell"><label>布置日期</label><input type="date" id="h_as" value="'+todayStr()+'"></div>'
+  +'<div class="fcell"><label>截止日期</label><input type="date" id="h_due" value="'+todayStr()+'"></div>'
+  +'<div class="fcell" style="display:block"><label>要求</label><textarea id="h_desc" placeholder="作业内容、要求…"></textarea></div>',
+  onSave:()=>{const t=$('#h_title').value.trim(); if(!t){toast('请填写标题'); return;}; const h={id:uid(),title:t,subject:$('#h_sub').value,assignDate:$('#h_as').value, dueDate:$('#h_due').value||todayStr(),desc:$('#h_desc').value.trim(),records:{}}; db.students.forEach(s=>h.records[s.id]={status:'pending'}); db.homeworks.push(h); save(); render(); }});}
+function hwSheet(id){const h=db.homeworks.find(x=>x.id===id); if(!h)return;
+  const r=Object.values(h.records||{}); const sub=r.filter(x=>x.status==='submitted'||x.status==='late').length; const total=r.length;
+  const rows=db.students.map(s=>{const rec=h.records[s.id]||{status:'pending'}; const cur=rec.status;
+    const btns=['pending','submitted','late','missing'].map(k=>'<button class="chip '+(cur===k?'on':'')+'" style="font-size:12px" onclick="hwSetStatus(\''+id+'\',\''+s.id+'\',\''+k+'\')">'+H_ST[k]+'</button>').join('');
+    return '<div class="cell"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'</div><div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:60%">'+btns+'</div></div>';}).join('');
+  $('#modal').innerHTML='<div class="sheet"><div class="sh">'+esc(h.title)+'<span class="close" onclick="closeSheet()">×</span></div><div class="fd">'
+    +'<span class="ts">'+esc(h.subject)+' · 截止 '+fromNow(h.dueDate)+' · '+esc(h.desc||'')+'</span><div class="ts mt">已收 '+sub+'/'+total+'</div>'
+    +'<div class="btn-row mt"><button class="btn ghost" onclick="hwSetAll(\''+id+'\',\'submitted\')">全部已交</button><button class="btn" onclick="closeSheet()">完成</button></div>'
+    +'<div class="mt">'+rows+'</div></div></div>';
+  $('#modal').classList.add('show');
+}
+function hwSetStatus(hid,sid,st){const h=db.homeworks.find(x=>x.id===hid); if(!h)return; if(!h.records[sid])h.records[sid]={status:'pending'}; h.records[sid].status=st; save(); hwSheet(hid);}
+function hwSetAll(hid,st){const h=db.homeworks.find(x=>x.id===hid); if(!h)return; db.students.forEach(s=>{if(!h.records[s.id])h.records[s.id]={status:'pending'}; h.records[s.id].status=st;}); save(); hwSheet(hid);}
+/* ================== 教师打卡 ================== */
+function getTodayCheck(){return db.checkins.find(c=>c.date===todayStr());}
+function ensureTodayCheck(){let c=getTodayCheck(); if(!c){c={id:uid(),date:todayStr(),tasks:db.checkinTasks.map(t=>({name:t.name,done:false})),mood:'😊',note:''}; db.checkins.push(c); save();} return c;}
+function checkHTML(){const c=ensureTodayCheck();
+  const rows=c.tasks.map((t,i)=>'<div class="cell" onclick="checkToggle('+i+')"><div style="width:26px;height:26px;border-radius:50%;border:2px solid '+(t.done?'#07c160':'#ddd')+';background:'+(t.done?'#07c160':'#fff')+';display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;margin-right:12px">'+(t.done?'✓':'')+'</div><div class="t">'+esc(t.name)+'</div><span class="chev">'+(t.done?'✔️':'')+'</span></div>').join('');
+  const moods=['😊','🙂','😐','😣','😴'];
+  const streak=(()=>{let n=0; for(let i=0;i<365;i++){const d=addDays(todayStr(),-i); const cc=db.checkins.find(x=>x.date===d); if(cc&&cc.tasks.some(x=>x.done))n++; else break;} return n;})();
+  return '<div class="cgroup"><div class="cell"><div class="t" style="display:flex;align-items:center;gap:10px">🔥 <b>已连续打卡 '+streak+' 天</b></div><span class="val">'+c.tasks.filter(x=>x.done).length+'/'+c.tasks.length+'</span></div></div>'
+    +'<div class="cgroup"><div class="gtitle">今日任务　<span style="color:#07c160;float:right;font-size:14px" onclick="checkAddTask()">＋添加</span></div>'+rows+'</div>'
+    +'<div class="cgroup"><div class="gtitle">今日心情</div><div class="cell"><span class="ts" style="margin-right:10px">状态</span><div style="display:flex;gap:6px;flex-wrap:wrap">'+moods.map(m=>'<button class="chip '+(c.mood===m?'on':'')+'" onclick="checkMood(\''+m+'\')">'+m+'</button>').join('')+'</div></div>'
+    +'<div class="cell"><span class="ts" style="margin-right:10px">备注</span><input style="flex:1;border:none;outline:none;font-size:15px" placeholder="今天做得怎样？" value="'+esc(c.note||'')+'" onchange="checkNote(this.value)"></div></div>'
+    +'<div class="cgroup"><div class="gtitle">历史</div>'+(db.checkins.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10).map(x=>'<div class="cell"><div class="t">'+fmtCN(x.date)+'<div class="sub" style="color:#999">完成 '+x.tasks.filter(t=>t.done).length+'/'+x.tasks.length+'　'+ (x.mood||'')+'</div></div><span class="val">'+(x.tasks.some(t=>t.done)?'✓':'—')+'</span></div>').join('')||emptyHTML('📅','暂无打卡记录'))+'</div>';
+}
+function initCheck(){}
+function checkToggle(i){const c=ensureTodayCheck(); c.tasks[i].done=!c.tasks[i].done; save(); render();}
+function checkMood(m){const c=ensureTodayCheck(); c.mood=m; save(); render();}
+function checkNote(v){const c=ensureTodayCheck(); c.note=v; save();}
+function checkAddTask(){openSheet({title:'添加打卡任务',body:'<div class="fcell"><label>任务</label><input id="ct_name" placeholder="例如 检查卫生"></div>',onSave:()=>{const n=$('#ct_name').value.trim(); if(!n){toast('请填写任务'); return;}; db.checkinTasks.push({id:uid(),name:n}); const c=ensureTodayCheck(); c.tasks.push({name:n,done:false}); save(); render();}});}
+/*__APP__*/
+/* ================== 家长沟通（聊天） ================== */
+function chatListHTML(){
+  const today=todayStr();
+  const threads=db.students.map(s=>{const cs=db.contacts.filter(c=>c.studentId===s.id).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''))); const last=cs[cs.length-1];
+    const follow=cs.some(c=>c.followUp&&!c.followDone&&c.followUp<=today);
+    return {s,last,follow};}).sort((a,b)=>{const ka=a.last?(a.last.date+(a.last.time||'')):'0000'; const kb=b.last?(b.last.date+(b.last.time||'')):'0000'; return kb.localeCompare(ka);});
+  const rows=threads.map(x=>{const s=x.s; const last=x.last;
+    return '<div class="list-msg" onclick="nav(\'chat:'+s.id+'\')"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="mid"><div class="name">'+esc(s.name)+'　<span style="font-size:12px;color:#999">家长</span></div><div class="prev">'+(last?esc(last.content):'暂无记录，点击开始沟通')+'</div>'+(s.phone?'<div class="prow">📞 '+esc(s.phone)+(s.parent?'　'+esc(s.parent):'')+'</div>':'')+'</div><div class="right"><div class="time">'+(last?fromNow(last.date).slice(0,4):'')+'</div>'+(x.follow?'<div class="dot"></div>':'')+'</div></div>';}).join('');
+  return '<div class="cgroup" style="margin-top:0">'+'<div class="cell" style="background:#fff"><div style="flex:1;background:#f0f0f0;border-radius:8px;padding:8px 12px;color:#999;font-size:14px" onclick="openSearch()">🔍 搜索家长</div></div></div>'
+    +'<div class="cgroup">'+(rows||emptyHTML('💬','暂无学生'))+'</div>';
+}
+function initChat(){}
+function chatThreadHTML(id){const s=getStudent(id); if(!s)return emptyHTML('👤','学生不存在');
+  const msgs=db.contacts.filter(c=>c.studentId===id).slice().sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')));
+  let lastDay=''; let body='';
+  msgs.forEach(m=>{const day=m.date; if(day!==lastDay){body+='<div class="chat-day">'+fmtCN(day)+'</div>'; lastDay=day;}
+    const isOut=m.direction!=='in'; const av=isOut?esc(db.teacherName.slice(0,1)):esc(s.name.slice(0,1));
+    const avBg=isOut?'#07c160':avC(s.name); const tm=(m.time||'')?(' · '+m.time):'';
+    body+='<div class="msg '+(isOut?'right':'left')+'"><div class="av" style="background:'+avBg+'">'+av+'</div><div class="b">'+esc(m.content)+'<span class="when">'+esc(m.method||'')+tm+'</span></div></div>';});
+  const pc=s.phone?('<div class="chat-contact"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="cinfo"><div class="cn">'+esc(s.name)+'　<span class="ctag">家长</span></div><div class="crow">📞 '+esc(s.phone)+(s.parent?'　· '+esc(s.parent):'')+'</div></div><a class="call" href="tel:'+esc(s.phone)+'">拨打</a></div>'):''; return pc+'<div class="chatwrap">'+ (body||emptyHTML('🗨️','还没有沟通记录，在下方发送第一条消息')) +'</div>'
+    +'<div class="inputbar"><input id="chat_in" placeholder="给 '+esc(s.name)+' 家长发消息…"><button class="send" onclick="chatSend(\''+id+'\')">发送</button></div>';
+}
+function initChatThread(id){const inp=$('#chat_in'); if(inp){inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&inp.value.trim())chatSend(id);}); window.chatInputFocus=()=>inp.focus();}}
+function chatSend(id){const s=getStudent(id); const inp=$('#chat_in'); const v=(inp?inp.value:'').trim(); if(!v){toast('请输入内容'); return;}
+  const d=new Date(); db.contacts.push({id:uid(),studentId:id,date:todayStr(),time:pad(d.getHours())+':'+pad(d.getMinutes()),method:'微信',direction:'out',content:v,followUp:'',followDone:false}); save(); render(); window.scrollTo(0,document.body.scrollHeight);}
+function chatLog(id){}
+/* ================== 我的/设置 ================== */
+function meHTML(){
+  const avgDict=(()=>{let done=0,total=0; db.dictations.forEach(d=>{const r=Object.values(d.records||{}); total+=r.length; done+=r.filter(x=>x.status!=='un').length;}); return total?Math.round(done/total*100):0;})();
+  const streak=(()=>{let n=0; for(let i=0;i<365;i++){const d=addDays(todayStr(),-i); const cc=db.checkins.find(x=>x.date===d); if(cc&&cc.tasks.some(x=>x.done))n++; else break;} return n;})();
+  return '<div class="profile-hd"><div class="av" style="background:#07c160">'+esc(db.teacherName.slice(0,1))+'</div><div class="pt"><div class="n">'+esc(db.teacherName)+'</div><div class="s">'+esc(db.className)+' · '+esc(db.school)+'</div></div></div>'
+    +'<div class="cgroup"><div class="gtitle">我的数据</div>'
+    +'<div class="cell"><div class="t">📊 数据概览</div><div class="val">学生 '+db.students.length+' · 默写完成率 '+avgDict+'% · 打卡 '+streak+' 天</div></div>'
+    +'</div>'
+    +'<div class="cgroup"><div class="gtitle">设置</div>'
+    +'<div class="cell" onclick="editTeacher()"><div class="t">教师信息</div><span class="val">'+esc(db.teacherName)+'</span><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="classSettings()"><div class="t">班级设置 / 模板</div><span class="val">'+esc(db.className)+'</span><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="exportData()"><div class="t">数据备份</div><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="importData()"><div class="t">导入数据</div><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="installApp()"><div class="t">📲 安装到桌面</div><span class="val">生成主屏幕图标</span><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="aboutApp()"><div class="t">关于</div><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="resetData()"><div class="t" style="color:#fa5151">清空数据</div><span class="chev">›</span></div>'
+    +'</div>'
+    +'<div class="ts" style="text-align:center;padding:20px 20px 30px;color:#bbb">黄老师工作台 · 本地数据，不上传云端</div>';
+}
+function initMe(){}
+function editTeacher(){openSheet({title:'教师信息',body:'<div class="fcell"><label>姓名</label><input id="t_name" value="'+esc(db.teacherName)+'"></div>'
+  +'<div class="fcell"><label>学校</label><input id="t_school" value="'+esc(db.school)+'"></div>'
+  +'<div class="fcell"><label>班级</label><input id="t_class" value="'+esc(db.className)+'"></div>',
+  onSave:()=>{db.teacherName=$('#t_name').value.trim()||db.teacherName; db.school=$('#t_school').value.trim(); db.className=$('#t_class').value.trim(); save(); render(); toast('已保存');}});}
+function exportData(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='黄老师工作台备份-'+todayStr()+'.json'; a.click(); toast('已导出备份');}
+function importData(){const inp=document.createElement('input'); inp.type='file'; inp.accept='.json'; inp.onchange=()=>{const f=inp.files[0]; if(!f)return; const rd=new FileReader(); rd.onload=()=>{try{const data=JSON.parse(rd.result); if(!data.students||!data.dictations)throw 0; db=data; save(); render(); toast('导入成功');}catch(e){toast('文件格式不正确');}}; rd.readAsText(f);}; inp.click();}
+function resetData(){confirmBox('将清空全部数据并恢复示例班级，确定吗？',()=>{db=defaultData(); save(); render(); toast('已重置');});}
+function aboutApp(){openSheet({title:'关于',body:'<div style="padding:8px 0"><p style="line-height:1.7;color:#555">黄老师教学助手，专为高中英语老师/班主任设计。<br>默写登记 · 作业收缴 · 考勤 · 打卡 · 班级日志 · 家长沟通。</p></div>',ok:'知道了',onSave:()=>{}});}
+
+
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); deferredPrompt=e; });
+window.addEventListener('appinstalled',function(){ deferredPrompt=null; toast('已安装到桌面，可从主屏幕打开'); });
+function installApp(){
+  if(deferredPrompt){ var pp=deferredPrompt; pp.prompt(); pp.userChoice.then(function(r){ if(r.outcome==='accepted'){toast('已安装');} deferredPrompt=null; }); return; }
+  var ua=(navigator.userAgent||'').toLowerCase();
+  var ios=ua.indexOf('iphone')>=0||ua.indexOf('ipad')>=0;
+  var edge=ua.indexOf('edg')>=0;
+  var body='<div style="padding:8px 0;line-height:1.9">'
+    +(ios?'<b>iPhone/iPad（Safari）</b>：点底部“<b>分享</b>”按钮 → 选择“<b>添加到主屏幕</b>”。'
+       :(edge?'<b>Edge 安卓</b>：点右上角“<b>⋮</b>”菜单 → 选“<b>添加到手机 / 安装应用</b>”。若没有，先“<b>重新加载页面</b>一次”再试。'
+             :'<b>Chrome 安卓</b>：点右上角“<b>⋮</b>”菜单 → 选“<b>添加到主屏幕</b>” → 点“<b>安装</b>”。'))
+    +'</div><div class="ts" style="margin-top:8px;color:#888">若仍无“添加到主屏幕”：先关闭浏览器重新打开本页一次（让离线服务生效），再按上面步骤操作；也可换用 Chrome 打开。</div>';
+  openSheet({title:'如何生成桌面图标',body:body,onSave:function(){},ok:'知道了'});
+}
+
+/* ================== 座位表生成（可编辑） ================== */
+let seatSt={groups:8,rows:0,byGroup:true,front:true,_init:0};
+let seatSel=null;
+function seatHTML(){
+  initSeat();
+  const st=seatSt;
+  const tools='<div class="gen-tools no-print">'
+    +'<div class="field"><label>组数</label><input type="number" min="2" max="12" value="'+st.groups+'" onchange="seatSet(\'groups\',this.value)"></div>'
+    +'<div class="field"><label>每列/排</label><input type="number" min="0" max="12" value="'+(st.rows||'')+'" onchange="seatSet(\'rows\',this.value)" title="0=自动"></div>'
+    +'<div class="field check-mini"><input type="checkbox" '+(st.byGroup?'checked':'')+' onchange="seatSet(\'byGroup\',this.checked)"><label>按分组</label></div>'
+    +'<div class="field check-mini"><input type="checkbox" '+(st.front?'checked':'')+' onchange="seatSet(\'front\',this.checked)"><label>特殊坐前排</label></div>'
+    +'<button class="btn mini" onclick="seatAuto()">🔄 全部重排</button>'
+    +'<button class="btn mini soft" onclick="seatExportPNG()">🖼️ 导出图片</button>'
+    +'<button class="btn mini ghost" onclick="seatPrint()">🖨️ 打印</button>'
+    +'</div>'
+    +'<div class="seat-tip no-print" style="text-align:left;color:#576b95;padding:8px 16px 0">操作：点选第一个座位 → 再点第二个即可<b>调换</b>或<b>移动到空位</b>；点座位右上角 <b>✕</b> 移出该座；点空位“＋”或“未入座学生”可<b>添加</b>。</div>';
+  return tools+seatTableHTML();
+}
+function initSeat(){ if(!seatSt._init){ if(db.seatPreset&&db.seatPreset.groups){ seatSt.groups=db.seatPreset.groups; if(db.seatPreset.rows)seatSt.rows=db.seatPreset.rows; } else { const n=db.students.length; seatSt.groups=Math.max(2,Math.min(8,Math.ceil(n/7))); } seatSt._init=1; } }
+function seatSet(k,v){ if(k==='rows')seatSt.rows=Math.max(0,parseInt(v)||0); else if(k==='groups')seatSt.groups=Math.max(2,parseInt(v)||8); else seatSt[k]=v; seatAuto(); render(); }
+function seatAuto(){
+  const cols=seatSt.groups; const groups={}; const order=[];
+  if(seatSt.byGroup){ db.students.forEach(function(s){ const g=s.group||'未分组'; if(!groups[g]){groups[g]=[]; order.push(g);} groups[g].push(s); }); }
+  else { for(let i=0;i<cols;i++){ const g='第'+(i+1)+'组'; order.push(g); groups[g]=[]; } db.students.forEach(function(s,i){ groups[order[i%cols]].push(s); }); }
+  if(seatSt.front){ order.forEach(function(g){ const arr=groups[g]; const idx=arr.findIndex(function(s){return s.special;}); if(idx>=0&&idx!==arr.length-1){ const sp=arr.splice(idx,1)[0]; arr.push(sp); } }); }
+  let rows=seatSt.rows>0?seatSt.rows:Math.max.apply(null,[1].concat(order.map(function(g){return groups[g].length;})));
+  const matrix=order.map(function(g){ return Array.from({length:rows},function(_,ri){ const s=groups[g][ri]; return s?s.id:null; }); });
+  db.seat={groups:order,matrix:matrix,rows:rows}; seatSel=null; save();
+}
+function seatEnsure(){ if(!db.seat||!db.seat.matrix||!db.seat.matrix.length)seatAuto(); }
+function seatProject(){
+  seatEnsure(); const sg=db.seat;
+  const matrix=sg.matrix.map(function(col){ return col.map(function(id){ return id?(db.students.find(function(s){return s.id===id;})||null):null; }); });
+  return {groups:sg.groups,matrix:matrix,rows:matrix.length?matrix[0].length:0};
+}
+function seatTableHTML(){
+  const p=seatProject(); const cols=p.groups.length, rows=p.rows;
+  if(rows===0){ return '<div class="seat-table"><div class="empty"><span class="eic">🪑</span>还没有学生，请先到“学生名单”添加</div></div>'; }
+  let grid='<div class="seat-grid" style="grid-template-columns:repeat('+cols+',86px)">';
+  p.groups.forEach(function(g){ grid+='<div class="ghead">'+esc(g)+'</div>'; });
+  for(let ri=0;ri<rows;ri++){
+    p.groups.forEach(function(gl,ci){
+      const s=p.matrix[ci][ri]; const sel=seatSel&&seatSel.c===ci&&seatSel.r===ri;
+      const cellCls='seat-cell '+(s?(s.special?'sp':''):'empty')+(sel?' sel':'');
+      if(s){
+        grid+='<div class="'+cellCls+'" onclick="seatTap('+ci+','+ri+')">'+esc(s.name)+(s.special?'<span class="star">☆</span>':'')
+          +'<span class="seat-x" onclick="event.stopPropagation();seatRemove('+ci+','+ri+')">✕</span></div>';
+      } else {
+        grid+='<div class="'+cellCls+'" onclick="seatTap('+ci+','+ri+')"><span class="seat-add" onclick="event.stopPropagation();seatAddPick('+ci+','+ri+')">＋</span>空</div>';
+      }
+    });
+  }
+  grid+='</div>';
+  const un=unseatedStudents();
+  const pool=(un.length?('<div class="no-print"><div class="gtitle" style="padding:12px 16px 0">未入座学生 · '+un.length+'人</div><div class="chips" style="padding:6px 16px 12px">'+un.map(function(s){return '<span class="chip" style="cursor:pointer" onclick="seatAddUnseated(\''+s.id+'\')">'+esc(s.name)+'</span>';}).join('')+'</div></div>'):'');
+  const intro='<div class="gtitle" style="padding:12px 16px 0">🪑 座位表 · '+esc(db.className)+'（'+cols+'组 × '+rows+'排）</div>';
+  return '<div class="seat-table">'+intro+'<div style="overflow-x:auto">'+grid+'<div class="podium">讲 台</div></div>'+pool+'<div class="seat-tip">面向讲台，上方为后排 · '+db.students.length+' 人 · 最下方为前排</div></div>';
+}
+function unseatedStudents(){ const used={}; seatEnsure(); db.seat.matrix.forEach(function(col){ col.forEach(function(id){ if(id)used[id]=1; }); }); return db.students.filter(function(s){ return !used[s.id]; }); }
+function seatTap(c,r){
+  const p=seatProject(); const s=p.matrix[c][r];
+  if(!seatSel){ seatSel={c:c,r:r}; render(); }
+  else if(seatSel.c===c&&seatSel.r===r){ seatSel=null; render(); }
+  else { seatMove(seatSel.c,seatSel.r,c,r); seatSel=null; }
+}
+function seatMove(c1,r1,c2,r2){ const a=db.seat.matrix; const t=a[c1][r1]; a[c1][r1]=a[c2][r2]; a[c2][r2]=t; save(); render(); }
+function seatRemove(c,r){ const id=db.seat.matrix[c][r]; if(!id)return; const s=db.students.find(function(x){return x.id===id;}); confirmBox('将 '+esc(s?s.name:'该生')+' 移出此座位（可在“未入座学生”重新入座）？',function(){ db.seat.matrix[c][r]=null; save(); seatSel=null; render(); toast('已移出'); }); }
+function seatAddPick(c,r){
+  const u=unseatedStudents(); if(!u.length){ toast('没有未入座学生'); return; }
+  openSheet({title:'添加学生到该座位',body:'<div class="chips" style="padding:12px 0">'+u.map(function(s){return '<span class="chip" style="cursor:pointer" onclick="seatPlace('+c+','+r+',\''+s.id+'\')">'+esc(s.name)+'</span>';}).join('')+'</div>',onSave:function(){},ok:'关闭'});
+}
+function seatAddUnseated(sid){
+  if(!seatSel){ toast('请先点选一个空座位'); return; }
+  const c=seatSel.c,r=seatSel.r;
+  if(db.seat.matrix[c][r]){ toast('该座位已被占用'); seatSel=null; return; }
+  db.seat.matrix[c][r]=sid; save(); seatSel=null; render(); toast('已入座');
+}
+function seatPlace(c,r,sid){ db.seat.matrix[c][r]=sid; save(); try{closeSheet();}catch(e){} render(); toast('已入座'); }
+function seatExportPNG(){
+  const p=seatProject(); const groups=p.groups, matrix=p.matrix, rows=p.rows; const cols=groups.length;
+  const cw=120,ch=44,hh=34,pad=24,titleH=52,podH=62;
+  const W=pad*2+cols*cw, H=titleH+hh+rows*ch+podH+pad;
+  const mk=makeCanvas(W,H); const cn=mk[0],ctx=mk[1];
+  ctx.fillStyle='#eef5ee'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#07c160'; ctx.font='bold 23px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(db.className+' 座位表', W/2, 36);
+  groups.forEach(function(g,ci){ ctx.fillStyle='#333'; ctx.font='bold 15px sans-serif'; ctx.fillText(g, pad+ci*cw+cw/2, titleH+hh-10); });
+  matrix.forEach(function(col,ci){ col.forEach(function(s,ri){ const x=pad+ci*cw,y=titleH+hh+ri*ch;
+    ctx.fillStyle=s?(s.special?'#fdf3c2':'#fff'):'#f2f2f2'; ctx.fillRect(x+3,y+3,cw-6,ch-6);
+    if(s){ ctx.strokeStyle='#cfcfcf'; ctx.strokeRect(x+3,y+3,cw-6,ch-6); ctx.fillStyle=s.special?'#a9791a':'#333'; ctx.font='15px sans-serif'; ctx.fillText(s.name+(s.special?'☆':''), x+cw/2, y+ch/2+5); } });
+  });
+  const px=W/2-70, py=titleH+hh+rows*ch+18;
+  ctx.fillStyle='#fff'; ctx.strokeStyle='#333'; ctx.lineWidth=2; ctx.fillRect(px,py,140,32); ctx.strokeRect(px,py,140,32);
+  ctx.fillStyle='#333'; ctx.font='bold 17px sans-serif'; ctx.fillText('讲台', W/2, py+22);
+  downloadPNG(cn.toDataURL('image/png'), db.className+'-座位表.png'); toast('已导出座位表图片');
+}
+function seatPrint(){ printHTML(db.className+' 座位表', seatTableHTML()); }
+
+/* ================== 值日表生成 ================== */
+let dutySt={groups:9,byPlan:true,_init:0};
+function dutyHTML(){
+  initDuty();
+  const st=dutySt;
+  const tools='<div class="gen-tools no-print">'
+    +'<div class="field"><label>组数</label><input type="number" min="3" max="12" value="'+st.groups+'" onchange="dutySet(\'groups\',this.value)"></div>'
+    +'<div class="field check-mini"><input type="checkbox" '+(st.byPlan?'checked':'')+' onchange="dutySet(\'byPlan\',this.checked)"><label>用预设分组</label></div>'
+    +'<button class="btn mini" onclick="dutyRebuild()">🔄 重新分</button>'
+    +'<button class="btn mini soft" onclick="dutyExportPNG()">🖼️ 导出图片</button>'
+    +'<button class="btn mini ghost" onclick="dutyPrint()">🖨️ 打印</button>'
+    +'</div>';
+  return tools+dutyTableHTML();
+}
+function initDuty(){ if(!dutySt._init){ if(db.dutyPlan&&db.dutyPlan.length){ dutySt.groups=db.dutyPlan.length; } else { dutySt.groups=Math.max(3,Math.min(9,Math.ceil(db.students.length/6))); } dutySt._init=1; } }
+function dutySet(k,v){ if(k==='groups')dutySt.groups=Math.max(3,parseInt(v)||9); else dutySt[k]=v; render(); }
+function dutyNorm(grp){
+  if(Array.isArray(grp)){ const a=grp.slice(); const trash=a.splice(0,2); const corridor=a.splice(0,1); const window=a.splice(0,1); return {sweep:a,corridor:corridor,window:window,trash:trash}; }
+  return {sweep:(grp.sweep||[]).slice(),corridor:(grp.corridor||[]).slice(),window:(grp.window||[]).slice(),trash:(grp.trash||[]).slice()};
+}
+function dutyBuild(){
+  const n=dutySt.groups;
+  if(dutySt.byPlan&&db.dutyPlan&&db.dutyPlan.length)return db.dutyPlan.slice();
+  const names=db.students.map(function(s){return s.name;}); const g=Array.from({length:n},function(){return [];});
+  names.forEach(function(nm,i){ g[i%n].push(nm); }); db.dutyPlan=g.map(function(x){return x.slice();}); return g;
+}
+function dutyRebuild(){ const names=db.students.map(function(s){return s.name;}); shuffle(names); const n=dutySt.groups; const g=Array.from({length:n},function(){return [];}); names.forEach(function(nm,i){ g[i%n].push(nm); }); db.dutyPlan=g.map(function(x){return x.slice();}); dutySt.byPlan=true; save(); render(); toast('已重新分组'); }
+function dutyTableHTML(){
+  const g=dutyBuild(); const n=g.length;
+  const rows=g.map(function(grp,gi){ const d=dutyNorm(grp);
+    const td=function(arr){ return arr.length?arr.map(function(x){return esc(x);}).join('<br>'):'—'; };
+    return '<tr><td class="nm">第'+(gi+1)+'天</td><td>'+td(d.sweep)+'</td><td>'+td(d.corridor)+'</td><td>'+td(d.window)+'</td><td>'+td(d.trash)+'</td></tr>'; }).join('');
+  const intro='<div class="gtitle" style="padding:12px 16px 0">🧹 卫生值日表 · '+esc(db.className)+'（'+n+'组 · 每天一组轮流）</div>';
+  const note='<div class="seat-tip">任务来自值日分工表 · 扫地 + 扫走廊1 + 窗台1 + 倒垃圾 · 第'+n+'组后从第1组重新轮换</div>';
+  return '<div class="duty-table-wrap">'+intro+'<div style="overflow-x:auto"><table class="duty"><thead><tr><th>值日天数</th><th>扫地</th><th>扫走廊（1人）</th><th>窗台（1人）</th><th>倒垃圾（2人）</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+note+'</div>';
+}
+function dutyExportPNG(){
+  const g=dutyBuild(); const n=g.length;
+  const colW=150,rowH=52,hh=38,pad=24,titleH=58;
+  const W=pad*2+colW*5, H=titleH+hh+n*rowH+34+pad;
+  const mk=makeCanvas(W,H); const cn=mk[0],ctx=mk[1];
+  ctx.fillStyle='#f2f6f2'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#07c160'; ctx.font='bold 21px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(db.className+' 卫生值日表（'+n+'组 · 任务分工）', W/2, 34);
+  ctx.font='13px sans-serif'; ctx.fillStyle='#667';
+  ctx.fillText('扫地 + 扫走廊1人 + 窗台1人 + 倒垃圾 · 每天一组轮流', W/2, 52);
+  const headers=['值日天数','扫地','扫走廊（1人）','窗台（1人）','倒垃圾（2人）'];
+  ctx.fillStyle='#eef3ff'; ctx.fillRect(pad,titleH,colW*5,hh);
+  ctx.strokeStyle='#889'; ctx.lineWidth=1; ctx.strokeRect(pad,titleH,colW*5,hh);
+  ctx.fillStyle='#333'; ctx.font='bold 15px sans-serif';
+  headers.forEach(function(h,i){ ctx.fillText(h,pad+i*colW+colW/2,titleH+hh/2+5); });
+  g.forEach(function(grp,gi){ const y=titleH+hh+gi*rowH; const d=dutyNorm(grp);
+    ctx.fillStyle='#fff'; ctx.fillRect(pad,y,colW*5,rowH); ctx.strokeStyle='#aaab'; ctx.strokeRect(pad,y,colW*5,rowH);
+    ctx.fillStyle='#333'; ctx.font='14px sans-serif'; ctx.fillText('第'+(gi+1)+'天', pad+colW/2, y+rowH/2+5);
+    [d.sweep,d.corridor,d.window,d.trash].forEach(function(arr,i){ const tx=pad+(i+1)*colW+colW/2; const lines=arr.length?arr:['—']; const lh=17; const start=y+rowH/2-((lines.length-1)*lh)/2+5; lines.forEach(function(ln,li){ ctx.fillText(ln,tx,start+li*lh); }); });
+  });
+  ctx.fillStyle='#667'; ctx.font='12px sans-serif'; ctx.fillText('任务分工来自值日表；一天一组，循环轮值。', W/2, H-14);
+  downloadPNG(cn.toDataURL('image/png'), db.className+'-值日表.png'); toast('已导出值日表图片');
+}
+function dutyPrint(){ printHTML(db.className+' 卫生值日表（'+dutySt.groups+'组）', dutyTableHTML()); }
+
+/* ================== 通用导出 ================== */
+function makeCanvas(w,h){ const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h); return [c,ctx]; }
+function downloadPNG(url,name){ const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function printHTML(title,body){
+  try{
+    const w=window.open('','_blank','width=920,height=760');
+    if(!w){ toast('请允许弹出窗口以打印'); return; }
+    w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+esc(title)+'</title><style>*{box-sizing:border-box}body{font-family:sans-serif;padding:20px;color:#222}h2{text-align:center;margin:0 0 18px;font-size:20px}.seat-grid{display:grid;gap:4px 8px;justify-content:center;margin:0 auto}.ghead{text-align:center;font-size:13px;color:#555;font-weight:600;padding:6px 0;border-top:2px solid #07c160}.seat-cell{border:1px solid #999;min-height:40px;display:flex;align-items:center;justify-content:center;font-size:14px;padding:4px 8px;background:#fff}.seat-cell.sp{background:#fdf3c2;font-weight:700}.seat-cell.empty{background:#efefef;color:#aaa;border-style:dashed}.podium{margin:16px auto 0;width:140px;text-align:center;border:2px solid #333;padding:9px 0;font-weight:700}table.duty{border-collapse:collapse;width:100%;font-size:14px;margin-top:12px}table.duty th,table.duty td{border:1px solid #999;padding:8px 6px;text-align:center}table.duty th{background:#eef3ff}.no-print{display:none!important}.seat-x,.seat-add{display:none!important}@media print{body{padding:0}}</style></head><body><h2>'+esc(title)+'</h2>'+body+'</body></html>');
+    w.document.close(); w.focus(); setTimeout(function(){ try{w.print();}catch(e){} }, 400);
+  }catch(e){ toast('打印失败'); }
+}
+
+
+/* ================== 班级课表 / 住宿生 ================== */
+var schedView='class';
+function weekdayIdx(){ const w=new Date().getDay(); return (w+6)%7; }
+function periodLabel(i){ const t=db.times||[]; return t[i]?('第'+(i+1)+'节 '+t[i]):('第'+(i+1)+'节'); }
+function classCell(subj){ if(typeof subj==='string'){ const p=subj.split('/'); return {subject:p[0],teacher:p[1]||''}; } return {subject:'',teacher:''}; }
+function scheduleHTML(){
+  const cs=db.classSchedule||[]; const days=['周一','周二','周三','周四','周五']; const times=db.times||[];
+  let head='<tr><th class="daycol">节次</th>'+days.map(function(d){return '<th>'+d+'</th>';}).join('')+'</tr>';
+  let body='';
+  for(let p=0;p<(times.length||8);p++){
+    let cells='';
+    for(let d=0;d<cs.length;d++){
+      const raw=(cs[d]&&cs[d][p])||''; const c=classCell(raw); const mine=c.subject==='英语';
+      cells+='<td class="sched-cell'+(mine?' mine':'')+'" title="'+esc(raw)+'">'+(raw?esc(c.subject):'—')+(c.teacher?'<small>'+esc(c.teacher)+'</small>':'')+'</td>';
+    }
+    body+='<tr><td class="daycol">'+esc(periodLabel(p))+'</td>'+cells+'</tr>';
+  }
+  const classTable='<div class="sched-wrap"><div class="gtitle" style="padding:12px 16px 0">📅 '+esc(db.className)+' 一周课表</div><div class="sched-scroll"><table class="sched"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div><div class="seat-tip">高亮为 <b style="color:#07c160">英语（黄思敏）</b> 课堂 · 教师为授课老师</div></div>';
+  const ts=db.teacherSchedule||{}; let tbody='';
+  for(let d=0;d<5;d++){
+    const segs=[];
+    Object.keys(ts).forEach(function(cls){ (ts[cls]||[]).forEach(function(it){ if(it[0]===d)segs.push({cls:cls,p:it[1]}); }); });
+    segs.sort(function(a,b){return a.p-b.p;});
+    const txt=segs.map(function(s){return '<span class="chip" style="background:#e8f7ed;color:#0a7a43">'+esc(s.cls)+' · 第'+(s.p+1)+'节</span>';}).join(' ')||'—';
+    tbody+='<tr><td class="daycol">'+days[d]+'</td><td style="text-align:left;padding-left:10px">'+txt+'</td></tr>';
+  }
+  const teacherTable='<div class="sched-wrap"><div class="gtitle" style="padding:12px 16px 0">👩‍🏫 黄思敏老师 授课安排</div><div class="sched-scroll"><table class="sched"><thead><tr><th class="daycol">星期</th><th>授课班级 · 节次</th></tr></thead><tbody>'+tbody+'</tbody></table></div><div class="seat-tip">任教 2610 班与 2612 班 · 首页“待办提醒”按此推送</div></div>';
+  const tabbar='<div class="gen-tools no-print" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn mini '+(schedView==='class'?'':'ghost')+'" onclick="schedView=\'class\';render()">班级课表</button><button class="btn mini '+(schedView==='teacher'?'':'ghost')+'" onclick="schedView=\'teacher\';render()">教师课表</button><button class="btn mini soft" onclick="schedPrint()">🖨️ 打印</button></div>';
+  return tabbar+(schedView==='teacher'?teacherTable:classTable);
+}
+function schedPrint(){
+  const cs=db.classSchedule||[]; const days=['周一','周二','周三','周四','周五']; const times=db.times||[];
+  let head='<tr><th style="background:#eef3ff">节次</th>'+days.map(function(d){return '<th style="background:#eef3ff">'+d+'</th>';}).join('')+'</tr>';
+  let body='';
+  for(let p=0;p<(times.length||8);p++){ let cells=''; for(let d=0;d<cs.length;d++){ const raw=(cs[d]&&cs[d][p])||''; const mine=raw.indexOf('英语')>=0; cells+='<td style="border:1px solid #999'+(mine?';background:#e8f7ed;font-weight:700':'')+'">'+esc(raw||'—')+'</td>'; } body+='<tr><td style="border:1px solid #999;background:#fafafa;font-weight:600">'+esc(periodLabel(p))+'</td>'+cells+'</tr>'; }
+  const tbl='<table style="border-collapse:collapse;width:100%;font-size:14px">'+head+body+'</table>';
+  printHTML(db.className+' 课表', tbl);
+}
+function dormHTML(){
+  const dorm=db.dorm||{}; const sex=db.dormSex||{};
+  const total=Object.keys(dorm).reduce(function(a,r){return a+(dorm[r]||[]).length;},0);
+  const rooms=Object.keys(dorm).sort(function(a,b){return a-b;}).map(function(room){
+    const list=dorm[room]||[];
+    return '<div class="cell dorm-room" onclick="dormStudents(\''+room+'\')"><div class="ic" style="background:#fff2e0">🛏️</div><div class="t">'+esc(room)+'号寝室<small class="sub" style="color:#999;display:block">'+(sex[room]||'')+'宿舍 · '+list.length+'人</small></div><div class="val">'+list.map(function(x){return esc(x);}).join('、')+'</div><span class="chev">›</span></div>';
+  }).join('');
+  return '<div class="gtitle" style="padding:14px 16px 0">住宿生名单 · '+total+'人</div><div class="cgroup">'+rooms+'</div>';
+}
+function dormStudents(room){
+  const dorm=db.dorm||{}; const list=dorm[room]||[];
+  const rows=list.map(function(name){ const s=db.students.find(function(x){return x.name===name;}); return '<div class="cell"><div class="av round" style="background:'+avC(name)+'">'+esc(name.slice(0,1))+'</div><div class="t">'+esc(name)+'</div><div class="val">'+esc((s&&s.phone)||'')+'</div>'+(s?'<span class="chev" onclick="event.stopPropagation();showStudent(\''+s.id+'\')">›</span>':'')+'</div>'; }).join('');
+  const box=openSheet({title:'寝室 '+room,body:'<div class="ts" style="padding:4px 0">'+((db.dormSex||{})[room]||'')+'宿舍 · '+list.length+'人</div>'+rows,onSave:function(){},ok:'关闭'});
+}
+function initSchedule(){} function initDorm(){}
+
+
+
+/* ================== 班级设置与模板 ================== */
+function classSettings(){
+  openSheet({title:'班级设置',body:
+    '<div class="fcell"><label>班级名称</label><input id="cls_name" value="'+esc(db.className)+'"></div>'
+    +'<div class="fcell"><label>学校</label><input id="cls_school" value="'+esc(db.school)+'"></div>'
+    +'<div class="fcell"><label>教师</label><input id="cls_teach" value="'+esc(db.teacherName)+'"></div>'
+    +'<div class="cgroup" style="margin-top:10px"><div class="gtitle">载入班级模板（会替换学生与相关记录）</div>'
+    +'<div class="btn-row" style="padding:6px 0 12px"><button class="btn mini ghost" onclick="loadClassSample10()">示例班级 10 人</button><button class="btn mini ghost" onclick="loadClass2612()">2612 班 55 人</button></div></div>',
+    onSave:function(){ db.className=$('#cls_name').value.trim()||db.className; db.school=$('#cls_school').value.trim(); db.teacherName=$('#cls_teach').value.trim(); save(); render(); toast('已保存班级设置'); }
+  });
+}
+function applyTemplate(d){
+  try{ closeSheet(); }catch(e){}
+  if(!d.school)d.school='一中'; if(!d.teacherName)d.teacherName='黄思敏';
+  if(!d.dictations)d.dictations=[]; if(!d.homeworks)d.homeworks=[];
+  if(!d.attendance)d.attendance={}; if(!d.logs)d.logs=[]; if(!d.contacts)d.contacts=[]; if(!d.checkinTasks)d.checkinTasks=[]; if(!d.checkins)d.checkins=[];
+  db=d; save(); seatSt._init=0; dutySt._init=0; render(); toast('已载入班级：'+db.className);
+}
+function loadClassSample10(){ applyTemplate(defaultData()); }
+function loadClass2612(){ applyTemplate(makeClass2612()); }
+function makeClass2612(){
+  const gLabels=['第一组','第二组','第三组','第四组','第五组','第六组','第七组','第八组'];
+  const students=S2612_ROSTER.map(function(r,i){
+    return {id:uid(),no:String(i+1).padStart(2,'0'),name:r[0],gender:r[1]||'男',phone:r[2]||'',parent:r[3]||'',group:'',special:0};
+  });
+  const nameToGroup={};
+  S2612_SEAT.forEach(function(col,ci){ col.forEach(function(nm){ if(nm)nameToGroup[nm]=gLabels[ci]; }); });
+  students.forEach(function(s){ s.group=nameToGroup[s.name]||''; });
+  const nameToId={}; students.forEach(function(s){ nameToId[s.name]=s.id; });
+  const seatMatrix=S2612_SEAT.map(function(col){ return col.map(function(nm){ return nm?nameToId[nm]:null; }); });
+  const dutyPlan=S2612_DUTY.map(function(d){
+    const arr=[];
+    (d.trash||[]).forEach(function(x){arr.push(x);});
+    (d.corridor||[]).forEach(function(x){arr.push(x);});
+    (d.window||[]).forEach(function(x){arr.push(x);});
+    (d.sweep||[]).forEach(function(x){arr.push(x);});
+    return arr;
+  });
+  return {teacherName:'黄思敏',school:'昌济中学',className:'2612班',seeded:true,rev:3,
+    students:students,dictations:[],homeworks:[],attendance:{},
+    checkinTasks:[{id:uid(),name:'早读英语带读'},{id:uid(),name:'检查学生背诵'},{id:uid(),name:'批改今日默写'},{id:uid(),name:'处理班级事务'},{id:uid(),name:'备课/教学反思'}],
+    checkins:[],logs:[],contacts:[],dutyPlan:dutyPlan,
+    seatPreset:{groups:8,rows:7},seat:{groups:gLabels,matrix:seatMatrix,rows:7},
+    dorm:S2612_DORM,dormSex:S2612_DORM_SEX,
+    classSchedule:S2612_CLASS12,teacherSchedule:S2612_TEACHER,times:S2612_TIMES};
+}
+
+/* ================== 启动 ================== */
+seedIfNeeded();
+(function(){const h=location.hash.replace(/^#/,''); if(h){route=h;} render();
+  window.addEventListener('hashchange',function(){route=location.hash.replace(/^#/,'')||'home'; render();});
+})();
+
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});}</script>
+</body>
+</html>
