@@ -33,7 +33,7 @@
   .hero{padding:14px 14px 6px;}
   .hero .box{background:linear-gradient(135deg,#07c160,#06ad56); color:#fff; border-radius:14px; padding:18px 18px 16px; box-shadow:0 6px 18px rgba(7,193,96,.22);}
   .hero .greet{font-size:14px; opacity:.92;}
-  .hero h1{font-size:22px; font-weight:700; margin:4px 0 2px;}
+  .hero h1{font-size:20px; font-weight:700; margin:6px 0 4px; line-height:1.35; word-break:break-word;}
   .hero .sub{font-size:12px; opacity:.9;}
   /* 统计块 */
   .statrow{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:12px 14px 4px;}
@@ -390,6 +390,57 @@ function render(){
 function seg(list,cur,onK){return '<div class="seg">'+list.map(x=>'<button class="'+(x.k===cur?'on':'')+'" onclick="'+onK+'(\''+x.k+'\')">'+x.n+'</button>').join('')+'</div>';}
 function emptyHTML(ic,text){return '<div class="empty"><span class="eic">'+ic+'</span>'+text+'</div>';}
 /* 首页 */
+const QUOTES=[
+'「不要懊恼，这是一个广大的世界。」',
+'「路虽远，行则将至；事虽难，做则必成。」',
+'「不积跬步，无以至千里；不积小流，无以成江海。」',
+'「天行健，君子以自强不息。」',
+'「千里之行，始于足下。」',
+'「世上无难事，只怕有心人。」',
+'「宝剑锋从磨砺出，梅花香自苦寒来。」',
+'「少壮不努力，老大徒伤悲。」',
+'「书山有路勤为径，学海无涯苦作舟。」',
+'「业精于勤，荒于嬉；行成于思，毁于随。」',
+'「学而不思则罔，思而不学则殆。」',
+'「温故而知新，可以为师矣。」',
+'「三人行，必有我师焉。」',
+'「知之为知之，不知为不知，是知也。」',
+'「工欲善其事，必先利其器。」',
+'「逝者如斯夫，不舍昼夜。」',
+'「志不立，天下无可成之事。」',
+'「有志者，事竟成。」',
+'「破釜沉舟，百二秦关终属楚。」',
+'「卧薪尝胆，三千越甲可吞吴。」',
+'「长风破浪会有时，直挂云帆济沧海。」',
+'「会当凌绝顶，一览众山小。」',
+'「山重水复疑无路，柳暗花明又一村。」',
+'「沉舟侧畔千帆过，病树前头万木春。」',
+'「天生我材必有用，千金散尽还复来。」',
+'「莫愁前路无知己，天下谁人不识君。」',
+'「天将降大任于是人也，必先苦其心志。」',
+'「生于忧患，死于安乐。」',
+'「博观而约取，厚积而薄发。」',
+'「锲而不舍，金石可镂。」',
+'「绳锯木断，水滴石穿。」',
+'「精诚所至，金石为开。」',
+'「只要功夫深，铁杵磨成针。」',
+'「兴趣是最好的老师。」',
+'「读万卷书，行万里路。」',
+'「纸上得来终觉浅，绝知此事要躬行。」',
+'「玉不琢，不成器；人不学，不知义。」',
+'「黑发不知勤学早，白首方悔读书迟。」',
+'「少年易老学难成，一寸光阴不可轻。」',
+'「一寸光阴一寸金，寸金难买寸光阴。」',
+'「明日复明日，明日何其多。」',
+'「满招损，谦受益。」',
+'「静以修身，俭以养德。」',
+'「非淡泊无以明志，非宁静无以致远。」',
+'「勿以恶小而为之，勿以善小而不为。」',
+'「己所不欲，勿施于人。」',
+'「天下兴亡，匹夫有责。」',
+'「为中华之崛起而读书。」'
+];
+function dailyQuote(ds){const s=String(ds); let h=0; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; } return QUOTES[Math.abs(h)%QUOTES.length];}
 function homeHTML(){
   const today=todayStr();
   const dictT=db.dictations.filter(d=>d.date===today);
@@ -411,7 +462,7 @@ function homeHTML(){
     if(items.length){ items.sort(function(a,b){return a.p-b.p;}); const txt=items.map(function(x){return esc(x.cls)+' 第'+(x.p+1)+'节';}).join('、'); todo+='<div class="list-msg"><div class="av round" style="background:#07c160">课</div><div class="mid"><div class="name">今日授课 · 黄思敏</div><div class="prev">'+txt+'</div></div><div class="right" onclick="nav(\'class:schedule\')">›</div></div>'; }
     else { todo+='<div class="list-msg"><div class="av round" style="background:#8a8a8a">休</div><div class="mid"><div class="name">今日无授课</div><div class="prev">'+(dow>4?'周末休息':'今日无我校英语课')+'</div></div><div class="right" onclick="nav(\'class:schedule\')">›</div></div>'; } })();
   if(!todo)todo=emptyHTML('🎉','今天没有紧急待办，去记录点工作吧');
-  return '<div class="hero"><div class="box"><div class="greet">'+greet+'，'+esc(db.teacherName)+'老师</div><h1>'+esc(db.className)+'</h1><div class="sub">'+fmtCN(today)+' · '+weekdayCN(today)+' · '+esc(db.school)+'</div></div></div>'
+  return '<div class="hero"><div class="box"><div class="greet">'+greet+'，'+esc(db.teacherName)+'老师</div><h1>'+esc(dailyQuote(today))+'</h1><div class="sub">'+fmtCN(today)+' · '+weekdayCN(today)+' · '+esc(db.school)+' · '+esc(db.className)+'</div></div></div>'
     +'<div class="statrow">'
     +'<div class="stat"><div class="num">'+dictDone+'/'+dictTotal+'</div><div class="lbl">今日默写</div></div>'
     +'<div class="stat"><div class="num">'+hwOpen+'</div><div class="lbl">待收作业</div></div>'
