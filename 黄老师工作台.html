@@ -734,6 +734,7 @@ function meHTML(){
     +'<div class="cgroup"><div class="gtitle">设置</div>'
     +'<div class="cell" onclick="editTeacher()"><div class="t">教师信息</div><span class="val">'+esc(db.teacherName)+'</span><span class="chev">›</span></div>'
     +'<div class="cell" onclick="classSettings()"><div class="t">班级设置 / 模板</div><span class="val">'+esc(db.className)+'</span><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="syncData()"><div class="t">数据同步<div class="sub" style="color:#999">电脑 ↔ 手机</div></div><span class="chev">›</span></div>'
     +'<div class="cell" onclick="exportData()"><div class="t">数据备份</div><span class="chev">›</span></div>'
     +'<div class="cell" onclick="importData()"><div class="t">导入数据</div><span class="chev">›</span></div>'
     +'<div class="cell" onclick="installApp()"><div class="t">📲 安装到桌面</div><span class="val">生成主屏幕图标</span><span class="chev">›</span></div>'
@@ -749,6 +750,31 @@ function editTeacher(){openSheet({title:'教师信息',body:'<div class="fcell">
   onSave:()=>{db.teacherName=$('#t_name').value.trim()||db.teacherName; db.school=$('#t_school').value.trim(); db.className=$('#t_class').value.trim(); save(); render(); toast('已保存');}});}
 function exportData(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='黄老师工作台备份-'+todayStr()+'.json'; a.click(); toast('已导出备份');}
 function importData(){const inp=document.createElement('input'); inp.type='file'; inp.accept='.json'; inp.onchange=()=>{const f=inp.files[0]; if(!f)return; const rd=new FileReader(); rd.onload=()=>{try{const data=JSON.parse(rd.result); if(!data.students||!data.dictations)throw 0; db=data; save(); render(); toast('导入成功');}catch(e){toast('文件格式不正确');}}; rd.readAsText(f);}; inp.click();}
+async function dbToCode(){const json=JSON.stringify(db);
+  try{ if(typeof CompressionStream==='function'){ const stream=new Blob([json]).stream().pipeThrough(new CompressionStream('deflate-raw')); const buf=await new Response(stream).arrayBuffer(); const bytes=new Uint8Array(buf); let s=''; for(let i=0;i<bytes.length;i+=0x8000){ s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000)); } return 'NICO1:'+btoa(s); } }catch(e){}
+  return 'NICO0:'+btoa(unescape(encodeURIComponent(json)));}
+async function codeToDb(code){code=(code||'').trim(); let json;
+  try{ if(code.indexOf('NICO1:')===0){ const bin=atob(code.slice(6)); const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i); const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw')); json=await new Response(stream).text(); } else if(code.indexOf('NICO0:')===0){ json=decodeURIComponent(escape(atob(code.slice(6)))); } else { throw 0; } }catch(e){ throw new Error('同步码格式不正确'); }
+  let data; try{ data=JSON.parse(json); }catch(e){ throw new Error('同步码解析失败'); }
+  if(!data||!Array.isArray(data.students)) throw new Error('同步码数据不完整');
+  return data;}
+function syncData(){openSheet({title:'数据同步',
+  body:'<div style="padding:8px 0"><div class="cell" style="padding:12px 0;cursor:pointer" onclick="syncOut()"><div class="t">📤 生成同步码<div class="sub" style="color:#999">把本机数据变成一段码</div></div><span class="chev">›</span></div><div class="cell" style="padding:12px 0;cursor:pointer" onclick="syncIn()"><div class="t">📥 粘贴同步码<div class="sub" style="color:#999">用另一台设备的码覆盖本机</div></div><span class="chev">›</span></div><p style="font-size:12px;color:#999;margin:8px 0 0">电脑（网页版）↔ 手机（桌面版）：先在 A 台“生成同步码”，复制后到 B 台“粘贴同步码”。</p></div>',
+  onSave:()=>{},ok:'关闭'});}
+function syncOut(){openSheet({title:'生成同步码',
+  body:'<div class="fcell" style="display:block"><label>复制下面的码，发到另一台设备并粘贴</label><textarea id="sync_out" style="width:100%;min-height:150px;font-size:11px" readonly></textarea></div><div style="display:flex;gap:8px;padding:0 16px 4px"><button class="btn" style="flex:1" onclick="copySync()">复制同步码</button></div><p style="font-size:12px;color:#999;margin:8px 16px 0">码较长没关系，用微信/QQ 发到另一台设备即可。</p>',
+  onSave:()=>{},ok:'关闭'});
+  dbToCode().then(c=>{ const el=$('#sync_out'); if(el)el.value=c; }).catch(()=>{ const el=$('#sync_out'); if(el)el.value='生成失败，请重试'; });}
+function copySync(){const el=$('#sync_out'); if(!el||!el.value){toast('请稍候，正在生成');return;}
+  el.focus(); el.select(); try{ el.setSelectionRange(0,99999999); }catch(e){}
+  let ok=false;
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(el.value).then(()=>toast('已复制')); ok=true; } }catch(e){}
+  if(!ok){ try{ ok=document.execCommand('copy'); }catch(e){} toast(ok?'已复制':'请长按选择复制'); }}
+function syncIn(){openSheet({title:'粘贴同步码',
+  body:'<div class="fcell" style="display:block"><label>粘贴另一台设备的同步码</label><textarea id="sync_in" style="width:100%;min-height:150px;font-size:11px"></textarea></div>',
+  onSave:()=>{ const c=($('#sync_in').value||'').trim(); if(!c){toast('请先粘贴同步码');return;}
+    codeToDb(c).then(data=>{ db=data; patchData(); save(); render(); closeSheet(); toast('同步成功'); }).catch(e=>toast(e.message)); },
+  ok:'应用'});}
 function resetData(){confirmBox('将清空全部数据并恢复示例班级，确定吗？',()=>{db=defaultData(); save(); render(); toast('已重置');});}
 function aboutApp(){openSheet({title:'关于',body:'<div style="padding:8px 0"><p style="line-height:1.7;color:#555">NICO小记，专为高中英语老师/班主任设计。<br>默写登记 · 作业收缴 · 考勤 · 打卡 · 班级日志 · 家长沟通。</p></div>',ok:'知道了',onSave:()=>{}});}
 
