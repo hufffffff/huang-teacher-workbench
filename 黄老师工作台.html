@@ -966,7 +966,7 @@ function scheduleHTML(){
   function teachLabel(cls,d,p){
     const arr=(cls==='2612班')?(db.classSchedule||[]):(db.classSchedule10||[]);
     const raw=(arr[d]&&arr[d][p])||'';
-    if(raw.indexOf('班会')>=0)return '班会';
+    if(raw.indexOf('班会')>=0)return (p>=8)?'晚自习班会':'班会';
     if(p>=8)return '晚自习听力';
     return '第'+(p+1)+'节';
   }
