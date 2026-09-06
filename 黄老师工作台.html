@@ -241,22 +241,54 @@ const H_ST={pending:'待收',submitted:'已交',late:'迟交',missing:'缺交'};
 const A_ST={present:'到',late:'迟到',leave:'请假',absent:'缺勤'};
 /* ====== 2612班 真实数据（来自官方表格） ====== */
 const S2612_ROSTER=[["唐有","女","18674877808",""],["詹乐萱","女","13007488298",""],["周逸巧","女","17343605717",""],["杨妍雨","女","13298680831",""],["曹睿涵","女","13974866708",""],["许思怡","女","15697363753",""],["谭明煦","男","13973140710",""],["李嘉泉","男","13874977241",""],["冯宇萱","女","18274899500",""],["文希妍","女","13507487844",""],["毛品荣","男","18973110748",""],["盛雨芊","女","15111496860",""],["王思涵","女","13973146660",""],["李琢言","男","18607311655",""],["朱炫宇","男","13822891808",""],["李晓涵","女","15084909610",""],["朱家骏","男","15387487832",""],["杨曦晨","男","15111032135",""],["李诺欣","女","13787033049",""],["周顺","男","13437404934",""],["章佳宸","男","18218228418",""],["周馨","女","18163618062",""],["曹钰洁","女","13348682098",""],["陈紫萱","女","19573736178",""],["黄思妍","女","13517312935",""],["刘欣琳","女","18173151111",""],["胡锦程","男","13507437820",""],["张佳音","女","15173154305",""],["李家旭","男","15387579890",""],["林梓兴","男","13510551246",""],["张博霖","男","17775861012",""],["张玉玺","男","15874151606",""],["李兆芬","女","18373157878",""],["胡思彤","女","13786125731",""],["石昊然","男","15116376436",""],["夏振博","男","13319579768",""],["罗晨希","男","18374800988",""],["蒲欣语","女","18874061693",""],["耿梓晨","男","18611157953",""],["毛雅茜","女","18175975531",""],["梁宸瑜","男","13755074078",""],["吴子涵","男","17749686382",""],["闫家辉","男","15343310234",""],["范妙言","女","15874001555",""],["周思琪","女","17708454878",""],["周蔚","女","13367312348",""],["段诗画","女","13818895487",""],["张嘉乐","男","18874086958",""],["杨紫萱","女","15802581366",""],["李思远","男","13548941556",""],["周嘉怡","女","15907303649",""],["冷雨馨","女","15874115216",""],["袁文灿","男","19386691265",""],["黄子豪","男","18670752221",""],["罗媛妮","女","15116430766","罗树"]];
+const S2610_ROSTER=[["邹鸿永","男","",""],["雷亿诗","女","",""],["刘沁怡","女","",""],["肖瑞阳","男","",""],["陈熙驰","男","",""],["陈佳慧","女","",""],["祖堇瑜","女","",""],["马梓祺","男","",""],["李琴","女","",""],["曹鑫莹","女","",""],["郑皓轩","男","",""],["喻诗琪","女","",""],["李文标","男","",""],["黄文筠","女","",""],["田文杰","男","",""],["文峻熙","男","",""],["廖琳雯","女","",""],["姚晨蕊","女","",""],["阳璐璐","女","",""],["赵咸泽","男","",""],["柳沣源","男","",""],["刘弋弋","女","",""],["肖雨微","女","",""],["丁宇泽","男","",""],["魏婉婷","女","",""],["刘晟睿","男","",""],["董佳星","女","",""],["胡嘉琪","女","",""],["王逸","男","",""],["王泓勋","男","",""],["曾婉芸","女","",""],["刘慧阳","女","",""],["吴英俊","男","",""],["颜佳慧","女","",""],["刘予希","女","",""],["缪晓婉","女","",""],["李雨昕","女","",""],["谭庄","女","",""],["何沐阳","女","",""],["章米琪","女","",""],["郭艾萱","女","",""],["陈畅扬","男","",""],["彭佳妮","女","",""],["钟景晟","男","",""],["龙腾翔","男","",""],["范迁文","男","",""],["周雅茜","女","",""],["李妍希","男","",""],["吴禹山","男","",""],["柳博瀚","男","",""],["张语珊","女","",""],["胡雨欣","女","",""],["梁立果","男","",""],["李瑞昕","女","",""]];
 const S2612_DORM={"512":["耿梓晨","闫家辉","张嘉乐","夏振博","袁文灿","吴子涵"],"513":["梁宸瑜","谭明煦","朱家骏","杨曦晨","李家旭","罗晨希"],"514":["李嘉泉","李琢言","朱炫宇","章佳宸","张博霖","石昊然"],"515":["毛品荣","周顺","胡锦程","林梓兴","李思远","黄子豪","张玉玺"],"516":["周嘉怡","王思涵","曹钰洁","蒲欣语","周蔚","罗媛妮"],"517":["曹睿涵","盛雨芊","周馨","陈紫萱","李兆芬","周思琪","段诗画","冷雨馨"],"518":["冯雨萱","周逸巧","许思怡","李晓涵","李诺欣","毛雅茜","范妙言","杨紫萱"],"519":["唐有","詹乐萱","黄思妍","刘欣琳","张佳音","杨妍雨"]};
 const S2612_DORM_SEX={"512":"男","513":"男","514":"男","515":"男","516":"女","517":"女","518":"女","519":"女"};
 const S2612_SEAT=[["张玉玺","冯宇萱","夏振博","段诗画","李思远","胡思彤","袁文灿"],["吴子涵","陈紫萱","张博霖","周蔚","胡锦程","文希妍","耿梓晨"],["罗媛妮","蒲欣语","朱家骏","石昊然","周逸巧","冷雨馨","刘欣琳"],["杨妍雨","毛雅茜","周顺","张嘉乐","李晓涵","王思涵","曹钰洁"],["李兆芬","杨曦晨","盛雨芊","黄思妍","章佳宸","曹睿涵","李家旭"],["张佳音","梁宸瑜","周馨","李诺欣","李嘉泉","詹乐萱","林梓兴"],["闫家辉","罗晨希","许思怡","李琢言","杨紫萱","朱炫宇","周思琪"],[null,"毛品荣","范妙言","黄子豪","周嘉怡","谭明煦","唐有"]];
 const S2612_DUTY=[{"sweep":["唐有","詹乐萱"],"corridor":["周逸巧"],"window":["杨妍雨"],"trash":["李琢言","朱炫宇"]},{"sweep":["盛雨芊","冯宇萱"],"corridor":["文希妍"],"window":["王思涵"],"trash":["李嘉泉","毛品荣"]},{"sweep":["曹睿涵","许思怡"],"corridor":["李晓涵"],"window":["李诺欣"],"trash":["杨曦晨","朱家骏"]},{"sweep":["陈紫萱","黄思妍"],"corridor":["周馨"],"window":["曹钰洁"],"trash":["周顺","章佳宸"]},{"sweep":["刘欣琳","胡锦程"],"corridor":["张佳音"],"window":["李家旭"],"trash":["林梓兴","张博霖"]},{"sweep":["张玉玺","李兆芬"],"corridor":["胡思彤"],"window":["杨紫萱"],"trash":["夏振博","罗晨希"]},{"sweep":["蒲欣语","耿梓晨"],"corridor":["毛雅茜"],"window":["梁宸瑜"],"trash":["吴子涵","闫家辉"]},{"sweep":["范妙言","周思琪"],"corridor":["周蔚"],"window":["段诗画"],"trash":["张嘉乐","石昊然"]},{"sweep":["罗媛妮","周嘉怡"],"corridor":["冷雨馨"],"window":["袁文灿"],"trash":["黄子豪","李思远","谭明煦"]}];
 const S2612_CLASS12=[["数学/杜家睿","数学/杜家睿","英语/黄思敏","英语/黄思敏","政治/易马当先","物理/周俏","语文/陈缀缀","YM/龚平"],["物理/周俏","数学/杜家睿","语文/陈缀缀","语文/陈缀缀","生物/黄任衡","化学/姚品品","体育/汪点","英语/黄思敏"],["政治/易马当先","英语/黄思敏","地理/吴晶晴","历史/钟仪璇","物理/周俏","数学/杜家睿","语文/陈缀缀","体育/汪点"],["数学/杜家睿","物理/周俏","生物/黄任衡","语文/陈缀缀","历史/钟仪璇","XX/覃笠","化学/姚品品","英语/黄思敏"],["数学/杜家睿","数学/杜家睿","化学/姚品品","英语/黄思敏","语文/陈缀缀","TW/陈武","地理/吴晶晴","班会/"]];
-const S2612_TEACHER={"2610班":[[0,0],[0,1],[1,4],[2,3],[3,6],[4,1]],"2612班":[[0,2],[0,3],[1,7],[2,1],[3,7],[4,3]]};
-const S2612_TIMES=["7:30-7:50","8:00-8:40","9:30-9:55","9:55-10:35","14:00-14:40","14:50-15:30","15:40-16:25","16:35-17:15"];
+const S2612_TEACHER={"2610班":[[0,0],[0,1],[1,4],[2,3],[3,6],[4,1],[0,8],[1,8],[2,8],[3,8],[4,8],[4,7]],"2612班":[[0,2],[0,3],[1,7],[2,1],[3,7],[4,3],[0,8],[1,8],[2,8],[3,8],[4,8],[4,7]]};
+const S2612_TIMES=["8:00-8:40","8:50-9:30","9:40-10:20","10:30-11:10","11:20-12:00","14:00-14:40","14:50-15:30","15:40-16:20","19:00-19:40"];
 function load(){try{const r=localStorage.getItem(KEY); if(r){db=JSON.parse(r); return true;}}catch(e){} return false;}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(db)); return true;}catch(e){toast('保存失败'); return false;}}
 function patchData(){
   const PATCH={'陈紫萱':'19573736178'};
   (db.students||[]).forEach(function(s){ const p=PATCH[s.name]; if(p&&!s.phone) s.phone=p; });
+  if(!Array.isArray(db.students10)) db.students10=[];
+  if(!db.students10.length && typeof S2610_ROSTER!=='undefined'){
+    db.students10=S2610_ROSTER.map(function(r,i){ return {id:uid(),no:String(i+1).padStart(2,'0'),name:r[0],gender:r[1]||'男',phone:r[2]||'',parent:r[3]||'',group:'',special:0,cls:'2610'}; });
+  }
+  (db.students||[]).forEach(function(s){ if(!s.cls) s.cls='2612'; });
+  (db.students10||[]).forEach(function(s){ if(!s.cls) s.cls='2610'; });
+  if(!Array.isArray(db.exams)) db.exams=[];
+  if(!db.classes){ db.classes=['2612','2610']; }
+  if(!Array.isArray(db.times)||db.times.length<9){ db.times=S2612_TIMES.slice(); }
+  (db.classSchedule||[]).forEach(function(row){ if(row&&row.length<9){ row.push('晚英语听力/黄思敏'); } });
+  if(db.teacherSchedule){
+    Object.keys(db.teacherSchedule).forEach(function(cls){
+      const arr=db.teacherSchedule[cls]||[]; const hasEve=arr.some(function(x){return x[1]>=8;});
+      if(!hasEve){ [0,1,2,3,4].forEach(function(d){ arr.push([d,8]); }); }
+    });
+  }
+  if(!Array.isArray(db.classSchedule10)||!db.classSchedule10.length){
+    var cs0=(db.classSchedule||[]).map(function(row,di){
+      var out=row.slice();
+      var eng10=[[0,0],[0,1],[1,4],[2,3],[3,6],[4,1]];
+      for(var p=0;p<8;p++){ if(out[p]&&out[p].indexOf('英语')>=0){ out[p]=''; } }
+      eng10.forEach(function(x){ if(x[0]===di) out[x[1]]='英语/黄思敏'; });
+      if(!out[7])out[7]='班会/黄思敏';
+      return out;
+    });
+    db.classSchedule10=cs0;
+  }
 }
-function seedIfNeeded(){ if(load()){ patchData(); save(); return; } db=makeClass2612(); save(); }
-function getStudent(id){return db.students.find(s=>s.id===id);}
-function makeDictation(title,type,date,words,students){const rec={}; students.forEach(s=>rec[s.id]={status:'un',score:null,wrong:''}); return {id:uid(),title,type,date,words:words||[],records:rec,note:''};}
+function seedIfNeeded(){ if(load()){ patchData(); save(); return; } db=makeClass2612(); patchData(); save(); }
+function getStudent(id){return (db.students||[]).find(s=>s.id===id)||(db.students10||[]).find(s=>s.id===id);}
+function allStudents(){return (db.students||[]).concat(db.students10||[]);}
+function classList(){return db.classes||['2612','2610']; }
+function classLabel(c){return c==='2610'?'10班':(c==='2612'?'12班':(c||''));}
+function studentOfCls(c){return c==='2610'?(db.students10||[]):(db.students||[]);}
+function makeDictation(title,type,date,words,students,cls){const rec={}; students.forEach(s=>rec[s.id]={status:'un',score:null,wrong:''}); return {id:uid(),title,type,date,words:words||[],records:rec,note:'',cls:cls||'2612'};}
 function defaultData(){
   const names=['张伟','李娜','王强','刘洋','陈静','赵磊','孙悦','周杰','吴昊','郑爽'];
   const students=names.map((n,i)=>({id:uid(),name:n,no:String(i+1).padStart(2,'0'),group:['A组','B组'][i%2],gender:i%2?'女':'男',phone:''}));
@@ -293,6 +325,11 @@ const TABS=[{k:'home',i:'🧰',l:'首页'},{k:'class',i:'🏫',l:'班级'},{k:'w
 function goTab(k){stack=[]; route=k; render(); window.scrollTo(0,0);}
 function nav(r){if(r!==route){stack.push(route);} route=r; render(); window.scrollTo(0,0);}
 function back(){if(stack.length){route=stack.pop(); render();}else goTab('home');}
+function pushHistory(){try{history.pushState({s:1},'',location.href);}catch(e){}}
+function popBack(){
+  if(stack.length){ route=stack.pop(); render(); window.scrollTo(0,0); pushHistory(); }
+  else { route='home'; render(); window.scrollTo(0,0); pushHistory(); }
+}
 function activeTab(){return route.split(':')[0];}
 function pageMeta(){
   if(route==='home')return{title:'工作台'};
@@ -307,6 +344,7 @@ function pageMeta(){
   if(route==='work')return{title:'工作台工具'};
   if(route==='work:dict')return{title:'默写管理',back:1};
   if(route==='work:hw')return{title:'作业管理',back:1};
+  if(route==='work:exam')return{title:'考试分数登记',back:1};
   if(route==='work:check')return{title:'教师打卡',back:1};
   if(route==='chat')return{title:'家长沟通'};
   if(route.slice(0,5)==='chat:'){const s=getStudent(route.slice(5)); return{title:s?s.name:'沟通',back:1};}
@@ -329,13 +367,14 @@ function render(){
   else if(route==='work')content=workListHTML();
   else if(route==='work:dict')content=dictHTML();
   else if(route==='work:hw')content=hwHTML();
+  else if(route==='work:exam')content=examHTML();
   else if(route==='work:check')content=checkHTML();
   else if(route==='chat')content=chatListHTML();
   else if(route.slice(0,5)==='chat:')content=chatThreadHTML(route.slice(5));
   else if(route==='me')content=meHTML();
   const tabbar=isDetail?'':'<div class="tabbar">'+TABS.map(x=>'<button class="tab '+(t===x.k?'on':'')+'" onclick="goTab(\''+x.k+'\')"><span class="ti">'+x.i+'</span><span class="tl">'+x.l+'</span></button>').join('')+'</div>';
   $('#app').innerHTML=topbar+content+tabbar;
-  const init={home:initHome,class:initClass,stu:initStu,att:initAtt,log:initLog,work:initWork,dict:initDict,hw:initHW,check:initCheck,chat:initChat,me:initMe,seat:initSeat,duty:initDuty,schedule:initSchedule,dorm:initDorm}[route]||null;
+  const init={home:initHome,class:initClass,stu:initStu,att:initAtt,log:initLog,work:initWork,dict:initDict,hw:initHW,exam:initExam,check:initCheck,chat:initChat,me:initMe,seat:initSeat,duty:initDuty,schedule:initSchedule,dorm:initDorm}[route]||null;
   if(init)init();
   if(route.slice(0,5)==='chat:')initChatThread(route.slice(5));
 }
@@ -375,6 +414,7 @@ function homeHTML(){
     +'<div class="cgroup"><div class="gtitle">快捷入口</div>'
     +'<div class="cell" onclick="nav(\'work:dict\')"><div class="ic" style="background:#e8f7ed">✍️</div><div class="t">默写登记<small class="sub" style="color:#999">记录每人的完成与错词</small></div><span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'work:hw\')"><div class="ic" style="background:#eef3ff">📚</div><div class="t">作业收缴<small class="sub" style="color:#999">已交/未交/迟交/缺交</small></div><span class="chev">›</span></div>'
+    +'<div class="cell" onclick="nav(\'work:exam\')"><div class="ic" style="background:#fff2e0">📝</div><div class="t">考试分数登记<small class="sub" style="color:#999">分数录入 · 班级统计</small></div><span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'class:att\')"><div class="ic" style="background:#fff5e6">🧭</div><div class="t">今日考勤<small class="sub" style="color:#999">到勤/迟到/请假/缺勤</small></div><span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'class:schedule\')"><div class="ic" style="background:#e6f7ff">📅</div><div class="t">班级课表<small class="sub" style="color:#999">2612 一周课程 · 教师安排</small></div><span class="chev">›</span></div>'
   +'<div class="cell" onclick="nav(\'class:dorm\')"><div class="ic" style="background:#fff2e0">🛏️</div><div class="t">住宿生<small class="sub" style="color:#999">寝室名单 · 男女分配</small></div><span class="chev">›</span></div>'
@@ -400,12 +440,12 @@ function classListHTML(){
     +'<div class="ctools">'
       +'<div class="ctool" onclick="nav(\'class:seat\')"><div class="ci">🪑</div><div class="cn">座位表生成</div><div class="cs">按组排座 · 导出图片</div></div>'
       +'<div class="ctool" onclick="nav(\'class:duty\')"><div class="ci">🧹</div><div class="cn">值日表生成</div><div class="cs">轮流值日 · 任务分工</div></div>'
-      +'<div class="ctool" onclick="nav(\'class:stu\')"><div class="ci">👥</div><div class="cn">学生名单</div><div class="cs">'+db.students.length+'人 · 编辑</div></div>'
+      +'<div class="ctool" onclick="nav(\'class:stu\')"><div class="ci">👥</div><div class="cn">学生名单</div><div class="cs">'+(db.students.length+(db.students10||[]).length)+'人 · 12/10班</div></div>'
       +'<div class="ctool" onclick="nav(\'class:schedule\')"><div class="ci">📅</div><div class="cn">班级课表</div><div class="cs">一周课程 · 教师安排</div></div>'
   +'<div class="ctool" onclick="nav(\'class:dorm\')"><div class="ci">🛏️</div><div class="cn">住宿生</div><div class="cs">寝室名单</div></div>'
 +'<div class="ctool" onclick="classSettings()"><div class="ci">⚙️</div><div class="cn">班级设置</div><div class="cs">名称 / 模板</div></div>'
     +'</div>'
-+'<div class="cgroup"><div class="gtitle">学生名单 · '+db.students.length+'人　<span style="color:#07c160;float:right;font-size:14px;font-weight:600" onclick="stuAdd()">＋ 添加</span></div>'
++'<div class="cgroup"><div class="gtitle">学生名单 · '+((stuCls==='2610')?((db.students10||[]).length):db.students.length)+'人　<span style="color:#07c160;float:right;font-size:14px;font-weight:600" onclick="stuAdd()">＋ 添加</span></div>'
     +(rows||emptyHTML('👤','还没有学生，点击右上角添加'))+'</div>';
 }
 function initClass(){}
@@ -418,35 +458,40 @@ function openSearch(){
 }
 function searchRows(q,mode){
   q=(q||'').trim().toLowerCase();
-  var list=db.students.filter(function(s){
+  var list=allStudents().filter(function(s){
     if(!q)return true;
     return (s.name||'').toLowerCase().indexOf(q)>=0 || (s.phone||'').indexOf(q)>=0 || (s.group||'').toLowerCase().indexOf(q)>=0 || (s.parent||'').indexOf(q)>=0;
   });
   if(!list.length)return emptyHTML('🔍','没有找到匹配的学生');
   return list.slice(0,80).map(function(s){
     var onClick = mode==='chat' ? "searchPick('"+s.id+"')" : "closeSheet();showStudent('"+s.id+"')";
-    return '<div class="cell" onclick="'+onClick+'"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'<small class="sub" style="color:#999;display:block">'+(s.phone?'📞 '+esc(s.phone):'')+(s.parent?' · '+esc(s.parent):'')+' · '+esc(s.group||'')+'</small></div><span class="chev">›</span></div>';
+    return '<div class="cell" onclick="'+onClick+'"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'<small class="sub" style="color:#999;display:block">'+esc(classLabel(s.cls||'2612'))+' · '+(s.phone?'📞 '+esc(s.phone):'')+(s.parent?' · '+esc(s.parent):'')+' · '+esc(s.group||'')+'</small></div><span class="chev">›</span></div>';
   }).join('');
 }
 function searchDo(v,mode){ var r=$('#search_results'); if(r)r.innerHTML=searchRows(v,mode); }
 function searchPick(id){ try{closeSheet();}catch(e){} nav('chat:'+id); }
 /* 学生管理（管理页） */
+let stuCls='2612';
 function stuHTML(){
-  const rows=db.students.map(s=>'<div class="cell" data-name="'+esc(s.name)+'" onclick="showStudent(\''+s.id+'\')"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'<small class="sub" style="color:#999;display:block">'+esc(s.no||'')+' · '+esc(s.group||'')+' · '+(s.gender||'')+'</small></div><span class="chev">›</span></div>').join('');
+  const src=stuCls==='2610'?(db.students10||[]):(db.students||[]);
+  const rows=src.map(s=>'<div class="cell" data-name="'+esc(s.name)+'" onclick="showStudent(\''+s.id+'\')"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'<small class="sub" style="color:#999;display:block">'+esc(s.no||'')+' · '+esc(s.group||'')+' · '+(s.gender||'')+'</small></div><span class="chev">›</span></div>').join('');
+  const seg='<div class="seg">'+[{k:'2612',n:'12班'},{k:'2610',n:'10班'}].map(function(x){return '<button class="'+(stuCls===x.k?'on':'')+'" onclick="stuCls=\''+x.k+'\';render()">'+x.n+'</button>';}).join('')+'</div>';
   return '<div class="btn-row" style="padding:12px 14px"><button class="btn" onclick="stuAdd()">＋ 添加学生</button><button class="btn ghost" onclick="stuImport()">批量导入</button></div>'
-    +'<div class="cgroup">'+(rows||emptyHTML('👤','还没有学生'))+'</div>';
+    +seg
+    +'<div class="cgroup">'+(rows||emptyHTML('👤','还没有该班学生'))+'</div>';
 }
 function initStu(){}
 function stuFormHTML(v){v=v||{};return '<div class="fcell"><label>姓名</label><input id="s_name" placeholder="学生姓名" value="'+esc(v.name||'')+'"></div>'
   +'<div class="fcell"><label>学号</label><input id="s_no" placeholder="例如 01" value="'+esc(v.no||'')+'"></div>'
   +'<div class="fcell"><label>性别</label><select id="s_gender"><option value="男"'+(v.gender==='女'?'':'')+'>男</option><option value="女"'+(v.gender==='女'?' selected':'')+'>女</option></select></div>'
+  +'<div class="fcell"><label>班级</label><select id="s_cls"><option value="2612"'+((v.cls||'2612')==='2612'?'':'')+'>12班</option><option value="2610"'+((v.cls||'')==='2610'?' selected':'')+'>10班</option></select></div>'
   +'<div class="fcell"><label>分组</label><input id="s_group" placeholder="例如 第一组 / A组" value="'+esc(v.group||'')+'"></div>'
   +'<div class="fcell"><label>家长电话</label><input id="s_phone" placeholder="可选" value="'+esc(v.phone||'')+'"></div>'
   +'<div class="fcell"><label>特殊座</label><span style="flex:1;display:flex;align-items:center;gap:6px;color:#333;font-size:14px"><input type="checkbox" id="s_special" style="width:auto"'+(v.special?' checked':'')+'> 坐前排（黄色标★）</span></div>';}
-function stuAdd(){openSheet({title:'添加学生',body:stuFormHTML(),onSave:()=>{const n=$('#s_name').value.trim(); if(!n){toast('请填写姓名'); return;}; db.students.push({id:uid(),name:n,no:$('#s_no').value.trim(),gender:$('#s_gender').value,group:$('#s_group').value.trim(),phone:$('#s_phone').value.trim(),special:$('#s_special').checked?1:0}); save(); render(); toast('已添加 '+n);}});}
-function stuEdit(id){const s=getStudent(id); if(!s)return; openSheet({title:'编辑 '+s.name,body:stuFormHTML(s),onSave:()=>{const n=$('#s_name').value.trim(); if(!n){toast('请填写姓名'); return;}; s.name=n; s.no=$('#s_no').value.trim(); s.gender=$('#s_gender').value; s.group=$('#s_group').value.trim(); s.phone=$('#s_phone').value.trim(); s.special=$('#s_special').checked?1:0; save(); closeSheet(); render(); toast('已保存');}}); }
-function stuDel(id){const s=getStudent(id); confirmBox('删除学生 '+s.name+'？相关记录会保留但不可关联。',()=>{db.students=db.students.filter(x=>x.id!==id); save(); render(); toast('已删除');}); }
-function stuImport(){openSheet({title:'批量导入学生',hint:'每行一个姓名，支持“姓名,学号,组”的格式',body:'<div class="fcell" style="display:block"><label>名单</label><textarea id="imp_text" style="width:100%;min-height:120px" placeholder="张三,01,A组&#10;李四,02,B组"></textarea></div>',onSave:()=>{const lines=($('#imp_text').value||'').split(/\n+/).map(x=>x.trim()).filter(Boolean); if(!lines.length){toast('请输入名单'); return;}; let n=0; lines.forEach(l=>{const p=l.split(/[,，]/).map(x=>x.trim()); const name=p[0]; if(!name)return; db.students.push({id:uid(),name,no:p[1]||'',group:p[2]||'',gender:'',phone:p[3]||''}); n++;}); save(); render(); toast('导入 '+n+' 人');}}); }
+function stuAdd(){openSheet({title:'添加学生',body:stuFormHTML(),onSave:()=>{const n=$('#s_name').value.trim(); if(!n){toast('请填写姓名'); return;}; const cls=$('#s_cls').value; const rec={id:uid(),name:n,no:$('#s_no').value.trim(),gender:$('#s_gender').value,group:$('#s_group').value.trim(),phone:$('#s_phone').value.trim(),special:$('#s_special').checked?1:0,cls:cls}; if(cls==='2610')(db.students10=db.students10||[]).push(rec); else db.students.push(rec); stuCls=cls; save(); render(); toast('已添加 '+n);}});}
+function stuEdit(id){const s=getStudent(id); if(!s)return; openSheet({title:'编辑 '+s.name,body:stuFormHTML(s),onSave:()=>{const n=$('#s_name').value.trim(); if(!n){toast('请填写姓名'); return;}; const oldCls=s.cls||'2612'; const cls=$('#s_cls').value; s.name=n; s.no=$('#s_no').value.trim(); s.gender=$('#s_gender').value; s.group=$('#s_group').value.trim(); s.phone=$('#s_phone').value.trim(); s.special=$('#s_special').checked?1:0; if(oldCls!==cls){ if(oldCls==='2610'){db.students10=(db.students10||[]).filter(x=>x.id!==id); db.students.push(s);} else {db.students=db.students.filter(x=>x.id!==id); (db.students10=db.students10||[]).push(s);} s.cls=cls; } save(); closeSheet(); render(); toast('已保存');}}); }
+function stuDel(id){const s=getStudent(id); confirmBox('删除学生 '+s.name+'？相关记录会保留但不可关联。',()=>{db.students=(db.students||[]).filter(x=>x.id!==id); db.students10=(db.students10||[]).filter(x=>x.id!==id); save(); render(); toast('已删除');}); }
+function stuImport(){openSheet({title:'批量导入学生',hint:'每行一个姓名，支持“姓名,学号,组”的格式',body:'<div class="fcell"><label>班级</label><select id="imp_cls"><option value="2612">12班</option><option value="2610">10班</option></select></div><div class="fcell" style="display:block"><label>名单</label><textarea id="imp_text" style="width:100%;min-height:120px" placeholder="张三,01,A组&#10;李四,02,B组"></textarea></div>',onSave:()=>{const cls=$('#imp_cls').value; const lines=($('#imp_text').value||'').split(/\n+/).map(x=>x.trim()).filter(Boolean); if(!lines.length){toast('请输入名单'); return;}; let n=0; lines.forEach(l=>{const p=l.split(/[,，]/).map(x=>x.trim()); const name=p[0]; if(!name)return; const rec={id:uid(),name,no:p[1]||'',group:p[2]||'',gender:'',phone:p[3]||'',cls:cls}; if(cls==='2610')(db.students10=db.students10||[]).push(rec); else db.students.push(rec); n++;}); stuCls=cls; save(); render(); toast('导入 '+n+' 人');}}); }
 /* 学生档案 */
 function showStudent(id){const s=getStudent(id); if(!s)return;
   let dc=0,dt=0, ar=0, at=0;
@@ -518,31 +563,39 @@ function workListHTML(){
   return '<div class="cgroup"><div class="gtitle">日常教学</div>'
     +'<div class="cell" onclick="nav(\'work:dict\')"><div class="ic" style="background:#e8f7ed">✍️</div><div class="t">默写管理<small class="sub" style="color:#999;display:block">英语默写 · 完成登记 · 错词统计</small></div>'+(dOpen?'<span class="bdg">'+dOpen+'</span>':'<span class="val">'+dictT.length+'场</span>')+'<span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'work:hw\')"><div class="ic" style="background:#eef3ff">📚</div><div class="t">作业管理<small class="sub" style="color:#999;display:block">布置 · 收缴 · 逾期提醒</small></div>'+(hwOpen?'<span class="bdg">'+hwOpen+'</span>':'')+'<span class="chev">›</span></div>'
+    +'<div class="cell" onclick="nav(\'work:exam\')"><div class="ic" style="background:#fff2e0">📝</div><div class="t">考试分数登记<small class="sub" style="color:#999;display:block">月考/期中/期末 · 分数录入 · 班级统计</small></div>'+(db.exams&&db.exams.length?'<span class="val">'+db.exams.length+'场</span>':'')+'<span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'work:check\')"><div class="ic" style="background:#f4edff">✅</div><div class="t">教师打卡<small class="sub" style="color:#999;display:block">每日任务 · 连续打卡</small></div>'+(chkT>0 && chkD<chkT?'<span class="val">'+chkD+'/'+chkT+'</span>':'<span class="val">✓</span>')+'<span class="chev">›</span></div>'
     +'</div>';
 }
 function initWork(){}
 /* ================== 默写 ================== */
+let dictCls='all', hwCls='all';
+function dictClsHTML(){
+  const opts=[{k:'all',n:'全部'},{k:'2612',n:'12班'},{k:'2610',n:'10班'}];
+  return '<div class="seg">'+opts.map(function(x){return '<button class="'+(dictCls===x.k?'on':'')+'" onclick="dictCls=\''+x.k+'\';render()">'+x.n+'</button>';}).join('')+'</div>';
+}
 function dictHTML(){
-  const list=db.dictations.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const list=db.dictations.slice().sort((a,b)=>b.date.localeCompare(a.date)).filter(function(d){return dictCls==='all'?true:(d.cls||'2612')===dictCls;});
   const cards=list.map(d=>{const r=Object.values(d.records||{}); const done=r.filter(x=>x.status!=='un').length; const total=r.length; const pct=total?Math.round(done/total*100):0;
-    return '<div class="cell" onclick="dictSheet(\''+d.id+'\')"><div class="ic" style="background:#e8f7ed">✍️</div><div class="t">'+esc(d.title)+'<div class="sub" style="color:#999">'+esc(d.type)+' · '+fmtCN(d.date)+' · '+pct+'%'+(total?' · '+done+'/'+total:'')+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div><span class="chev">›</span></div>';}).join('');
+    return '<div class="cell" onclick="dictSheet(\''+d.id+'\')"><div class="ic" style="background:#e8f7ed">✍️</div><div class="t">'+esc(d.title)+'<div class="sub" style="color:#999">'+esc(classLabel(d.cls||'2612'))+' · '+esc(d.type)+' · '+fmtCN(d.date)+' · '+pct+'%'+(total?' · '+done+'/'+total:'')+'</div><div class="bar"><i style="width:'+pct+'%"></i></div></div><span class="chev">›</span></div>';}).join('');
   return '<div class="btn-row" style="padding:12px 14px"><button class="btn" onclick="dictAdd()">＋ 新建默写</button></div>'
-    +'<div class="cgroup">'+(cards||emptyHTML('✍️','还没有默写记录，点击上方新建'))+'</div>';
+    +dictClsHTML()
+    +'<div class="cgroup">'+(cards||emptyHTML('✍️','还没有该班默写记录，点击上方新建'))+'</div>';
 }
 function initDict(){}
-function dictAdd(){openSheet({title:'新建默写',body:'<div class="fcell"><label>标题</label><input id="d_title" placeholder="例如 Unit 2 课文背诵"></div>'
+function dictAdd(c){openSheet({title:'新建默写',body:'<div class="fcell"><label>标题</label><input id="d_title" placeholder="例如 Unit 2 课文背诵"></div>'
   +'<div class="fcell"><label>类型</label><select id="d_type"><option value="单词">单词</option><option value="短语">短语</option><option value="课文">课文</option><option value="听写">听写</option></select></div>'
+  +'<div class="fcell"><label>班级</label><select id="d_cls"><option value="2612">12班</option><option value="2610">10班</option></select></div>'
   +'<div class="fcell"><label>日期</label><input type="date" id="d_date" value="'+todayStr()+'"></div>'
   +'<div class="fcell" style="display:block"><label>默写内容</label><textarea id="d_words" placeholder="每行一个，例如：&#10;abandon&#10;ability"></textarea></div>',
-  onSave:()=>{const t=$('#d_title').value.trim(); if(!t){toast('请填写标题'); return;}; const ws=($('#d_words').value||'').split(/\n/).map(x=>x.trim()).filter(Boolean); const d=makeDictation(t,$('#d_type').value,$('#d_date').value||todayStr(),ws,db.students); db.dictations.push(d); save(); render(); toast('已创建，点击进入登记');}});}
+  onSave:()=>{const t=$('#d_title').value.trim(); if(!t){toast('请填写标题'); return;}; const cls=$('#d_cls').value; const ws=($('#d_words').value||'').split(/\n/).map(x=>x.trim()).filter(Boolean); const d=makeDictation(t,$('#d_type').value,$('#d_date').value||todayStr(),ws,studentOfCls(cls),cls); db.dictations.push(d); save(); dictCls=cls; render(); toast('已创建，点击进入登记');}});}
 function dictSheet(id){const d=db.dictations.find(x=>x.id===id); if(!d)return;
   const r=Object.values(d.records||{}); const done=r.filter(x=>x.status!=='un').length; const total=r.length; const pct=total?Math.round(done/total*100):0;
-  const rows=db.students.map(s=>{const rec=d.records[s.id]||{status:'un',score:null,wrong:''}; const cur=rec.status;
+  const rows=studentOfCls(d.cls||'2612').map(s=>{const rec=d.records[s.id]||{status:'un',score:null,wrong:''}; const cur=rec.status;
     const btns=['un','done','full'].map(k=>'<button class="chip '+(cur===k?'on':'')+'" style="font-size:12px" onclick="dictSetStatus(\''+id+'\',\''+s.id+'\',\''+k+'\')">'+D_ST[k]+'</button>').join('');
     return '<div class="cell"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'</div><div style="text-align:right"><div style="display:flex;gap:4px;justify-content:flex-end">'+btns+'</div><input type="number" placeholder="分数" value="'+(rec.score==null?'':rec.score)+'" onchange="dictSetScore(\''+id+'\',\''+s.id+'\',this.value)" style="width:60px;border:1px solid #ddd;border-radius:6px;padding:4px 6px;font-size:13px;text-align:center;margin-top:6px"></div></div>';}).join('');
   $('#modal').innerHTML='<div class="sheet"><div class="sh">'+esc(d.title)+'<span class="close" onclick="closeSheet()">×</span></div><div class="fd">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center"><span class="ts">'+esc(d.type)+' · '+fmtCN(d.date)+'</span></div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center"><span class="ts">'+esc(classLabel(d.cls||'2612'))+' · '+esc(d.type)+' · '+fmtCN(d.date)+'</span><span class="ts" style="color:#fa5151;cursor:pointer" onclick="dictDel(\''+id+'\')">🗑 删除</span></div>'
     +'<div class="bar mt"><i style="width:'+pct+'%"></i></div><div class="ts mt">完成 '+done+'/'+total+'（'+pct+'%）</div>'
     +'<div class="btn-row mt"><button class="btn ghost" onclick="dictSetAll(\''+id+'\',\'done\')">全部已交</button><button class="btn ghost" onclick="dictSetAll(\''+id+'\',\'full\')">全部订正</button><button class="btn" onclick="closeSheet()">完成</button></div>'
     +'<div class="mt">'+rows+'</div></div></div>';
@@ -550,36 +603,76 @@ function dictSheet(id){const d=db.dictations.find(x=>x.id===id); if(!d)return;
 }
 function dictSetStatus(did,sid,st){const d=db.dictations.find(x=>x.id===did); if(!d)return; if(!d.records[sid])d.records[sid]={status:'un',score:null,wrong:''}; d.records[sid].status=st; save(); dictSheet(did);}
 function dictSetScore(did,sid,v){const d=db.dictations.find(x=>x.id===did); if(!d)return; if(!d.records[sid])d.records[sid]={status:'un',score:null,wrong:''}; d.records[sid].score=v===''?null:(+v); save();}
-function dictSetAll(did,st){const d=db.dictations.find(x=>x.id===did); if(!d)return; db.students.forEach(s=>{if(!d.records[s.id])d.records[s.id]={status:'un',score:null,wrong:''}; d.records[s.id].status=st;}); save(); dictSheet(did);}
-function dictDel(did){}
+function dictSetAll(did,st){const d=db.dictations.find(x=>x.id===did); if(!d)return; studentOfCls(d.cls||'2612').forEach(s=>{if(!d.records[s.id])d.records[s.id]={status:'un',score:null,wrong:''}; d.records[s.id].status=st;}); save(); dictSheet(did);}
+function dictDel(did){confirmBox('确定删除这条默写记录吗？删掉后不可恢复。',()=>{db.dictations=db.dictations.filter(x=>x.id!==did); save(); closeSheet(); render(); toast('已删除默写记录');});}
 /* ================== 作业 ================== */
 function hwHTML(){
-  const list=db.homeworks.slice().sort((a,b)=>b.dueDate.localeCompare(a.dueDate));
+  const list=db.homeworks.slice().sort((a,b)=>b.dueDate.localeCompare(a.dueDate)).filter(function(h){return hwCls==='all'?true:(h.cls||'2612')===hwCls;});
   const cards=list.map(h=>{const r=Object.values(h.records||{}); const sub=r.filter(x=>x.status==='submitted'||x.status==='late').length; const total=r.length; const open=r.filter(x=>x.status==='pending'||x.status==='missing').length; const ovl=h.dueDate<todayStr()&&open>0;
-    return '<div class="cell" onclick="hwSheet(\''+h.id+'\')"><div class="ic" style="background:#eef3ff">📚</div><div class="t">'+esc(h.title)+'<div class="sub" style="color:#999">'+(ovl?'<span style="color:#fa5151">逾</span> ':'')+esc(h.subject)+' · 截止 '+fromNow(h.dueDate)+' · '+sub+'/'+total+'</div><div class="bar"><i style="width:'+(total?Math.round(sub/total*100):0)+'%"></i></div></div>'+(open?'<span class="bdg">'+open+'</span>':'')+'<span class="chev">›</span></div>';}).join('');
+    return '<div class="cell" onclick="hwSheet(\''+h.id+'\')"><div class="ic" style="background:#eef3ff">📚</div><div class="t">'+esc(h.title)+'<div class="sub" style="color:#999">'+esc(classLabel(h.cls||'2612'))+' · '+(ovl?'<span style="color:#fa5151">逾</span> ':'')+esc(h.subject)+' · 截止 '+fromNow(h.dueDate)+' · '+sub+'/'+total+'</div><div class="bar"><i style="width:'+(total?Math.round(sub/total*100):0)+'%"></i></div></div>'+(open?'<span class="bdg">'+open+'</span>':'')+'<span class="chev">›</span></div>';}).join('');
+  const seg='<div class="seg">'+[{k:'all',n:'全部'},{k:'2612',n:'12班'},{k:'2610',n:'10班'}].map(function(x){return '<button class="'+(hwCls===x.k?'on':'')+'" onclick="hwCls=\''+x.k+'\';render()">'+x.n+'</button>';}).join('')+'</div>';
   return '<div class="btn-row" style="padding:12px 14px"><button class="btn" onclick="hwAdd()">＋ 布置作业</button></div>'
-    +'<div class="cgroup">'+(cards||emptyHTML('📚','还没有布置作业'))+'</div>';
+    +seg
+    +'<div class="cgroup">'+(cards||emptyHTML('📚','还没有该班作业，点击上方布置'))+'</div>';
 }
 function initHW(){}
 function hwAdd(){openSheet({title:'布置作业',body:'<div class="fcell"><label>标题</label><input id="h_title" placeholder="例如 练习册 P12"></div>'
   +'<div class="fcell"><label>科目</label><select id="h_sub"><option>英语</option><option>数学</option><option>语文</option><option>其他</option></select></div>'
+  +'<div class="fcell"><label>班级</label><select id="h_cls"><option value="2612">12班</option><option value="2610">10班</option></select></div>'
   +'<div class="fcell"><label>布置日期</label><input type="date" id="h_as" value="'+todayStr()+'"></div>'
   +'<div class="fcell"><label>截止日期</label><input type="date" id="h_due" value="'+todayStr()+'"></div>'
   +'<div class="fcell" style="display:block"><label>要求</label><textarea id="h_desc" placeholder="作业内容、要求…"></textarea></div>',
-  onSave:()=>{const t=$('#h_title').value.trim(); if(!t){toast('请填写标题'); return;}; const h={id:uid(),title:t,subject:$('#h_sub').value,assignDate:$('#h_as').value, dueDate:$('#h_due').value||todayStr(),desc:$('#h_desc').value.trim(),records:{}}; db.students.forEach(s=>h.records[s.id]={status:'pending'}); db.homeworks.push(h); save(); render(); }});}
+  onSave:()=>{const t=$('#h_title').value.trim(); if(!t){toast('请填写标题'); return;}; const cls=$('#h_cls').value; const h={id:uid(),title:t,subject:$('#h_sub').value,cls:cls,assignDate:$('#h_as').value, dueDate:$('#h_due').value||todayStr(),desc:$('#h_desc').value.trim(),records:{}}; studentOfCls(cls).forEach(s=>h.records[s.id]={status:'pending'}); db.homeworks.push(h); save(); hwCls=cls; render(); }});}
 function hwSheet(id){const h=db.homeworks.find(x=>x.id===id); if(!h)return;
   const r=Object.values(h.records||{}); const sub=r.filter(x=>x.status==='submitted'||x.status==='late').length; const total=r.length;
-  const rows=db.students.map(s=>{const rec=h.records[s.id]||{status:'pending'}; const cur=rec.status;
+  const rows=studentOfCls(h.cls||'2612').map(s=>{const rec=h.records[s.id]||{status:'pending'}; const cur=rec.status;
     const btns=['pending','submitted','late','missing'].map(k=>'<button class="chip '+(cur===k?'on':'')+'" style="font-size:12px" onclick="hwSetStatus(\''+id+'\',\''+s.id+'\',\''+k+'\')">'+H_ST[k]+'</button>').join('');
     return '<div class="cell"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'</div><div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:60%">'+btns+'</div></div>';}).join('');
   $('#modal').innerHTML='<div class="sheet"><div class="sh">'+esc(h.title)+'<span class="close" onclick="closeSheet()">×</span></div><div class="fd">'
-    +'<span class="ts">'+esc(h.subject)+' · 截止 '+fromNow(h.dueDate)+' · '+esc(h.desc||'')+'</span><div class="ts mt">已收 '+sub+'/'+total+'</div>'
+    +'<span class="ts">'+esc(classLabel(h.cls||'2612'))+' · '+esc(h.subject)+' · 截止 '+fromNow(h.dueDate)+' · '+esc(h.desc||'')+'</span><div class="ts mt">已收 '+sub+'/'+total+'</div>'
     +'<div class="btn-row mt"><button class="btn ghost" onclick="hwSetAll(\''+id+'\',\'submitted\')">全部已交</button><button class="btn" onclick="closeSheet()">完成</button></div>'
     +'<div class="mt">'+rows+'</div></div></div>';
   $('#modal').classList.add('show');
 }
 function hwSetStatus(hid,sid,st){const h=db.homeworks.find(x=>x.id===hid); if(!h)return; if(!h.records[sid])h.records[sid]={status:'pending'}; h.records[sid].status=st; save(); hwSheet(hid);}
-function hwSetAll(hid,st){const h=db.homeworks.find(x=>x.id===hid); if(!h)return; db.students.forEach(s=>{if(!h.records[s.id])h.records[s.id]={status:'pending'}; h.records[s.id].status=st;}); save(); hwSheet(hid);}
+function hwSetAll(hid,st){const h=db.homeworks.find(x=>x.id===hid); if(!h)return; studentOfCls(h.cls||'2612').forEach(s=>{if(!h.records[s.id])h.records[s.id]={status:'pending'}; h.records[s.id].status=st;}); save(); hwSheet(hid);}
+/* ================== 考试分数登记 ================== */
+let examCls='all';
+function examHTML(){
+  const list=(db.exams||[]).slice().sort(function(a,b){return b.date.localeCompare(a.date);}).filter(function(e){return examCls==='all'?true:(e.cls||'2612')===examCls;});
+  const cards=list.map(function(e){
+    const sc=Object.values(e.scores||{}).filter(function(v){return v!==''&&v!=null;}).map(function(v){return +v;});
+    const avg=sc.length?Math.round(sc.reduce(function(a,b){return a+b;},0)/sc.length):0;
+    const mx=sc.length?Math.max.apply(null,sc):0; const mn=sc.length?Math.min.apply(null,sc):0;
+    const pass=sc.filter(function(v){return v>=60;}).length;
+    return '<div class="cell" onclick="examSheet(\''+e.id+'\')"><div class="ic" style="background:#fff2e0">📝</div><div class="t">'+esc(e.title)+'<div class="sub" style="color:#999">'+esc(classLabel(e.cls||'2612'))+' · '+(e.subject||'英语')+' · '+fmtCN(e.date)+' · 平均 '+avg+(sc.length?' · 最高 '+mx+' · 最低 '+mn+' · 及格 '+pass+'/'+sc.length:'')+'</div><div class="bar"><i style="width:'+(avg?Math.min(100,avg):0)+'%"></i></div></div><span class="chev">›</span></div>';}).join('');
+  const seg='<div class="seg">'+[{k:'all',n:'全部'},{k:'2612',n:'12班'},{k:'2610',n:'10班'}].map(function(x){return '<button class="'+(examCls===x.k?'on':'')+'" onclick="examCls=\''+x.k+'\';render()">'+x.n+'</button>';}).join('')+'</div>';
+  return '<div class="btn-row" style="padding:12px 14px"><button class="btn" onclick="examAdd()">＋ 新建考试</button></div>'
+    +seg
+    +'<div class="cgroup">'+(cards||emptyHTML('📝','还没有考试记录，点击上方新建'))+'</div>';
+}
+function initExam(){}
+function examAdd(){openSheet({title:'新建考试',body:'<div class="fcell"><label>名称</label><input id="e_title" placeholder="例如 高一第一次月考"></div>'
+  +'<div class="fcell"><label>科目</label><select id="e_sub"><option>英语</option><option>数学</option><option>语文</option><option>物理</option><option>化学</option><option>其他</option></select></div>'
+  +'<div class="fcell"><label>班级</label><select id="e_cls"><option value="2612">12班</option><option value="2610">10班</option></select></div>'
+  +'<div class="fcell"><label>日期</label><input type="date" id="e_date" value="'+todayStr()+'"></div>',
+  onSave:function(){const t=$('#e_title').value.trim(); if(!t){toast('请填写名称'); return;}; const cls=$('#e_cls').value; const e={id:uid(),title:t,subject:$('#e_sub').value,cls:cls,date:$('#e_date').value||todayStr(),scores:{}}; studentOfCls(cls).forEach(function(s){e.scores[s.id]='';}); (db.exams=db.exams||[]).push(e); save(); examCls=cls; render(); toast('已创建，点击进入录入分数');}
+  });
+}
+function examSheet(id){const e=(db.exams||[]).find(function(x){return x.id===id;}); if(!e)return;
+  const sc=Object.values(e.scores||{}).filter(function(v){return v!==''&&v!=null;}).map(function(v){return +v;});
+  const avg=sc.length?Math.round(sc.reduce(function(a,b){return a+b;},0)/sc.length):0;
+  const mx=sc.length?Math.max.apply(null,sc):0; const mn=sc.length?Math.min.apply(null,sc):0; const pass=sc.filter(function(v){return v>=60;}).length;
+  const rows=studentOfCls(e.cls||'2612').map(function(s){const v=e.scores[s.id]; return '<div class="cell"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'</div><div style="text-align:right"><input type="number" placeholder="分数" value="'+(v==null?'':v)+'" onchange="examSetScore(\''+id+'\',\''+s.id+'\',this.value)" style="width:80px;border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-size:14px;text-align:center"></div></div>';}).join('');
+  $('#modal').innerHTML='<div class="sheet"><div class="sh">'+esc(e.title)+'<span class="close" onclick="closeSheet()">×</span></div><div class="fd">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center"><span class="ts">'+esc(classLabel(e.cls||'2612'))+' · '+(e.subject||'英语')+' · '+fmtCN(e.date)+'</span><span class="ts" style="color:#fa5151;cursor:pointer" onclick="examDel(\''+id+'\')">🗑 删除</span></div>'
+    +'<div class="ts mt">平均 <b>'+avg+'</b> · 最高 '+mx+' · 最低 '+mn+' · 及格 '+pass+'/'+sc.length+'</div>'
+    +'<div class="btn-row mt"><button class="btn" onclick="closeSheet()">完成</button></div>'
+    +'<div class="mt">'+rows+'</div></div></div>';
+  $('#modal').classList.add('show');
+}
+function examSetScore(eid,sid,v){const e=(db.exams||[]).find(function(x){return x.id===eid;}); if(!e)return; e.scores[sid]=(v===''||v==null)?'':(+v); save();}
+function examDel(eid){confirmBox('确定删除这场考试记录吗？',function(){db.exams=(db.exams||[]).filter(function(x){return x.id!==eid;}); save(); closeSheet(); render(); toast('已删除考试');});}
 /* ================== 教师打卡 ================== */
 function getTodayCheck(){return db.checkins.find(c=>c.date===todayStr());}
 function ensureTodayCheck(){let c=getTodayCheck(); if(!c){c={id:uid(),date:todayStr(),tasks:db.checkinTasks.map(t=>({name:t.name,done:false})),mood:'😊',note:''}; db.checkins.push(c); save();} return c;}
@@ -631,7 +724,7 @@ function meHTML(){
   const streak=(()=>{let n=0; for(let i=0;i<365;i++){const d=addDays(todayStr(),-i); const cc=db.checkins.find(x=>x.date===d); if(cc&&cc.tasks.some(x=>x.done))n++; else break;} return n;})();
   return '<div class="profile-hd"><div class="av" style="background:#07c160">'+esc(db.teacherName.slice(0,1))+'</div><div class="pt"><div class="n">'+esc(db.teacherName)+'</div><div class="s">'+esc(db.className)+' · '+esc(db.school)+'</div></div></div>'
     +'<div class="cgroup"><div class="gtitle">我的数据</div>'
-    +'<div class="cell"><div class="t">📊 数据概览</div><div class="val">学生 '+db.students.length+' · 默写完成率 '+avgDict+'% · 打卡 '+streak+' 天</div></div>'
+    +'<div class="cell"><div class="t">📊 数据概览</div><div class="val">学生 '+(db.students.length+(db.students10||[]).length)+'（12班 '+db.students.length+' · 10班 '+(db.students10||[]).length+'）· 默写完成率 '+avgDict+'% · 打卡 '+streak+' 天</div></div>'
     +'</div>'
     +'<div class="cgroup"><div class="gtitle">设置</div>'
     +'<div class="cell" onclick="editTeacher()"><div class="t">教师信息</div><span class="val">'+esc(db.teacherName)+'</span><span class="chev">›</span></div>'
@@ -845,23 +938,25 @@ function printHTML(title,body){
 
 
 /* ================== 班级课表 / 住宿生 ================== */
-var schedView='class';
+var schedView='class12';
 function weekdayIdx(){ const w=new Date().getDay(); return (w+6)%7; }
-function periodLabel(i){ const t=db.times||[]; return t[i]?('第'+(i+1)+'节 '+t[i]):('第'+(i+1)+'节'); }
+function periodLabel(i){ const t=db.times||[]; if(i>=8)return '晚自习 '+((t[i]||'')); if(t[i])return '第'+(i+1)+'节 '+t[i]; return '第'+(i+1)+'节'; }
 function classCell(subj){ if(typeof subj==='string'){ const p=subj.split('/'); return {subject:p[0],teacher:p[1]||''}; } return {subject:'',teacher:''}; }
+function schedClass(){ return schedView==='class10' ? (db.classSchedule10||[]) : (db.classSchedule||[]); }
+function schedName(){ return schedView==='class10' ? '2610班' : '2612班'; }
 function scheduleHTML(){
-  const cs=db.classSchedule||[]; const days=['周一','周二','周三','周四','周五']; const times=db.times||[];
+  const cs=schedClass(); const days=['周一','周二','周三','周四','周五']; const times=db.times||[];
   let head='<tr><th class="daycol">节次</th>'+days.map(function(d){return '<th>'+d+'</th>';}).join('')+'</tr>';
   let body='';
   for(let p=0;p<(times.length||8);p++){
     let cells='';
     for(let d=0;d<cs.length;d++){
-      const raw=(cs[d]&&cs[d][p])||''; const c=classCell(raw); const mine=c.subject==='英语';
+      const raw=(cs[d]&&cs[d][p])||''; const c=classCell(raw); const mine=(c.subject==='英语')||(c.teacher==='黄思敏');
       cells+='<td class="sched-cell'+(mine?' mine':'')+'" title="'+esc(raw)+'">'+(raw?esc(c.subject):'—')+(c.teacher?'<small>'+esc(c.teacher)+'</small>':'')+'</td>';
     }
     body+='<tr><td class="daycol">'+esc(periodLabel(p))+'</td>'+cells+'</tr>';
   }
-  const classTable='<div class="sched-wrap"><div class="gtitle" style="padding:12px 16px 0">📅 '+esc(db.className)+' 一周课表</div><div class="sched-scroll"><table class="sched"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div><div class="seat-tip">高亮为 <b style="color:#07c160">英语（黄思敏）</b> 课堂 · 教师为授课老师</div></div>';
+  const classTable='<div class="sched-wrap"><div class="gtitle" style="padding:12px 16px 0">📅 '+esc(schedName())+' 一周课表</div><div class="sched-scroll"><table class="sched"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div><div class="seat-tip">高亮为 <b style="color:#07c160">黄思敏</b> 课堂 · 含晚英语听力/班会</div></div>';
   const ts=db.teacherSchedule||{}; let tbody='';
   for(let d=0;d<5;d++){
     const segs=[];
@@ -870,17 +965,17 @@ function scheduleHTML(){
     const txt=segs.map(function(s){return '<span class="chip" style="background:#e8f7ed;color:#0a7a43">'+esc(s.cls)+' · 第'+(s.p+1)+'节</span>';}).join(' ')||'—';
     tbody+='<tr><td class="daycol">'+days[d]+'</td><td style="text-align:left;padding-left:10px">'+txt+'</td></tr>';
   }
-  const teacherTable='<div class="sched-wrap"><div class="gtitle" style="padding:12px 16px 0">👩‍🏫 黄思敏老师 授课安排</div><div class="sched-scroll"><table class="sched"><thead><tr><th class="daycol">星期</th><th>授课班级 · 节次</th></tr></thead><tbody>'+tbody+'</tbody></table></div><div class="seat-tip">任教 2610 班与 2612 班 · 首页“待办提醒”按此推送</div></div>';
-  const tabbar='<div class="gen-tools no-print" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn mini '+(schedView==='class'?'':'ghost')+'" onclick="schedView=\'class\';render()">班级课表</button><button class="btn mini '+(schedView==='teacher'?'':'ghost')+'" onclick="schedView=\'teacher\';render()">教师课表</button><button class="btn mini soft" onclick="schedPrint()">🖨️ 打印</button></div>';
+  const teacherTable='<div class="sched-wrap"><div class="gtitle" style="padding:12px 16px 0">👩‍🏫 黄思敏老师 授课安排</div><div class="sched-scroll"><table class="sched"><thead><tr><th class="daycol">星期</th><th>授课班级 · 节次</th></tr></thead><tbody>'+tbody+'</tbody></table></div><div class="seat-tip">任教 2610 班与 2612 班 · 含晚英语听力 · 首页“待办提醒”按此推送</div></div>';
+  const tabbar='<div class="gen-tools no-print" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn mini '+(schedView==='class12'?'':'ghost')+'" onclick="schedView=\'class12\';render()">12班课表</button><button class="btn mini '+(schedView==='class10'?'':'ghost')+'" onclick="schedView=\'class10\';render()">10班课表</button><button class="btn mini '+(schedView==='teacher'?'':'ghost')+'" onclick="schedView=\'teacher\';render()">教师课表</button><button class="btn mini soft" onclick="schedPrint()">🖨️ 打印</button></div>';
   return tabbar+(schedView==='teacher'?teacherTable:classTable);
 }
 function schedPrint(){
-  const cs=db.classSchedule||[]; const days=['周一','周二','周三','周四','周五']; const times=db.times||[];
+  const cs=schedClass(); const days=['周一','周二','周三','周四','周五']; const times=db.times||[];
   let head='<tr><th style="background:#eef3ff">节次</th>'+days.map(function(d){return '<th style="background:#eef3ff">'+d+'</th>';}).join('')+'</tr>';
   let body='';
-  for(let p=0;p<(times.length||8);p++){ let cells=''; for(let d=0;d<cs.length;d++){ const raw=(cs[d]&&cs[d][p])||''; const mine=raw.indexOf('英语')>=0; cells+='<td style="border:1px solid #999'+(mine?';background:#e8f7ed;font-weight:700':'')+'">'+esc(raw||'—')+'</td>'; } body+='<tr><td style="border:1px solid #999;background:#fafafa;font-weight:600">'+esc(periodLabel(p))+'</td>'+cells+'</tr>'; }
+  for(let p=0;p<(times.length||8);p++){ let cells=''; for(let d=0;d<cs.length;d++){ const raw=(cs[d]&&cs[d][p])||''; const mine=raw.indexOf('英语')>=0||raw.indexOf('黄思敏')>=0; cells+='<td style="border:1px solid #999'+(mine?';background:#e8f7ed;font-weight:700':'')+'">'+esc(raw||'—')+'</td>'; } body+='<tr><td style="border:1px solid #999;background:#fafafa;font-weight:600">'+esc(periodLabel(p))+'</td>'+cells+'</tr>'; }
   const tbl='<table style="border-collapse:collapse;width:100%;font-size:14px">'+head+body+'</table>';
-  printHTML(db.className+' 课表', tbl);
+  printHTML(schedName()+' 课表', tbl);
 }
 function dormHTML(){
   const dorm=db.dorm||{}; const sex=db.dormSex||{};
@@ -914,8 +1009,11 @@ function classSettings(){
 function applyTemplate(d){
   try{ closeSheet(); }catch(e){}
   if(!d.school)d.school='一中'; if(!d.teacherName)d.teacherName='黄思敏';
-  if(!d.dictations)d.dictations=[]; if(!d.homeworks)d.homeworks=[];
+  if(!d.dictations)d.dictations=[]; if(!d.homeworks)d.homeworks=[]; if(!d.exams)d.exams=[];
   if(!d.attendance)d.attendance={}; if(!d.logs)d.logs=[]; if(!d.contacts)d.contacts=[]; if(!d.checkinTasks)d.checkinTasks=[]; if(!d.checkins)d.checkins=[];
+  if(!d.classes)d.classes=['2612']; if(!d.students10)d.students10=[]; if(!d.classSchedule10)d.classSchedule10=[];
+  (d.students||[]).forEach(function(s){ if(!s.cls)s.cls='2612'; });
+  (d.students10||[]).forEach(function(s){ if(!s.cls)s.cls='2610'; });
   db=d; save(); seatSt._init=0; dutySt._init=0; render(); toast('已载入班级：'+db.className);
 }
 function loadClassSample10(){ applyTemplate(defaultData()); }
@@ -923,7 +1021,10 @@ function loadClass2612(){ applyTemplate(makeClass2612()); }
 function makeClass2612(){
   const gLabels=['第一组','第二组','第三组','第四组','第五组','第六组','第七组','第八组'];
   const students=S2612_ROSTER.map(function(r,i){
-    return {id:uid(),no:String(i+1).padStart(2,'0'),name:r[0],gender:r[1]||'男',phone:r[2]||'',parent:r[3]||'',group:'',special:0};
+    return {id:uid(),no:String(i+1).padStart(2,'0'),name:r[0],gender:r[1]||'男',phone:r[2]||'',parent:r[3]||'',group:'',special:0,cls:'2612'};
+  });
+  const students10=S2610_ROSTER.map(function(r,i){
+    return {id:uid(),no:String(i+1).padStart(2,'0'),name:r[0],gender:r[1]||'男',phone:r[2]||'',parent:r[3]||'',group:'',special:0,cls:'2610'};
   });
   const nameToGroup={};
   S2612_SEAT.forEach(function(col,ci){ col.forEach(function(nm){ if(nm)nameToGroup[nm]=gLabels[ci]; }); });
@@ -938,19 +1039,30 @@ function makeClass2612(){
     (d.sweep||[]).forEach(function(x){arr.push(x);});
     return arr;
   });
-  return {teacherName:'黄思敏',school:'昌济中学',className:'2612班',seeded:true,rev:3,
-    students:students,dictations:[],homeworks:[],attendance:{},
+  const classSchedule=S2612_CLASS12.map(function(row){ return row.concat(['晚英语听力/黄思敏']); });
+  const eng10=[[0,0],[0,1],[1,4],[2,3],[3,6],[4,1]];
+  const classSchedule10=classSchedule.map(function(row,di){
+    const out=row.slice();
+    for(let p=0;p<8;p++){ if(out[p]&&out[p].indexOf('英语')>=0){ out[p]=''; } }
+    eng10.forEach(function(x){ if(x[0]===di) out[x[1]]='英语/黄思敏'; });
+    return out;
+  }).map(function(row){ if(!row[7])row[7]='班会/黄思敏'; return row; });
+  return {teacherName:'黄思敏',school:'昌济中学',className:'2612班',seeded:true,rev:4,
+    students:students,students10:students10,classes:['2612','2610'],exams:[],
+    dictations:[],homeworks:[],attendance:{},
     checkinTasks:[{id:uid(),name:'早读英语带读'},{id:uid(),name:'检查学生背诵'},{id:uid(),name:'批改今日默写'},{id:uid(),name:'处理班级事务'},{id:uid(),name:'备课/教学反思'}],
     checkins:[],logs:[],contacts:[],dutyPlan:dutyPlan,
     seatPreset:{groups:8,rows:7},seat:{groups:gLabels,matrix:seatMatrix,rows:7},
     dorm:S2612_DORM,dormSex:S2612_DORM_SEX,
-    classSchedule:S2612_CLASS12,teacherSchedule:S2612_TEACHER,times:S2612_TIMES};
+    classSchedule:classSchedule,classSchedule10:classSchedule10,teacherSchedule:S2612_TEACHER,times:S2612_TIMES};
 }
 
 /* ================== 启动 ================== */
 seedIfNeeded();
 (function(){const h=location.hash.replace(/^#/,''); if(h){route=h;} render();
   window.addEventListener('hashchange',function(){route=location.hash.replace(/^#/,'')||'home'; render();});
+  pushHistory();
+  window.addEventListener('popstate',function(){ setTimeout(popBack,0); });
 })();
 
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});}</script>
