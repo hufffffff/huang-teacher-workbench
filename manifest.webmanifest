@@ -1,6 +1,6 @@
 {
-  "name": "黄老师工作台",
-  "short_name": "黄老师工作台",
+  "name": "NICO小记",
+  "short_name": "NICO小记",
   "description": "班主任 · 英语老师的教学助手：默写 / 作业 / 考勤 / 打卡 / 班级日志 / 家长沟通 / 座位表 / 值日表",
   "start_url": "./黄老师工作台.html",
   "scope": "./",
