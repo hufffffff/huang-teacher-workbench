@@ -438,7 +438,23 @@ const QUOTES=[
 '「勿以恶小而为之，勿以善小而不为。」',
 '「己所不欲，勿施于人。」',
 '「天下兴亡，匹夫有责。」',
-'「为中华之崛起而读书。」'
+'「为中华之崛起而读书。」',
+'Where there is a will, there is a way.',
+'Practice makes perfect.',
+'No pain, no gain.',
+'Never give up.',
+'Believe in yourself.',
+'Actions speak louder than words.',
+'Every cloud has a silver lining.',
+'Slow and steady wins the race.',
+'A journey of a thousand miles begins with a single step.',
+'The early bird catches the worm.',
+'Well begun is half done.',
+'Knowledge is power.',
+'Stay hungry, stay foolish.',
+'The best is yet to come.',
+'Make today count.',
+'Dream big.'
 ];
 function dailyQuote(ds){const s=String(ds); let h=0; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; } return QUOTES[Math.abs(h)%QUOTES.length];}
 function homeHTML(){
