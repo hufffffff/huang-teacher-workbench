@@ -115,6 +115,8 @@
   .modal-bg{position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:60; display:none; align-items:flex-end; justify-content:center;}
   .modal-bg.show{display:flex;}
   .sheet{background:#fff; width:100%; max-width:480px; border-radius:14px 14px 0 0; padding:16px 0 calc(16px + env(safe-area-inset-bottom)); max-height:88vh; overflow-y:auto;}
+  .modal-bg{overscroll-behavior:contain;}
+  .sheet{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
   .sheet .sh{text-align:center; font-size:16px; font-weight:600; padding:0 16px 12px; position:relative;}
   .sheet .sh .close{position:absolute; right:16px; top:-2px; font-size:24px; color:#999; cursor:pointer;}
   .sheet .fd{padding:0 16px;}
@@ -194,7 +196,7 @@
   .chat-contact .call{background:#07c160;color:#fff;border-radius:18px;padding:8px 14px;font-size:14px;text-decoration:none;flex-shrink:0;}
   /* 搜索弹层 */
   .searchwrap{padding:6px 0 2px;}
-  .search-input{width:100%;border:1px solid #e3e3e3;border-radius:10px;padding:11px 14px;font-size:15px;outline:none;background:#f5f5f5;box-sizing:border-box;}
+  .search-input{width:100%;border:1px solid #e3e3e3;border-radius:10px;padding:11px 14px;font-size:15px;outline:none;background:#f5f5f5;box-sizing:border-box;color:#111;-webkit-user-select:text;user-select:text;}
   .search-input:focus{border-color:#07c160;background:#fff;}
   .search-results{margin-top:8px;max-height:60vh;overflow-y:auto;}
   .printable{display:none;}
@@ -284,7 +286,7 @@ function openSheet({title,body,onSave,ok='保存',hint=''}){sheetSave=onSave;
   $('#modal').classList.add('show');}
 function closeSheet(){$('#modal').classList.remove('show'); $('#modal').innerHTML=''; sheetSave=null;}
 function saveSheet(){if(sheetSave){const f=sheetSave; sheetSave=null; try{f();}catch(e){console.error(e);} closeSheet();}}
-document.addEventListener('click',e=>{if(e.target.id==='modal')closeSheet();});
+document.addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeSheet();});
 /* ================== 路由 ================== */
 let route='home', stack=[];
 const TABS=[{k:'home',i:'🧰',l:'首页'},{k:'class',i:'🏫',l:'班级'},{k:'work',i:'🗂️',l:'工作'},{k:'chat',i:'💬',l:'沟通'},{k:'me',i:'👤',l:'我的'}];
@@ -410,9 +412,9 @@ function initClass(){}
 function openSearch(){
   const mode = (route.slice(0,4)==='chat') ? 'chat' : 'class';
   const label = mode==='chat' ? '搜索家长' : '搜索学生';
-  const body='<div class="searchwrap"><input id="search_input" class="search-input" placeholder="输入姓名 / 电话 / 组 / 家长" value="" oninput="searchDo(this.value, \''+mode+'\')" autocomplete="off"><div id="search_results" class="search-results">'+searchRows('',mode)+'</div></div>';
+  const body='<div class="searchwrap"><input type="text" id="search_input" class="search-input" placeholder="输入姓名 / 电话 / 组 / 家长" value="" inputmode="text" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="off" oninput="searchDo(this.value, \''+mode+'\')" onclick="event.stopPropagation()"><div id="search_results" class="search-results">'+searchRows('',mode)+'</div></div>';
   openSheet({title:label, body:body, onSave:function(){}, ok:'关闭'});
-  setTimeout(function(){ var i=$('#search_input'); if(i)i.focus(); },80);
+  setTimeout(function(){ var i=$('#search_input'); if(i){ try{i.focus({preventScroll:true});}catch(e){ i.focus(); } } },120);
 }
 function searchRows(q,mode){
   q=(q||'').trim().toLowerCase();
