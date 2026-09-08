@@ -137,6 +137,18 @@
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
   .ts{font-size:13px; color:var(--ink2);}
   .mt{margin-top:10px;}
+  /* ===== 考试统计 ===== */
+  .esbox{display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-top:4px;}
+  .esi{background:#f7f8fa; border-radius:8px; padding:6px 2px; text-align:center;}
+  .esi .esn{font-size:15px; font-weight:700; color:var(--wx); line-height:1.2;}
+  .esi .esl{font-size:10px; color:var(--ink2); margin-top:2px;}
+  .esdist{display:flex; gap:5px; margin-top:8px; flex-wrap:nowrap;}
+  .esd{flex:1; background:#f7f8fa; border-radius:6px; padding:5px 2px; text-align:center; font-size:11px; color:#555;}
+  .esd b{color:var(--wx); font-size:13px; margin-left:2px;}
+  .esd.off{opacity:.45;}
+  .rank{color:#999; font-size:13px;}
+  .mt4{margin-top:6px;}
+
 
   /* ===== 班级工具 / 生成器 ===== */
   .ctools{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px 0;}
@@ -716,14 +728,29 @@ function hwSetStatus(hid,sid,st){const h=db.homeworks.find(x=>x.id===hid); if(!h
 function hwSetAll(hid,st){const h=db.homeworks.find(x=>x.id===hid); if(!h)return; studentOfCls(h.cls||'2612').forEach(s=>{if(!h.records[s.id])h.records[s.id]={status:'pending'}; h.records[s.id].status=st;}); save(); hwSheet(hid);}
 /* ================== 考试分数登记 ================== */
 let examCls='all';
+function examCols(e){
+  const vals=Object.values(e.scores||{}).filter(function(v){return v!==''&&v!=null;}).map(function(v){return +v;});
+  const n=vals.length; if(!n) return {n:0,avg:0,mx:0,mn:0,pass:0,passRate:0,excel:0,excelRate:0,dist:[0,0,0,0,0]};
+  const avg=Math.round(vals.reduce(function(a,b){return a+b;},0)/n);
+  const mx=Math.max.apply(null,vals); const mn=Math.min.apply(null,vals);
+  const pass=vals.filter(function(v){return v>=60;}).length;
+  const excel=vals.filter(function(v){return v>=85;}).length;
+  const dist=[0,0,0,0,0]; vals.forEach(function(v){ if(v>=90)dist[0]++; else if(v>=80)dist[1]++; else if(v>=70)dist[2]++; else if(v>=60)dist[3]++; else dist[4]++; });
+  return {n:n,avg:avg,mx:mx,mn:mn,pass:pass,passRate:Math.round(pass/n*100),excel:excel,excelRate:Math.round(excel/n*100),dist:dist};
+}
 function examHTML(){
   const list=(db.exams||[]).slice().sort(function(a,b){return b.date.localeCompare(a.date);}).filter(function(e){return examCls==='all'?true:(e.cls||'2612')===examCls;});
   const cards=list.map(function(e){
-    const sc=Object.values(e.scores||{}).filter(function(v){return v!==''&&v!=null;}).map(function(v){return +v;});
-    const avg=sc.length?Math.round(sc.reduce(function(a,b){return a+b;},0)/sc.length):0;
-    const mx=sc.length?Math.max.apply(null,sc):0; const mn=sc.length?Math.min.apply(null,sc):0;
-    const pass=sc.filter(function(v){return v>=60;}).length;
-    return '<div class="cell" onclick="examSheet(\''+e.id+'\')"><div class="ic" style="background:#fff2e0">📝</div><div class="t">'+esc(e.title)+'<div class="sub" style="color:#999">'+esc(classLabel(e.cls||'2612'))+' · '+(e.subject||'英语')+' · '+fmtCN(e.date)+' · 平均 '+avg+(sc.length?' · 最高 '+mx+' · 最低 '+mn+' · 及格 '+pass+'/'+sc.length:'')+'</div><div class="bar"><i style="width:'+(avg?Math.min(100,avg):0)+'%"></i></div></div><span class="chev">›</span></div>';}).join('');
+    const c=examCols(e);
+    let stat='';
+    stat+='<div class="esbox">'
+      +'<div class="esi"><div class="esn">'+(c.n?c.avg:'-')+'</div><div class="esl">平均分</div></div>'
+      +'<div class="esi"><div class="esn">'+(c.n?c.passRate+'%':'-')+'</div><div class="esl">及格率</div></div>'
+      +'<div class="esi"><div class="esn">'+(c.n?c.excelRate+'%':'-')+'</div><div class="esl">优秀率</div></div>'
+      +'<div class="esi"><div class="esn">'+(c.n?c.mx:'-')+'</div><div class="esl">最高</div></div>'
+      +'<div class="esi"><div class="esn">'+(c.n?c.mn:'-')+'</div><div class="esl">最低</div></div>'
+      +'</div>';
+    return '<div class="cell" data-exam="'+e.id+'" onclick="examSheet(\''+e.id+'\')"><div class="ic" style="background:#fff2e0">📝</div><div class="t">'+esc(e.title)+'<div class="sub" style="color:#999">'+esc(classLabel(e.cls||'2612'))+' · '+(e.subject||'英语')+' · '+fmtCN(e.date)+' · <span class="escount">已录 '+c.n+' 人</span></div>'+(c.n?'<div class="mt4">'+stat+'</div>':'')+'<div class="bar"><i style="width:'+(c.n?Math.min(100,c.avg):0)+'%"></i></div></div><span class="chev">›</span></div>';}).join('');
   const seg='<div class="seg">'+[{k:'all',n:'全部'},{k:'2612',n:'12班'},{k:'2610',n:'10班'}].map(function(x){return '<button class="'+(examCls===x.k?'on':'')+'" onclick="examCls=\''+x.k+'\';render()">'+x.n+'</button>';}).join('')+'</div>';
   return '<div class="btn-row" style="padding:12px 14px"><button class="btn" onclick="examAdd()">＋ 新建考试</button></div>'
     +seg
@@ -738,19 +765,42 @@ function examAdd(){openSheet({title:'新建考试',body:'<div class="fcell"><lab
   });
 }
 function examSheet(id){const e=(db.exams||[]).find(function(x){return x.id===id;}); if(!e)return;
-  const sc=Object.values(e.scores||{}).filter(function(v){return v!==''&&v!=null;}).map(function(v){return +v;});
-  const avg=sc.length?Math.round(sc.reduce(function(a,b){return a+b;},0)/sc.length):0;
-  const mx=sc.length?Math.max.apply(null,sc):0; const mn=sc.length?Math.min.apply(null,sc):0; const pass=sc.filter(function(v){return v>=60;}).length;
-  const rows=studentOfCls(e.cls||'2612').map(function(s){const v=e.scores[s.id]; return '<div class="cell"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="t">'+esc(s.name)+'</div><div style="text-align:right"><input type="number" placeholder="分数" value="'+(v==null?'':v)+'" onchange="examSetScore(\''+id+'\',\''+s.id+'\',this.value)" style="width:80px;border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-size:14px;text-align:center"></div></div>';}).join('');
+  const c=examCols(e);
+  const stat='<div id="examStats" class="mt">'+examStatHTML(id)+'</div>';   // sorted rows: highest first, blanks last
+  const stus=studentOfCls(e.cls||'2612').slice().sort(function(a,b){const va=e.scores[a.id],vb=e.scores[b.id]; const na=(va===''||va==null)?-1:+va; const nb=(vb===''||vb==null)?-1:+vb; return nb-na;});
+  let rank=0; let lastScore=-1;
+  const rows=stus.map(function(s){const v=e.scores[s.id]; const has=(v!==''&&v!=null);
+    if(has&&(+v)!==lastScore){rank++; lastScore=+v;}
+    const rk=has?rank:'';
+    return '<div class="cell"><div class="av round" style="background:'+avC(s.name)+'">'+esc(s.name.slice(0,1))+'</div><div class="rank" style="width:26px;text-align:center;color:#999;font-size:13px">'+(rk||'')+'</div><div class="t">'+esc(s.name)+'</div><div style="text-align:right"><input type="number" placeholder="分数" value="'+(v==null?'':v)+'" onchange="examSetScore(\''+id+'\',\''+s.id+'\',this.value)" style="width:80px;border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-size:14px;text-align:center"></div></div>';}).join('');
   $('#modal').innerHTML='<div class="sheet"><div class="sh">'+esc(e.title)+'<span class="close" onclick="closeSheet()">×</span></div><div class="fd">'
     +'<div style="display:flex;justify-content:space-between;align-items:center"><span class="ts">'+esc(classLabel(e.cls||'2612'))+' · '+(e.subject||'英语')+' · '+fmtCN(e.date)+'</span><span class="ts" style="color:#fa5151;cursor:pointer" onclick="examDel(\''+id+'\')">🗑 删除</span></div>'
-    +'<div class="ts mt">平均 <b>'+avg+'</b> · 最高 '+mx+' · 最低 '+mn+' · 及格 '+pass+'/'+sc.length+'</div>'
+    +stat
     +'<div class="btn-row mt"><button class="btn" onclick="closeSheet()">完成</button></div>'
     +'<div class="mt">'+rows+'</div></div></div>';
   $('#modal').classList.add('show');
 }
-function examSetScore(eid,sid,v){const e=(db.exams||[]).find(function(x){return x.id===eid;}); if(!e)return; e.scores[sid]=(v===''||v==null)?'':(+v); save();}
+function examSetScore(eid,sid,v){const e=(db.exams||[]).find(function(x){return x.id===eid;}); if(!e)return; e.scores[sid]=(v===''||v==null)?'':(+v); save(); $('#examStats').innerHTML=examStatHTML(eid); const card=document.querySelector('[data-exam="'+eid+'"]'); if(card){const c=examCols(e); card.querySelector('.escount').textContent='已录 '+c.n+' 人';} }
+function examStatHTML(eid){const e=(db.exams||[]).find(function(x){return x.id===eid;}); if(!e)return''; const c=examCols(e);
+  return '<div class="esbox">'
+    +'<div class="esi"><div class="esn">'+(c.n?c.avg:'-')+'</div><div class="esl">平均分</div></div>'
+    +'<div class="esi"><div class="esn">'+(c.n?c.passRate+'%':'-')+'</div><div class="esl">及格率</div></div>'
+    +'<div class="esi"><div class="esn">'+(c.n?c.excelRate+'%':'-')+'</div><div class="esl">优秀率</div></div>'
+    +'<div class="esi"><div class="esn">'+(c.n?c.mx:'-')+'</div><div class="esl">最高</div></div>'
+    +'<div class="esi"><div class="esn">'+(c.n?c.mn:'-')+'</div><div class="esl">最低</div></div>'
+    +'</div>'
+    +'<div class="esdist">'
+    +'<span class="esd'+(c.n&&c.dist[0]?'':' off')+'">90+ <b>'+c.dist[0]+'</b></span>'
+    +'<span class="esd'+(c.n&&c.dist[1]?'':' off')+'">80-89 <b>'+c.dist[1]+'</b></span>'
+    +'<span class="esd'+(c.n&&c.dist[2]?'':' off')+'">70-79 <b>'+c.dist[2]+'</b></span>'
+    +'<span class="esd'+(c.n&&c.dist[3]?'':' off')+'">60-69 <b>'+c.dist[3]+'</b></span>'
+    +'<span class="esd'+(c.n&&c.dist[4]?'':' off')+'">&lt;60 <b>'+c.dist[4]+'</b></span>'
+    +'</div>'
+    +'<div class="ts mt" style="color:#888">共 '+c.n+' 人 · 及格 '+c.pass+' 人 · 优秀 '+c.excel+' 人</div>';
+}
+
 function examDel(eid){confirmBox('确定删除这场考试记录吗？',function(){db.exams=(db.exams||[]).filter(function(x){return x.id!==eid;}); save(); closeSheet(); render(); toast('已删除考试');});}
+
 /* ================== 教师打卡 ================== */
 function getTodayCheck(){return db.checkins.find(c=>c.date===todayStr());}
 function ensureTodayCheck(){let c=getTodayCheck(); if(!c){c={id:uid(),date:todayStr(),tasks:db.checkinTasks.map(t=>({name:t.name,done:false})),mood:'😊',note:''}; db.checkins.push(c); save();} return c;}
