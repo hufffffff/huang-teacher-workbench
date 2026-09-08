@@ -165,6 +165,7 @@
   .seat-table{margin:12px 14px;background:#fff;border-radius:12px;padding:14px 8px;overflow-x:auto;border:1px solid #ececec;}
   .seat-grid{display:grid;gap:4px 8px;justify-content:center;min-width:480px;margin:0 auto;}
   .seat-grid .ghead{text-align:center;font-size:12px;color:#666;padding:8px 0 2px;font-weight:600;border-top:2px solid #07c160;}
+  .seat-grid .ghead.gfoot{border-top:none;border-bottom:2px solid #07c160;padding:7px 0 2px;}
   .seat-cell{border:1px solid #cfcfcf;background:#fff;min-height:38px;display:flex;align-items:center;justify-content:center;font-size:13px;border-radius:3px;padding:4px 6px;white-space:nowrap;}
   .seat-cell.sp{background:#fdf3c2;border-color:#e0c860;color:#a9791a;font-weight:600;}
   .seat-cell .star{color:#e1870b;margin-left:2px;}
@@ -252,11 +253,11 @@ const D_ST={un:'未交',done:'已交',full:'已订正'};
 const H_ST={pending:'待收',submitted:'已交',late:'迟交',missing:'缺交'};
 const A_ST={present:'到',late:'迟到',leave:'请假',absent:'缺勤'};
 /* ====== 2612班 真实数据（来自官方表格） ====== */
-const S2612_ROSTER=[["唐有","女","18674877808",""],["詹乐萱","女","13007488298",""],["周逸巧","女","17343605717",""],["杨妍雨","女","13298680831",""],["曹睿涵","女","13974866708",""],["许思怡","女","15697363753",""],["谭明煦","男","13973140710",""],["李嘉泉","男","13874977241",""],["冯宇萱","女","18274899500",""],["文希妍","女","13507487844",""],["毛品荣","男","18973110748",""],["盛雨芊","女","15111496860",""],["王思涵","女","13973146660",""],["李琢言","男","18607311655",""],["朱炫宇","男","13822891808",""],["李晓涵","女","15084909610",""],["朱家骏","男","15387487832",""],["杨曦晨","男","15111032135",""],["李诺欣","女","13787033049",""],["周顺","男","13437404934",""],["章佳宸","男","18218228418",""],["周馨","女","18163618062",""],["曹钰洁","女","13348682098",""],["陈紫萱","女","19573736178",""],["黄思妍","女","13517312935",""],["刘欣琳","女","18173151111",""],["胡锦程","男","13507437820",""],["张佳音","女","15173154305",""],["李家旭","男","15387579890",""],["林梓兴","男","13510551246",""],["张博霖","男","17775861012",""],["张玉玺","男","15874151606",""],["李兆芬","女","18373157878",""],["胡思彤","女","13786125731",""],["石昊然","男","15116376436",""],["夏振博","男","13319579768",""],["罗晨希","男","18374800988",""],["蒲欣语","女","18874061693",""],["耿梓晨","男","18611157953",""],["毛雅茜","女","18175975531",""],["梁宸瑜","男","13755074078",""],["吴子涵","男","17749686382",""],["闫家辉","男","15343310234",""],["范妙言","女","15874001555",""],["周思琪","女","17708454878",""],["周蔚","女","13367312348",""],["段诗画","女","13818895487",""],["张嘉乐","男","18874086958",""],["杨紫萱","女","15802581366",""],["李思远","男","13548941556",""],["周嘉怡","女","15907303649",""],["冷雨馨","女","15874115216",""],["袁文灿","男","19386691265",""],["黄子豪","男","18670752221",""],["罗媛妮","女","15116430766","罗树"]];
+const S2612_ROSTER=[["唐有","女","18674877808",""],["詹乐萱","女","13007488298",""],["周逸巧","女","17343605717",""],["杨妍雨","女","13298680831",""],["曹睿涵","女","13974866708",""],["许思怡","女","15697363753",""],["谭明煦","男","13973140710",""],["李嘉泉","男","13874977241",""],["冯宇萱","女","18274899500",""],["文希妍","女","13507487844",""],["毛品荣","男","18973110748",""],["盛雨芊","女","15111496860",""],["王思涵","女","13973146660",""],["李琢言","男","18607311655",""],["朱炫宇","男","13822891808",""],["李晓涵","女","15084909610",""],["朱家骏","男","15387487832",""],["杨曦晨","男","15111032135",""],["李诺欣","女","13787033049",""],["周顺","男","13437404934",""],["章佳宸","男","18218228418",""],["周馨","女","18163618062",""],["曹钰洁","女","13348682098",""],["陈紫萱","女","19573736178",""],["黄思妍","女","13517312935",""],["刘欣琳","女","18173151111",""],["胡锦程","男","13507437820",""],["张佳音","女","15173154305",""],["李家旭","男","15387579890",""],["林梓兴","男","13510551246",""],["张博霖","男","17775861012",""],["张玉玺","男","15874151606",""],["李兆芬","女","18373157878",""],["胡思彤","女","13786125731",""],["石昊然","男","15116376436",""],["夏振博","男","13319579768",""],["罗晨希","男","18374800988",""],["蒲欣语","女","18874061693",""],["耿梓晨","男","18611157953",""],["毛雅茜","女","18175975531",""],["梁宸瑜","男","13755074078",""],["吴子涵","男","17749686382",""],["闫家辉","男","15343310234",""],["范妙言","女","15874001555",""],["周思琪","女","17708454878",""],["周蔚","女","13367312348",""],["段诗画","女","13818895487",""],["张嘉乐","男","18874086958",""],["杨紫萱","女","15802581366",""],["李思远","男","13548941556",""],["周嘉怡","女","15907303649",""],["冷雨馨","女","15874115216",""],["袁文灿","男","19386691265",""],["黄子豪","男","18670752221",""],["罗媛妮","女","15116430766","罗树"],["强思怡","女","15973179817",""]];
 const S2610_ROSTER=[["邹鸿永","男","",""],["雷亿诗","女","",""],["刘沁怡","女","",""],["肖瑞阳","男","",""],["陈熙驰","男","",""],["陈佳慧","女","",""],["祖堇瑜","女","",""],["马梓祺","男","",""],["李琴","女","",""],["曹鑫莹","女","",""],["郑皓轩","男","",""],["喻诗琪","女","",""],["李文标","男","",""],["黄文筠","女","",""],["田文杰","男","",""],["文峻熙","男","",""],["廖琳雯","女","",""],["姚晨蕊","女","",""],["阳璐璐","女","",""],["赵咸泽","男","",""],["柳沣源","男","",""],["刘弋弋","女","",""],["肖雨微","女","",""],["丁宇泽","男","",""],["魏婉婷","女","",""],["刘晟睿","男","",""],["董佳星","女","",""],["胡嘉琪","女","",""],["王逸","男","",""],["王泓勋","男","",""],["曾婉芸","女","",""],["刘慧阳","女","",""],["吴英俊","男","",""],["颜佳慧","女","",""],["刘予希","女","",""],["缪晓婉","女","",""],["李雨昕","女","",""],["谭庄","女","",""],["何沐阳","女","",""],["章米琪","女","",""],["郭艾萱","女","",""],["陈畅扬","男","",""],["彭佳妮","女","",""],["钟景晟","男","",""],["龙腾翔","男","",""],["范迁文","男","",""],["周雅茜","女","",""],["李妍希","男","",""],["吴禹山","男","",""],["柳博瀚","男","",""],["张语珊","女","",""],["胡雨欣","女","",""],["梁立果","男","",""],["李瑞昕","女","",""]];
 const S2612_DORM={"512":["吴子涵","张嘉乐","","夏振博","","耿梓晨","袁文灿","闫家辉"],"513":["","罗晨希","","谭明煦","朱家骏","李家旭","梁宸瑜","杨曦晨"],"514":["石昊然","李琢言","","张博霖","李嘉泉","章佳宸","朱炫宇",""],"515":["毛品荣","林梓兴","黄子豪","周顺","胡锦程","张玉玺","","李思远"],"516":["罗媛妮","周蔚","蒲欣语","","曹钰洁","","王思涵","周嘉怡"],"517":["段诗画","曹睿涵","周馨","盛雨芊","李兆芬","冷雨馨","陈紫萱","周思琪"],"518":["李诺欣","许思怡","周逸巧","毛雅茜","李晓涵","范妙言","冯宇萱","杨紫萱"],"519":["刘欣琳","","杨妍雨","唐有","","黄思妍","詹乐萱","张佳音"]};
 const S2612_DORM_SEX={"512":"男","513":"男","514":"男","515":"男","516":"女","517":"女","518":"女","519":"女"};
-const S2612_SEAT=[["张玉玺","冯宇萱","夏振博","段诗画","李思远","胡思彤","袁文灿"],["吴子涵","陈紫萱","张博霖","周蔚","胡锦程","文希妍","耿梓晨"],["罗媛妮","蒲欣语","朱家骏","石昊然","周逸巧","冷雨馨","刘欣琳"],["杨妍雨","毛雅茜","周顺","张嘉乐","李晓涵","王思涵","曹钰洁"],["李兆芬","杨曦晨","盛雨芊","黄思妍","章佳宸","曹睿涵","李家旭"],["张佳音","梁宸瑜","周馨","李诺欣","李嘉泉","詹乐萱","林梓兴"],["闫家辉","罗晨希","许思怡","李琢言","杨紫萱","朱炫宇","周思琪"],[null,"毛品荣","范妙言","黄子豪","周嘉怡","谭明煦","唐有"]];
+const S2612_SEAT=[["张玉玺","冯宇萱","夏振博","段诗画","李思远","胡思彤","袁文灿"],["吴子涵","陈紫萱","张博霖","周蔚","胡锦程","文希妍","耿梓晨"],["罗媛妮","蒲欣语","朱家骏","石昊然","周逸巧","冷雨馨","刘欣琳"],["杨妍雨","毛雅茜","周顺","张嘉乐","李晓涵","王思涵","曹钰洁"],["李兆芬","杨曦晨","盛雨芊","黄思妍","章佳宸","曹睿涵","李家旭"],["张佳音","梁宸瑜","周馨","李诺欣","李嘉泉","詹乐萱","林梓兴"],["闫家辉","罗晨希","许思怡","李琢言","杨紫萱","朱炫宇","周思琪"],["强思怡","毛品荣","范妙言","黄子豪","周嘉怡","谭明煦","唐有"]];
 const S2612_DUTY=[{"sweep":["唐有","詹乐萱"],"corridor":["周逸巧"],"window":["杨妍雨"],"trash":["李琢言","朱炫宇"]},{"sweep":["盛雨芊","冯宇萱"],"corridor":["文希妍"],"window":["王思涵"],"trash":["李嘉泉","毛品荣"]},{"sweep":["曹睿涵","许思怡"],"corridor":["李晓涵"],"window":["李诺欣"],"trash":["杨曦晨","朱家骏"]},{"sweep":["陈紫萱","黄思妍"],"corridor":["周馨"],"window":["曹钰洁"],"trash":["周顺","章佳宸"]},{"sweep":["刘欣琳","胡锦程"],"corridor":["张佳音"],"window":["李家旭"],"trash":["林梓兴","张博霖"]},{"sweep":["张玉玺","李兆芬"],"corridor":["胡思彤"],"window":["杨紫萱"],"trash":["夏振博","罗晨希"]},{"sweep":["蒲欣语","耿梓晨"],"corridor":["毛雅茜"],"window":["梁宸瑜"],"trash":["吴子涵","闫家辉"]},{"sweep":["范妙言","周思琪"],"corridor":["周蔚"],"window":["段诗画"],"trash":["张嘉乐","石昊然"]},{"sweep":["罗媛妮","周嘉怡"],"corridor":["冷雨馨"],"window":["袁文灿"],"trash":["黄子豪","李思远","谭明煦"]}];
 const S2612_CLASS12=[["数学/杜家睿","数学/杜家睿","英语/黄思敏","英语/黄思敏","政治/易马当先","物理/周俏","语文/陈缀缀","YM/龚平"],["物理/周俏","数学/杜家睿","语文/陈缀缀","语文/陈缀缀","生物/黄任衡","化学/姚品品","体育/汪点","英语/黄思敏"],["政治/易马当先","英语/黄思敏","地理/吴晶晴","历史/钟仪璇","物理/周俏","数学/杜家睿","语文/陈缀缀","体育/汪点"],["数学/杜家睿","物理/周俏","生物/黄任衡","语文/陈缀缀","历史/钟仪璇","XX/覃笠","化学/姚品品","英语/黄思敏"],["数学/杜家睿","数学/杜家睿","化学/姚品品","英语/黄思敏","语文/陈缀缀","TW/陈武","地理/吴晶晴","班会/黄思敏"]];
 const S2612_TEACHER={"2610班":[[0,0],[0,1],[1,4],[2,3],[3,6],[4,1],[0,8],[1,8]],"2612班":[[0,2],[0,3],[1,7],[2,1],[3,7],[4,3],[0,8],[1,8],[3,8],[4,7]]};
@@ -272,6 +273,19 @@ function patchData(){
   }
   (db.students||[]).forEach(function(s){ if(!s.cls) s.cls='2612'; });
   (db.students10||[]).forEach(function(s){ if(!s.cls) s.cls='2610'; });
+  if(!Array.isArray(db.discipline)) db.discipline=[];
+  if(typeof S2612_ROSTER!=='undefined'){
+    S2612_ROSTER.forEach(function(r){ var nm=r[0]; if(nm && !db.students.some(function(s){return s.name===nm;})){ db.students.push({id:uid(),no:String(db.students.length+1).padStart(2,'0'),name:nm,gender:r[1]||'男',phone:r[2]||'',parent:r[3]||'',group:'',special:0,cls:'2612'}); } });
+  }
+  if(db.seatRev!==3){
+    var gLb=['第一组','第二组','第三组','第四组','第五组','第六组','第七组','第八组'];
+    var nmId={}, nmGrp={};
+    db.students.forEach(function(s){ nmId[s.name]=s.id; });
+    S2612_SEAT.forEach(function(col,ci){ col.forEach(function(nm){ if(nm)nmGrp[nm]=gLb[ci]; }); });
+    db.students.forEach(function(s){ s.group=nmGrp[s.name]||''; });
+    db.seat={groups:gLb,matrix:S2612_SEAT.map(function(col){ return col.map(function(nm){ return nm?nmId[nm]:null; }); }),rows:7};
+    db.seatRev=3;
+  }
   if(!Array.isArray(db.exams)) db.exams=[];
   if(!Array.isArray(db.dormDeducts)) db.dormDeducts=[];
   if(db.dormRev!==2){ db.dorm=S2612_DORM; db.dormSex=S2612_DORM_SEX; db.dormRev=2; }
@@ -366,6 +380,7 @@ function pageMeta(){
   if(route==='work:exam')return{title:'考试分数登记',back:1};
   if(route==='work:check')return{title:'教师打卡',back:1};
   if(route==='work:dorm')return{title:'宿舍扣分登记',back:1};
+  if(route==='work:disc')return{title:'课堂纪律',back:1};
   if(route==='chat')return{title:'家长沟通'};
   if(route.slice(0,5)==='chat:'){const s=getStudent(route.slice(5)); return{title:s?s.name:'沟通',back:1};}
   if(route==='me')return{title:'我的'};
@@ -390,12 +405,13 @@ function render(){
   else if(route==='work:exam')content=examHTML();
   else if(route==='work:check')content=checkHTML();
   else if(route==='work:dorm')content=dormDeductHTML();
+  else if(route==='work:disc')content=discHTML();
   else if(route==='chat')content=chatListHTML();
   else if(route.slice(0,5)==='chat:')content=chatThreadHTML(route.slice(5));
   else if(route==='me')content=meHTML();
   const tabbar=isDetail?'':'<div class="tabbar">'+TABS.map(x=>'<button class="tab '+(t===x.k?'on':'')+'" onclick="goTab(\''+x.k+'\')"><span class="ti">'+x.i+'</span><span class="tl">'+x.l+'</span></button>').join('')+'</div>';
   $('#app').innerHTML=topbar+content+tabbar;
-  const init={home:initHome,class:initClass,stu:initStu,att:initAtt,log:initLog,work:initWork,dict:initDict,hw:initHW,exam:initExam,check:initCheck,chat:initChat,me:initMe,seat:initSeat,duty:initDuty,schedule:initSchedule,dorm:initDorm}[route]||null;
+  const init={home:initHome,class:initClass,stu:initStu,att:initAtt,log:initLog,work:initWork,dict:initDict,hw:initHW,exam:initExam,check:initCheck,chat:initChat,me:initMe,seat:initSeat,duty:initDuty,schedule:initSchedule,dorm:initDorm,disc:initDisc}[route]||null;
   if(init)init();
   if(route.slice(0,5)==='chat:')initChatThread(route.slice(5));
 }
@@ -649,12 +665,14 @@ function workListHTML(){
   let hwOpen=0; db.homeworks.forEach(h=>{if(h.dueDate<=today)hwOpen+=Object.values(h.records||{}).filter(x=>x.status==='pending'||x.status==='missing').length;});
   const chk=db.checkins.find(c=>c.date===today); const chkT=chk?chk.tasks.length:db.checkinTasks.length; const chkD=chk?chk.tasks.filter(x=>x.done).length:0;
   const ddTotal=(db.dormDeducts||[]).reduce(function(a,d){return a+(+d.score||0);},0);
+  const discScore=(db.discipline||[]).reduce(function(a,d){return a+(+d.score||0);},0);
   return '<div class="cgroup"><div class="gtitle">日常教学</div>'
     +'<div class="cell" onclick="nav(\'work:dict\')"><div class="ic" style="background:#e8f7ed">✍️</div><div class="t">默写管理<small class="sub" style="color:#999;display:block">英语默写 · 完成登记 · 错词统计</small></div>'+(dOpen?'<span class="bdg">'+dOpen+'</span>':'<span class="val">'+dictT.length+'场</span>')+'<span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'work:hw\')"><div class="ic" style="background:#eef3ff">📚</div><div class="t">作业管理<small class="sub" style="color:#999;display:block">布置 · 收缴 · 逾期提醒</small></div>'+(hwOpen?'<span class="bdg">'+hwOpen+'</span>':'')+'<span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'work:exam\')"><div class="ic" style="background:#fff2e0">📝</div><div class="t">考试分数登记<small class="sub" style="color:#999;display:block">月考/期中/期末 · 分数录入 · 班级统计</small></div>'+(db.exams&&db.exams.length?'<span class="val">'+db.exams.length+'场</span>':'')+'<span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'work:check\')"><div class="ic" style="background:#f4edff">✅</div><div class="t">教师打卡<small class="sub" style="color:#999;display:block">每日任务 · 连续打卡</small></div>'+(chkT>0 && chkD<chkT?'<span class="val">'+chkD+'/'+chkT+'</span>':'<span class="val">✓</span>')+'<span class="chev">›</span></div>'
     +'<div class="cell" onclick="nav(\'work:dorm\')"><div class="ic" style="background:#ffe9e9">🚩</div><div class="t">宿舍扣分登记<small class="sub" style="color:#999;display:block">按寝室号 · 床位 · 逐人登记</small></div>'+(ddTotal?'<span class="val" style="color:#fa5151">累计 '+ddTotal+'分</span>':'')+'<span class="chev">›</span></div>'
+    +'<div class="cell" onclick="nav(\'work:disc\')"><div class="ic" style="background:#eef3ff">📏</div><div class="t">课堂纪律<small class="sub" style="color:#999;display:block">违纪登记 · 课堂表现 · 持续跟进</small></div>'+(discScore?'<span class="val" style="color:#fa5151">累计 '+discScore+'分</span>':'')+'<span class="chev">›</span></div>'
     +'</div>';
 }
 function initWork(){}
@@ -957,7 +975,6 @@ function seatTableHTML(){
   const p=seatProject(); const cols=p.groups.length, rows=p.rows;
   if(rows===0){ return '<div class="seat-table"><div class="empty"><span class="eic">🪑</span>还没有学生，请先到“学生名单”添加</div></div>'; }
   let grid='<div class="seat-grid" style="grid-template-columns:repeat('+cols+',86px)">';
-  p.groups.forEach(function(g){ grid+='<div class="ghead">'+esc(g)+'</div>'; });
   for(let ri=0;ri<rows;ri++){
     p.groups.forEach(function(gl,ci){
       const s=p.matrix[ci][ri]; const sel=seatSel&&seatSel.c===ci&&seatSel.r===ri;
@@ -970,6 +987,7 @@ function seatTableHTML(){
       }
     });
   }
+  p.groups.forEach(function(g){ grid+='<div class="ghead gfoot">'+esc(g)+'</div>'; });
   grid+='</div>';
   const un=unseatedStudents();
   const pool=(un.length?('<div class="no-print"><div class="gtitle" style="padding:12px 16px 0">未入座学生 · '+un.length+'人</div><div class="chips" style="padding:6px 16px 12px">'+un.map(function(s){return '<span class="chip" style="cursor:pointer" onclick="seatAddUnseated(\''+s.id+'\')">'+esc(s.name)+'</span>';}).join('')+'</div></div>'):'');
@@ -1004,7 +1022,11 @@ function seatExportPNG(){
   ctx.fillStyle='#eef5ee'; ctx.fillRect(0,0,W,H);
   ctx.fillStyle='#07c160'; ctx.font='bold 23px sans-serif'; ctx.textAlign='center';
   ctx.fillText(db.className+' 座位表', W/2, 36);
-  groups.forEach(function(g,ci){ ctx.fillStyle='#333'; ctx.font='bold 15px sans-serif'; ctx.fillText(g, pad+ci*cw+cw/2, titleH+hh-10); });
+  matrix.forEach(function(col,ci){ col.forEach(function(s,ri){ const x=pad+ci*cw,y=titleH+hh+ri*ch;
+    ctx.fillStyle=s?(s.special?'#fdf3c2':'#fff'):'#f2f2f2'; ctx.fillRect(x+3,y+3,cw-6,ch-6);
+    if(s){ ctx.strokeStyle='#cfcfcf'; ctx.strokeRect(x+3,y+3,cw-6,ch-6); ctx.fillStyle=s.special?'#a9791a':'#333'; ctx.font='15px sans-serif'; ctx.fillText(s.name+(s.special?'☆':''), x+cw/2, y+ch/2+5); } });
+  });
+  groups.forEach(function(g,ci){ ctx.fillStyle='#333'; ctx.font='bold 15px sans-serif'; ctx.fillText('◆ '+g, pad+ci*cw+cw/2, titleH+hh+rows*ch+20); });
   matrix.forEach(function(col,ci){ col.forEach(function(s,ri){ const x=pad+ci*cw,y=titleH+hh+ri*ch;
     ctx.fillStyle=s?(s.special?'#fdf3c2':'#fff'):'#f2f2f2'; ctx.fillRect(x+3,y+3,cw-6,ch-6);
     if(s){ ctx.strokeStyle='#cfcfcf'; ctx.strokeRect(x+3,y+3,cw-6,ch-6); ctx.fillStyle=s.special?'#a9791a':'#333'; ctx.font='15px sans-serif'; ctx.fillText(s.name+(s.special?'☆':''), x+cw/2, y+ch/2+5); } });
@@ -1161,7 +1183,16 @@ function dormStudents(room){
 }
 function initSchedule(){} function initDorm(){}
 /* ================== 宿舍扣分登记 ================== */
+let dormDeductView='by';
 function dormDeductHTML(){
+  const tab='<div class="seg">'
+    +'<button class="'+(dormDeductView==='by'?'on':'')+'" onclick="dormDeductView=\'by\';render()">逐人登记</button>'
+    +'<button class="'+(dormDeductView==='quick'?'on':'')+'" onclick="dormDeductView=\'quick\';render()">随手记录</button>'
+    +'</div>';
+  if(dormDeductView==='quick')return tab+dormQuickHTML();
+  return tab+dormDeductByHTML();
+}
+function dormDeductByHTML(){
   const dorm=db.dorm||{}; const sex=db.dormSex||{}; const deducts=db.dormDeducts||[];
   const total=deducts.reduce(function(a,d){return a+(+d.score||0);},0);
   const rooms=Object.keys(dorm).sort(function(a,b){return a-b;}).map(function(room){
@@ -1174,6 +1205,33 @@ function dormDeductHTML(){
   }).join('');
   return '<div class="gtitle" style="padding:14px 16px 0">宿舍扣分登记 · 累计 '+total+' 分</div><div class="cgroup">'+(rooms||emptyHTML('🛏️','暂无住宿生'))+'</div><div class="seat-tip">点击寝室号进入，按床位给每位同学登记扣分。</div>';
 }
+
+function dormQuickHTML(){
+  const dorm=db.dorm||{}; const sex=db.dormSex||{};
+  const qs=(db.dormDeducts||[]).filter(function(d){return !d.name;}).slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
+  const total=qs.reduce(function(a,d){return a+(+d.score||0);},0);
+  const cards=qs.map(function(d){
+    return '<div class="cell"><div class="t">'+esc(fmtCN(d.date))+' · '+esc(d.room)+'号寝室<div class="sub" style="color:#999">'+esc(d.reason||'未填原因')+(d.note?(' · '+esc(d.note)):'')+'</div></div><span class="val" style="color:#fa5151">'+esc(String(d.score))+'分</span><span class="chev" style="cursor:pointer" onclick="dormQuickDel(\''+d.id+'\')">删</span></div>';
+  }).join('');
+  return '<div class="gtitle" style="padding:12px 16px 0">寝室扣分随手记 · 累计 '+total+' 分</div>'
+    +'<div class="btn-row" style="padding:8px 14px"><button class="btn" onclick="dormQuickAdd()">＋ 随手记一笔</button></div>'
+    +'<div class="cgroup">'+(cards||emptyHTML('🚩','还没有随手记录。还没责任到人时，先记下哪个寝室扣了什么分。'))+'</div>';
+}
+function dormQuickAdd(){
+  const dorm=db.dorm||{}; const sex=db.dormSex||{};
+  const rooms=Object.keys(dorm).sort(function(a,b){return a-b;}).map(function(r){return '<option value="'+esc(r)+'">'+esc(r)+'号寝室 · '+esc(sex[r]||'')+'</option>';}).join('');
+  openSheet({title:'随手记录扣分',
+    body:'<div class="fcell"><label>寝室</label><select id="dq_room">'+rooms+'</select></div>'
+      +'<div class="fcell"><label>日期</label><input id="dq_date" type="date" value="'+todayStr()+'"></div>'
+      +'<div class="fcell"><label>原因</label><select id="dq_reason"><option>晚归</option><option>卫生差</option><option>就寝吵闹</option><option>违规电器</option><option>未整理床铺</option><option>偷玩手机</option><option>其他</option></select></div>'
+      +'<div class="fcell"><label>扣分</label><select id="dq_score"><option value="-1">-1</option><option value="-2">-2</option><option value="-3">-3</option><option value="-5">-5</option><option value="-10">-10</option></select></div>'
+      +'<div class="fcell"><label>备注</label><input id="dq_note" placeholder="可选，责任到人后可在“逐人登记”补录"></div>',
+    onSave:function(){
+      const d={id:uid(),date:($('#dq_date').value||todayStr()),room:$('#dq_room').value,bed:null,name:'',reason:$('#dq_reason').value,score:parseInt($('#dq_score').value,10)||-1,note:($('#dq_note').value||'').trim()};
+      (db.dormDeducts=db.dormDeducts||[]).push(d); save(); render(); toast('已随手记录 '+d.score+' 分');
+    },ok:'保存'});
+}
+function dormQuickDel(id){confirmBox('删除这条随手记录？',function(){db.dormDeducts=(db.dormDeducts||[]).filter(function(d){return d.id!==id;}); save(); render(); toast('已删除');});}
 function dormDeductRoom(room){
   const dorm=db.dorm||{}; const list=dorm[room]||[];
   const deducts=(db.dormDeducts||[]).filter(function(d){return d.room===room;});
@@ -1184,7 +1242,7 @@ function dormDeductRoom(room){
     return '<div class="cell"><div class="av round" style="background:'+avC(name)+'">'+esc(name.slice(0,1))+'</div><div class="t">'+esc(name)+'<div class="sub" style="color:#999">床位'+(i+1)+(dd.length?(' · 已扣'+dd.length+'次 '+pts+'分'):' · 暂无扣分')+'</div></div>'+(pts?'<span class="val" style="color:#fa5151">'+pts+'分</span>':'<span class="val"></span>')+'<button class="chip" style="padding:3px 8px;flex-shrink:0" onclick="event.stopPropagation();dormDeductAdd(\''+room+'\','+(i+1)+',\''+name+'\')">扣分</button></div>';
   }).join('');
   const hist=deducts.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');}).slice(0,10).map(function(d){
-    return '<div class="cell"><div class="t">'+fmtCN(d.date)+' · '+esc(d.name)+'<div class="sub" style="color:#999">床'+esc(String(d.bed))+' · '+esc(d.reason||'未填原因')+(d.note?(' · '+esc(d.note)):'')+'</div></div><span class="val" style="color:#fa5151">'+esc(String(d.score))+'分</span><span class="chev" style="cursor:pointer" onclick="dormDeductDel(\''+d.id+'\')">删</span></div>';
+    return '<div class="cell"><div class="t">'+fmtCN(d.date)+' · '+(d.name?esc(d.name):'<b style="color:#e1870b">随手记录</b>')+'<div class="sub" style="color:#999">'+(d.name?('床'+esc(String(d.bed))):('寝室'+esc(String(d.room))))+' · '+esc(d.reason||'未填原因')+(d.note?(' · '+esc(d.note)):'')+'</div></div><span class="val" style="color:#fa5151">'+esc(String(d.score))+'分</span><span class="chev" style="cursor:pointer" onclick="dormDeductDel(\''+d.id+'\')">删</span></div>';
   }).join('');
   openSheet({title:'寝室 '+room+' · 扣分登记',
     body:'<div class="ts" style="padding:4px 0">'+list.filter(Boolean).length+'位同学 · 按床位登记</div>'+rows+'<div class="gtitle" style="padding:12px 0 2px">最近记录</div>'+(hist||emptyHTML('📋','暂无扣分记录')),
@@ -1209,6 +1267,49 @@ function dormDeductDel(id){
 }
 
 
+
+
+/* ================== 课堂纪律 ================== */
+let discCls='all';
+function initDisc(){}
+function discHTML(){
+  const list=(db.discipline||[]).slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');}).filter(function(d){return discCls==='all'?true:(d.cls||'2612')===discCls;});
+  const total=(db.discipline||[]).reduce(function(a,d){return a+(+d.score||0);},0);
+  const cards=list.map(function(d){
+    const names=(d.names&&d.names.length)?d.names.join('、'):'全班';
+    const cat=({talk:'课堂讲话',sleep:'打瞌睡',phone:'玩手机',late:'迟到',noise:'扰乱课堂',hw:'作业未交',good:'课堂表现好',other:'其他'}[d.cat]||'其他');
+    const sc=+d.score||0;
+    return '<div class="cell"><div class="t">'+esc(fmtCN(d.date))+' · <span class="chip" style="padding:0 8px;font-size:11px">'+esc(classLabel(d.cls||'2612'))+'</span><div style="font-size:15px;font-weight:600;margin-top:2px">'+esc(names)+'</div><div class="sub" style="color:#999">'+esc(cat)+(d.note?(' · '+esc(d.note)):'')+'</div></div><span class="val" style="color:'+(sc<0?'#fa5151':'#07c160')+'">'+(sc>0?'+':'')+sc+'分</span><span class="chev" style="cursor:pointer" onclick="discDel(\''+d.id+'\')">删</span></div>';
+  }).join('');
+  const seg='<div class="seg">'+[{k:'all',n:'全部'},{k:'2612',n:'12班'},{k:'2610',n:'10班'}].map(function(x){return '<button class="'+(discCls===x.k?'on':'')+'" onclick="discCls=\''+x.k+'\';render()">'+x.n+'</button>';}).join('')+'</div>';
+  return '<div class="btn-row" style="padding:12px 14px"><button class="btn" onclick="discAdd()">＋ 记录课堂纪律</button></div>'
+    +seg
+    +'<div class="gtitle" style="padding:12px 16px 0">课堂纪律 · 累计 '+(total>0?'+':'')+total+' 分</div>'
+    +'<div class="cgroup">'+(cards||emptyHTML('📏','还没有纪律记录，点击上方记录'))+'</div>';
+}
+function discClsChips(cls){
+  const students=studentOfCls(cls);
+  const el=document.getElementById('di_stu'); if(!el)return;
+  el.innerHTML=students.map(function(s){return '<span class="chip" data-sel="0" data-name="'+esc(s.name)+'" onclick="discPick(this)">'+esc(s.name)+'</span>';}).join('');
+}
+function discPick(el){ el.setAttribute('data-sel', el.getAttribute('data-sel')==='1'?'0':'1'); el.classList.toggle('on'); }
+function discAdd(){
+  const cls=discCls==='all'?'2612':discCls;
+  const chips=studentOfCls(cls).map(function(s){return '<span class="chip" data-sel="0" data-name="'+esc(s.name)+'" onclick="discPick(this)">'+esc(s.name)+'</span>';}).join('');
+  openSheet({title:'记录课堂纪律',
+    body:'<div class="fcell"><label>日期</label><input id="di_date" type="date" value="'+todayStr()+'"></div>'
+      +'<div class="fcell"><label>班级</label><select id="di_cls" onchange="discClsChips(this.value)"><option value="2612">12班</option><option value="2610">10班</option></select></div>'
+      +'<div class="fcell" style="display:block"><label>学生（点选可多选，不选=全班）</label><div class="chips" id="di_stu" style="padding:6px 0">'+chips+'</div></div>'
+      +'<div class="fcell"><label>类型</label><select id="di_cat"><option value="talk">课堂讲话</option><option value="sleep">打瞌睡</option><option value="phone">玩手机</option><option value="late">迟到</option><option value="noise">扰乱课堂</option><option value="hw">作业未交</option><option value="good">课堂表现好</option><option value="other">其他</option></select></div>'
+      +'<div class="fcell"><label>分值</label><select id="di_score"><option value="-1">扣1</option><option value="-2">扣2</option><option value="-3">扣3</option><option value="-5">扣5</option><option value="-10">扣10</option><option value="1">加1</option><option value="2">加2</option><option value="3">加3</option><option value="5">加5</option></select></div>'
+      +'<div class="fcell"><label>备注</label><input id="di_note" placeholder="可选，例如 第三节英语课"></div>',
+    onSave:function(){
+      const names=[]; document.querySelectorAll('#di_stu .chip[data-sel="1"]').forEach(function(el){names.push(el.getAttribute('data-name'));});
+      const rec={id:uid(),date:($('#di_date').value||todayStr()),cls:$('#di_cls').value,cat:$('#di_cat').value,score:parseInt($('#di_score').value,10)||-1,names:names,note:($('#di_note').value||'').trim()};
+      (db.discipline=db.discipline||[]).push(rec); save(); render(); toast('已记录');
+    },ok:'保存'});
+}
+function discDel(id){confirmBox('删除这条纪律记录？',function(){db.discipline=(db.discipline||[]).filter(function(d){return d.id!==id;}); save(); render(); toast('已删除');});}
 
 /* ================== 班级设置与模板 ================== */
 function classSettings(){
