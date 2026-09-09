@@ -1159,7 +1159,7 @@ function scheduleHTML(){
     tbody+='<tr><td class="daycol">'+days[d]+'</td><td style="text-align:left;padding-left:10px">'+txt+'</td></tr>';
   }
   const teacherTable='<div class="sched-wrap"><div class="gtitle" style="padding:12px 16px 0">👩‍🏫 黄思敏老师 授课安排</div><div class="sched-scroll"><table class="sched"><thead><tr><th class="daycol">星期</th><th>授课班级 · 节次</th></tr></thead><tbody>'+tbody+'</tbody></table></div><div class="seat-tip">任教 2610 班与 2612 班 · 含晚自习听力与班会 · 首页“待办提醒”按此推送</div></div>';
-  const tabbar='<div class="gen-tools no-print" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn mini '+(schedView==='class12'?'':'ghost')+'" onclick="schedView=\'class12\';render()">12班课表</button><button class="btn mini '+(schedView==='class10'?'':'ghost')+'" onclick="schedView=\'class10\';render()">10班课表</button><button class="btn mini '+(schedView==='teacher'?'':'ghost')+'" onclick="schedView=\'teacher\';render()">教师课表</button><button class="btn mini soft" onclick="schedPrint()">🖨️ 打印</button></div>';
+  const tabbar='<div class="gen-tools no-print" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn mini '+(schedView==='class12'?'':'ghost')+'" onclick="schedView=\'class12\';render()">12班课表</button><button class="btn mini '+(schedView==='class10'?'':'ghost')+'" onclick="schedView=\'class10\';render()">10班课表</button><button class="btn mini '+(schedView==='teacher'?'':'ghost')+'" onclick="schedView=\'teacher\';render()">教师课表</button><button class="btn mini soft" onclick="schedEditTimes()">✏️ 改时间</button><button class="btn mini soft" onclick="schedPrint()">🖨️ 打印</button></div>';
   return tabbar+(schedView==='teacher'?teacherTable:classTable);
 }
 function schedPrint(){
@@ -1170,6 +1170,26 @@ function schedPrint(){
   const tbl='<table style="border-collapse:collapse;width:100%;font-size:14px">'+head+body+'</table>';
   printHTML(schedName()+' 课表', tbl);
 }
+function schedEditTimes(){
+  const times=(db.times&&db.times.length)?db.times.slice():S2612_TIMES.slice();
+  const rows=times.map(function(t,i){
+    const lb=i>=8?'晚自习':'第'+(i+1)+'节';
+    const m=/^(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})$/.exec(t||'');
+    const st=m?m[1]+':'+m[2]:''; const en=m?m[3]+':'+m[4]:'';
+    return '<div class="fcell" style="display:flex;align-items:center;gap:8px"><label style="flex:0 0 60px">'+lb+'</label><input type="time" id="ts_'+i+'" value="'+st+'"><span style="color:#999">至</span><input type="time" id="te_'+i+'" value="'+en+'"></div>';
+  }).join('');
+  openSheet({title:'编辑上课时间',
+    body:'<div class="ts" style="padding:4px 0">共 '+times.length+' 个时段，直接改开始/结束时间，保存后立即生效</div>'+rows,
+    onSave:function(){
+      const nt=[];
+      for(var i=0;i<times.length;i++){
+        const st=$('#ts_'+i).value; const en=$('#te_'+i).value;
+        if(st&&en){ nt.push(fmtT(st)+'-'+fmtT(en)); } else { nt.push(times[i]||''); }
+      }
+      db.times=nt; db.timesRev=4; save(); render(); toast('上课时间已更新');
+    },ok:'保存'});
+}
+function fmtT(v){ const m=/^(\d{2}):(\d{2})$/.exec(v||''); if(!m)return v; return ((+m[1])+':'+m[2]); }
 function dormHTML(){
   const dorm=db.dorm||{}; const sex=db.dormSex||{};
   function occ(room){ return (dorm[room]||[]).filter(Boolean); }
