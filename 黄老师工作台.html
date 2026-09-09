@@ -261,7 +261,7 @@ const S2612_SEAT=[["张玉玺","冯宇萱","夏振博","段诗画","李思远","
 const S2612_DUTY=[{"sweep":["唐有","詹乐萱"],"corridor":["周逸巧"],"window":["杨妍雨"],"trash":["李琢言","朱炫宇"]},{"sweep":["盛雨芊","冯宇萱"],"corridor":["文希妍"],"window":["王思涵"],"trash":["李嘉泉","毛品荣"]},{"sweep":["曹睿涵","许思怡"],"corridor":["李晓涵"],"window":["李诺欣"],"trash":["杨曦晨","朱家骏"]},{"sweep":["陈紫萱","黄思妍"],"corridor":["周馨"],"window":["曹钰洁"],"trash":["周顺","章佳宸"]},{"sweep":["刘欣琳","胡锦程"],"corridor":["张佳音"],"window":["李家旭"],"trash":["林梓兴","张博霖"]},{"sweep":["张玉玺","李兆芬"],"corridor":["胡思彤"],"window":["杨紫萱"],"trash":["夏振博","罗晨希"]},{"sweep":["蒲欣语","耿梓晨"],"corridor":["毛雅茜"],"window":["梁宸瑜"],"trash":["吴子涵","闫家辉"]},{"sweep":["范妙言","周思琪"],"corridor":["周蔚"],"window":["段诗画"],"trash":["张嘉乐","石昊然"]},{"sweep":["罗媛妮","周嘉怡"],"corridor":["冷雨馨"],"window":["袁文灿"],"trash":["黄子豪","李思远","谭明煦"]}];
 const S2612_CLASS12=[["数学/杜家睿","数学/杜家睿","英语/黄思敏","英语/黄思敏","政治/易马当先","物理/周俏","语文/陈缀缀","YM/龚平"],["物理/周俏","数学/杜家睿","语文/陈缀缀","语文/陈缀缀","生物/黄任衡","化学/姚品品","体育/汪点","英语/黄思敏"],["政治/易马当先","英语/黄思敏","地理/吴晶晴","历史/钟仪璇","物理/周俏","数学/杜家睿","语文/陈缀缀","体育/汪点"],["数学/杜家睿","物理/周俏","生物/黄任衡","语文/陈缀缀","历史/钟仪璇","XX/覃笠","化学/姚品品","英语/黄思敏"],["数学/杜家睿","数学/杜家睿","化学/姚品品","英语/黄思敏","语文/陈缀缀","TW/陈武","地理/吴晶晴","班会/黄思敏"]];
 const S2612_TEACHER={"2610班":[[0,0],[0,1],[1,4],[2,3],[3,6],[4,1],[0,8],[1,8]],"2612班":[[0,2],[0,3],[1,7],[2,1],[3,7],[4,3],[0,8],[1,8],[3,8],[4,7]]};
-const S2612_TIMES=["8:00-8:40","8:50-9:30","9:40-10:20","10:30-11:10","11:20-12:00","14:00-14:40","14:50-15:30","15:40-16:20","19:00-19:40"];
+const S2612_TIMES=["8:00-8:40","8:50-9:30","9:40-10:20","10:30-11:10","14:00-14:40","14:50-15:30","15:40-16:25","16:35-17:15","19:00-19:40"];
 function load(){try{const r=localStorage.getItem(KEY); if(r){db=JSON.parse(r); return true;}}catch(e){} return false;}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(db)); return true;}catch(e){toast('保存失败'); return false;}}
 function patchData(){
@@ -291,6 +291,7 @@ function patchData(){
   if(db.dormRev!==2){ db.dorm=S2612_DORM; db.dormSex=S2612_DORM_SEX; db.dormRev=2; }
   if(!db.classes){ db.classes=['2612','2610']; }
   if(!Array.isArray(db.times)||db.times.length<9){ db.times=S2612_TIMES.slice(); }
+  if(db.timesRev!==2){ db.times=S2612_TIMES.slice(); db.timesRev=2; }
   var eveByDay=['晚自习听力/黄思敏','晚自习听力/黄思敏','晚自习','班会/黄思敏','晚自习'];
   var eve10=['晚自习听力/黄思敏','晚自习听力/黄思敏','晚自习','晚自习','晚自习'];
   (db.classSchedule||[]).forEach(function(row,di){ if(row&&row.length<9){ row.push(eveByDay[di%5]||'晚自习'); } else if(row&&row.length>8){ row[8]=eveByDay[di%5]||row[8]; } });
@@ -706,13 +707,17 @@ function dictSheet(id){const d=db.dictations.find(x=>x.id===id); if(!d)return;
     +'<div style="display:flex;justify-content:space-between;align-items:center"><span class="ts">'+esc(classLabel(d.cls||'2612'))+' · '+esc(d.type)+' · '+fmtCN(d.date)+'</span><span class="ts" style="color:#fa5151;cursor:pointer" onclick="dictDel(\''+id+'\')">🗑 删除</span></div>'
     +'<div class="bar mt"><i style="width:'+pct+'%"></i></div><div class="ts mt">完成 '+done+'/'+total+'（'+pct+'%）</div>'
     +'<div class="btn-row mt"><button class="btn ghost" onclick="dictSetAll(\''+id+'\',\'done\')">全部已交</button><button class="btn ghost" onclick="dictSetAll(\''+id+'\',\'full\')">全部订正</button><button class="btn" onclick="closeSheet()">完成</button></div>'
+    +'<div class="mt" id="dict_full">'+dict100HTML(id)+'</div>'
     +'<div class="mt">'+rows+'</div></div></div>';
   $('#modal').classList.add('show');
 }
 function dictSetStatus(did,sid,st){const d=db.dictations.find(x=>x.id===did); if(!d)return; if(!d.records[sid])d.records[sid]={status:'un',score:null,wrong:''}; d.records[sid].status=st; save(); dictSheet(did);}
-function dictSetScore(did,sid,v){const d=db.dictations.find(x=>x.id===did); if(!d)return; if(!d.records[sid])d.records[sid]={status:'un',score:null,wrong:''}; d.records[sid].score=v===''?null:(+v); save();}
+function dictSetScore(did,sid,v){const d=db.dictations.find(x=>x.id===did); if(!d)return; if(!d.records[sid])d.records[sid]={status:'un',score:null,wrong:''}; d.records[sid].score=v===''?null:(+v); save(); const el=document.getElementById('dict_full'); if(el) el.innerHTML=dict100HTML(did);}
 function dictSetAll(did,st){const d=db.dictations.find(x=>x.id===did); if(!d)return; studentOfCls(d.cls||'2612').forEach(s=>{if(!d.records[s.id])d.records[s.id]={status:'un',score:null,wrong:''}; d.records[s.id].status=st;}); save(); dictSheet(did);}
 function dictDel(did){confirmBox('确定删除这条默写记录吗？删掉后不可恢复。',()=>{db.dictations=db.dictations.filter(x=>x.id!==did); save(); closeSheet(); render(); toast('已删除默写记录');});}
+function dict100(d){ const ids={}; Object.keys(d.records||{}).forEach(function(id){ if(+(d.records[id].score)===100) ids[id]=true; }); return studentOfCls(d.cls||'2612').filter(function(s){return ids[s.id];}); }
+function dict100HTML(id){ const d=db.dictations.find(function(x){return x.id===id;}); if(!d)return ''; const names=dict100(d); const chips=names.map(function(n){return '<span class="chip" style="background:#e8f7ed;color:#0a7a43">'+esc(n.name)+'</span>';}).join(''); return '<div class="gtitle" style="padding:12px 0 2px">满分名单（100分） · 共'+names.length+'人</div>'+(chips?('<div class="chips" style="justify-content:flex-start">'+chips+'<button class="chip" style="background:#f5f5f5;margin-left:2px" onclick="copy100(\''+id+'\')">复制</button></div>'):'<div class="ts">登记分数后自动列出 100 分学生，方便登记表扬。</div>'); }
+function copy100(id){ const d=db.dictations.find(function(x){return x.id===id;}); if(!d)return; const names=dict100(d).map(function(s){return s.name;}); const txt=names.join('、'); if(!txt){toast('暂无满分学生'); return;} if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){toast('已复制：'+txt);}).catch(function(){toast(txt);}); } else { toast(txt); } }
 /* ================== 作业 ================== */
 function hwHTML(){
   const list=db.homeworks.slice().sort((a,b)=>b.dueDate.localeCompare(a.dueDate)).filter(function(h){return hwCls==='all'?true:(h.cls||'2612')===hwCls;});
@@ -1224,10 +1229,10 @@ function dormQuickAdd(){
     body:'<div class="fcell"><label>寝室</label><select id="dq_room">'+rooms+'</select></div>'
       +'<div class="fcell"><label>日期</label><input id="dq_date" type="date" value="'+todayStr()+'"></div>'
       +'<div class="fcell"><label>原因</label><select id="dq_reason"><option>晚归</option><option>卫生差</option><option>就寝吵闹</option><option>违规电器</option><option>未整理床铺</option><option>偷玩手机</option><option>其他</option></select></div>'
-      +'<div class="fcell"><label>扣分</label><select id="dq_score"><option value="-1">-1</option><option value="-2">-2</option><option value="-3">-3</option><option value="-5">-5</option><option value="-10">-10</option></select></div>'
+      +'<div class="fcell"><label>扣分</label><select id="dq_score"><option value="-0.5">-0.5</option><option value="-1">-1</option><option value="-2">-2</option><option value="-3">-3</option><option value="-5">-5</option><option value="-10">-10</option></select></div>'
       +'<div class="fcell"><label>备注</label><input id="dq_note" placeholder="可选，责任到人后可在“逐人登记”补录"></div>',
     onSave:function(){
-      const d={id:uid(),date:($('#dq_date').value||todayStr()),room:$('#dq_room').value,bed:null,name:'',reason:$('#dq_reason').value,score:parseInt($('#dq_score').value,10)||-1,note:($('#dq_note').value||'').trim()};
+      const d={id:uid(),date:($('#dq_date').value||todayStr()),room:$('#dq_room').value,bed:null,name:'',reason:$('#dq_reason').value,score:parseFloat($('#dq_score').value)||-1,note:($('#dq_note').value||'').trim()};
       (db.dormDeducts=db.dormDeducts||[]).push(d); save(); render(); toast('已随手记录 '+d.score+' 分');
     },ok:'保存'});
 }
@@ -1253,10 +1258,10 @@ function dormDeductAdd(room,bed,name){
     body:'<div class="fcell"><label>学生</label><input value="'+esc(name)+'（床'+bed+'）" readonly style="background:#f5f5f5"></div>'
       +'<div class="fcell"><label>日期</label><input id="dd_date" type="date" value="'+todayStr()+'"></div>'
       +'<div class="fcell"><label>原因</label><select id="dd_reason"><option>晚归</option><option>卫生差</option><option>就寝吵闹</option><option>违规电器</option><option>未整理床铺</option><option>偷玩手机</option><option>其他</option></select></div>'
-      +'<div class="fcell"><label>扣分</label><select id="dd_score"><option value="-1">-1</option><option value="-2">-2</option><option value="-3">-3</option><option value="-5">-5</option><option value="-10">-10</option></select></div>'
+      +'<div class="fcell"><label>扣分</label><select id="dd_score"><option value="-0.5">-0.5</option><option value="-1">-1</option><option value="-2">-2</option><option value="-3">-3</option><option value="-5">-5</option><option value="-10">-10</option></select></div>'
       +'<div class="fcell"><label>备注</label><input id="dd_note" placeholder="可选"></div>',
     onSave:function(){
-      const d={id:uid(),date:($('#dd_date').value||todayStr()),room:room,bed:bed,name:name,reason:$('#dd_reason').value,score:parseInt($('#dd_score').value,10)||-1,note:($('#dd_note').value||'').trim()};
+      const d={id:uid(),date:($('#dd_date').value||todayStr()),room:room,bed:bed,name:name,reason:$('#dd_reason').value,score:parseFloat($('#dd_score').value)||-1,note:($('#dd_note').value||'').trim()};
       (db.dormDeducts=db.dormDeducts||[]).push(d); save(); render(); toast('已登记扣分 '+d.score+' 分');
     },ok:'保存'});
 }
