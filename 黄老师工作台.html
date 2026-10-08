@@ -952,7 +952,7 @@ function seatHTML(){
     +'<div class="field"><label>每列/排</label><input type="number" min="0" max="12" value="'+(st.rows||'')+'" onchange="seatSet(\'rows\',this.value)" title="0=自动"></div>'
     +'<div class="field check-mini"><input type="checkbox" '+(st.byGroup?'checked':'')+' onchange="seatSet(\'byGroup\',this.checked)"><label>按分组</label></div>'
     +'<div class="field check-mini"><input type="checkbox" '+(st.front?'checked':'')+' onchange="seatSet(\'front\',this.checked)"><label>特殊坐前排</label></div>'
-    +'<button class="btn mini" onclick="seatAuto()">🔄 全部重排</button>'
+    +'<button class="btn mini" onclick="seatRearrange()">🔄 全部重排</button>'
     +'<button class="btn mini soft" onclick="seatExportPNG()">🖼️ 导出图片</button>'
     +'<button class="btn mini ghost" onclick="seatPrint()">🖨️ 打印</button>'
     +'</div>'
@@ -961,13 +961,24 @@ function seatHTML(){
 }
 function initSeat(){ if(!seatSt._init){ if(db.seatPreset&&db.seatPreset.groups){ seatSt.groups=db.seatPreset.groups; if(db.seatPreset.rows)seatSt.rows=db.seatPreset.rows; } else { const n=db.students.length; seatSt.groups=Math.max(2,Math.min(8,Math.ceil(n/7))); } seatSt._init=1; } }
 function seatSet(k,v){ if(k==='rows')seatSt.rows=Math.max(0,parseInt(v)||0); else if(k==='groups')seatSt.groups=Math.max(2,parseInt(v)||8); else seatSt[k]=v; seatAuto(); render(); }
-function seatAuto(){
+function seatShuffle(list){
+  const out=list.slice();
+  for(let i=out.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=out[i]; out[i]=out[j]; out[j]=t; }
+  return out;
+}
+function seatRearrange(){ seatAuto(true); render(); toast('座位已重新排列'); }
+function seatAuto(randomize){
   const cols=seatSt.groups; const groups={}; const order=[];
   if(seatSt.byGroup){ db.students.forEach(function(s){ const g=s.group||'未分组'; if(!groups[g]){groups[g]=[]; order.push(g);} groups[g].push(s); }); }
-  else { for(let i=0;i<cols;i++){ const g='第'+(i+1)+'组'; order.push(g); groups[g]=[]; } db.students.forEach(function(s,i){ groups[order[i%cols]].push(s); }); }
-  if(seatSt.front){ order.forEach(function(g){ const arr=groups[g]; const idx=arr.findIndex(function(s){return s.special;}); if(idx>=0&&idx!==arr.length-1){ const sp=arr.splice(idx,1)[0]; arr.push(sp); } }); }
-  let rows=seatSt.rows>0?seatSt.rows:Math.max.apply(null,[1].concat(order.map(function(g){return groups[g].length;})));
-  const matrix=order.map(function(g){ return Array.from({length:rows},function(_,ri){ const s=groups[g][ri]; return s?s.id:null; }); });
+  else { for(let i=0;i<cols;i++){ const g='第'+(i+1)+'组'; order.push(g); groups[g]=[]; } const students=randomize?seatShuffle(db.students):db.students; students.forEach(function(s,i){ groups[order[i%cols]].push(s); }); }
+  if(randomize&&seatSt.byGroup){ order.forEach(function(g){ groups[g]=seatShuffle(groups[g]); }); }
+  const rows=Math.max(seatSt.rows||0,1,...order.map(function(g){return groups[g].length;}));
+  const matrix=order.map(function(g){
+    const arr=groups[g];
+    const normal=seatSt.front?arr.filter(function(s){return !s.special;}):arr;
+    const special=seatSt.front?arr.filter(function(s){return s.special;}):[];
+    return normal.map(function(s){return s.id;}).concat(Array(rows-arr.length).fill(null),special.map(function(s){return s.id;}));
+  });
   db.seat={groups:order,matrix:matrix,rows:rows}; seatSel=null; save();
 }
 function seatEnsure(){ if(!db.seat||!db.seat.matrix||!db.seat.matrix.length)seatAuto(); }
