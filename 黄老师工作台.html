@@ -978,7 +978,23 @@ function seatHistoryHTML(){
   const due=seatDate(new Date())>=last.nextDate;
   return '<div class="seat-tip" style="text-align:left;padding:8px 16px">📌 第'+history.length+'次重排 · '+esc(last.date)+'<br>下次建议换座：'+esc(last.nextDate)+(due?' · 已到换座日期':'')
     +'<details class="no-print"><summary style="cursor:pointer;margin-top:6px">换座记录（'+history.length+'次）</summary>'
-    +history.map(function(h,i){return '<div>第'+(i+1)+'次 · '+esc(h.date)+'</div>';}).reverse().join('')+'</details></div>';
+    +history.map(function(h,i){return '<div style="padding:8px 0;border-bottom:1px solid #eee">第'+(i+1)+'次 · '+esc(h.date)+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button class="btn mini ghost" onclick="seatHistoryView('+i+',\'before\')">查看换座前</button><button class="btn mini soft" onclick="seatHistoryView('+i+',\'after\')">查看换座后</button></div></div>';}).reverse().join('')+'</details></div>';
+}
+function seatHistoryView(index,side){
+  const record=(db.seatHistory||[])[index];
+  if(!record||(side!=='before'&&side!=='after')||!record[side]){toast('这次记录没有保存座位表');return;}
+  const seat=record[side],cols=seat.matrix.length,rows=seat.rows;
+  const roster=new Map((record.students||db.students).map(function(s){return [s.id,s];}));
+  const title='第'+(index+1)+'次 · '+record.date+' · '+(side==='before'?'换座前':'换座后');
+  let grid='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><div style="width:'+Math.max(180,cols*94-8)+'px;margin:0 auto"><div class="seat-grid" style="min-width:0;grid-template-columns:repeat('+cols+',86px)">';
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const id=seat.matrix[c][r],student=roster.get(id);
+      grid+='<div class="seat-cell '+(!id?'empty':(student&&student.special?'sp':''))+'">'+(id?esc(student?student.name:'已移出名单'):'空')+'</div>';
+    }
+  }
+  grid+=seat.groups.map(function(g){return '<div class="ghead gfoot">'+esc(g)+'</div>';}).join('')+'</div><div class="podium">讲 台</div></div></div>';
+  openSheet({title:title,body:'<div class="seat-tip">'+esc(record.className||db.className)+' · 历史座位表 · 上方为后排，最下方为前排<br>左右滑动查看全部组</div>'+grid,onSave:function(){},ok:'关闭',hint:'仅查看历史记录，不会改变当前座位。'});
 }
 function seatShuffle(list){
   const out=list.slice();
@@ -1036,7 +1052,7 @@ function seatRearrange(){
   occupants.forEach(function(student,i){if(student>=0){const slot=slots[i];matrix[slot.c][slot.r]=db.students[student].id;}});
   const next={groups:labels,matrix:matrix,rows:rows},now=new Date();
   if(!db.seatHistory)db.seatHistory=[];
-  db.seatHistory.push({date:seatDate(now),nextDate:seatNextMonth(now),at:now.toISOString(),before:JSON.parse(JSON.stringify(old)),after:JSON.parse(JSON.stringify(next))});
+  db.seatHistory.push({date:seatDate(now),nextDate:seatNextMonth(now),at:now.toISOString(),className:db.className,students:db.students.map(function(s){return {id:s.id,name:s.name,special:s.special};}),before:JSON.parse(JSON.stringify(old)),after:JSON.parse(JSON.stringify(next))});
   db.seat=next; seatSel=null; save(); render(); toast('已换区随机排座，并记录第'+db.seatHistory.length+'次重排');
 }
 function seatAuto(randomize){

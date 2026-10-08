@@ -39,4 +39,16 @@ ctx.db.students.push({id:'extra1'},{id:'extra2'});ctx.seatRearrange();assert.equ
 const impossible=setup(8,7);impossible.db.students.forEach(s=>s.special=true);const previous=JSON.stringify(impossible.db.seat);impossible.seatRearrange();assert.equal(JSON.stringify(impossible.db.seat),previous);assert(!impossible.db.seatHistory);assert(impossible.msg.includes('冲突'));
 const empty=setup(8,7);empty.db.students=[];empty.seatRearrange();assert.equal(empty.msg,'请先添加学生');assert(!empty.db.seatHistory);
 const outcomes=new Set();for(let i=0;i<12;i++){const c=setup(8,7);c.seatRearrange();outcomes.add(JSON.stringify(c.db.seat.matrix));}assert(outcomes.size>1);
+const view=setup(8,7);view.db.students.forEach(s=>s.name='Student '+s.id);view.seatRearrange();
+let sheet;view.openSheet=options=>{sheet=options;};const snapshot=JSON.stringify(view.db),saved=view.saved;
+for(const side of ['before','after']){
+  view.seatHistoryView(0,side);assert(sheet.title.includes(side==='before'?'换座前':'换座后'));
+  const ids=view.db.seatHistory[0][side].matrix[0].filter(Boolean);let position=-1;
+  for(const id of ids){const next=sheet.body.indexOf('Student '+id+'<');assert(next>position);position=next;}
+  assert(!sheet.body.includes('onclick='));assert.equal(JSON.stringify(view.db),snapshot);assert.equal(view.saved,saved);
+}
+view.db.students=[];view.seatHistoryView(0,'before');assert(sheet.body.includes('Student s0<'));
+view.seatHistoryView(0,'invalid');assert.equal(view.msg,'这次记录没有保存座位表');
+const legacy=setup(8,7);legacy.db.students.forEach(s=>s.name='Legacy '+s.id);legacy.seatRearrange();delete legacy.db.seatHistory[0].students;legacy.openSheet=options=>{sheet=options;};legacy.seatHistoryView(0,'before');assert(sheet.body.includes('Legacy s0<'));
 console.log(`PASS: ${checks} consecutive rearrangements, random outcomes, opposite zones, intact groups, special first 5 rows, roster integrity, history snapshots, month-end dates, and failure preservation.`);
+console.log('PASS: before/after history viewers, read-only viewing, stored names after roster removal, and legacy history compatibility.');
