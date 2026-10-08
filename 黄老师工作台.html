@@ -951,22 +951,94 @@ function seatHTML(){
     +'<div class="field"><label>组数</label><input type="number" min="2" max="12" value="'+st.groups+'" onchange="seatSet(\'groups\',this.value)"></div>'
     +'<div class="field"><label>每列/排</label><input type="number" min="0" max="12" value="'+(st.rows||'')+'" onchange="seatSet(\'rows\',this.value)" title="0=自动"></div>'
     +'<div class="field check-mini"><input type="checkbox" '+(st.byGroup?'checked':'')+' onchange="seatSet(\'byGroup\',this.checked)"><label>按分组</label></div>'
-    +'<div class="field check-mini"><input type="checkbox" '+(st.front?'checked':'')+' onchange="seatSet(\'front\',this.checked)"><label>特殊坐前排</label></div>'
+    +'<div class="field check-mini"><input type="checkbox" '+(st.front?'checked':'')+' onchange="seatSet(\'front\',this.checked)"><label>特殊生前5排</label></div>'
     +'<button class="btn mini" onclick="seatRearrange()">🔄 全部重排</button>'
     +'<button class="btn mini soft" onclick="seatExportPNG()">🖼️ 导出图片</button>'
     +'<button class="btn mini ghost" onclick="seatPrint()">🖨️ 打印</button>'
     +'</div>'
+    +'<div class="seat-tip no-print" style="text-align:left;padding:8px 16px 0">重排规则：左右换区、前后换区，区内随机；按分组时整组换边。奇数列／排的正中间保留在中间区。特殊生可坐到从讲台数第4、5排，优先换区。</div>'
     +'<div class="seat-tip no-print" style="text-align:left;color:#576b95;padding:8px 16px 0">操作：点选第一个座位 → 再点第二个即可<b>调换</b>或<b>移动到空位</b>；点座位右上角 <b>✕</b> 移出该座；点空位“＋”或“未入座学生”可<b>添加</b>。</div>';
-  return tools+seatTableHTML();
+  return tools+seatHistoryHTML()+seatTableHTML();
 }
-function initSeat(){ if(!seatSt._init){ if(db.seatPreset&&db.seatPreset.groups){ seatSt.groups=db.seatPreset.groups; if(db.seatPreset.rows)seatSt.rows=db.seatPreset.rows; } else { const n=db.students.length; seatSt.groups=Math.max(2,Math.min(8,Math.ceil(n/7))); } seatSt._init=1; } }
-function seatSet(k,v){ if(k==='rows')seatSt.rows=Math.max(0,parseInt(v)||0); else if(k==='groups')seatSt.groups=Math.max(2,parseInt(v)||8); else seatSt[k]=v; seatAuto(); render(); }
+function initSeat(){ if(!seatSt._init){ if(db.seatPreset&&db.seatPreset.groups){ seatSt.groups=db.seatPreset.groups; if(db.seatPreset.rows)seatSt.rows=db.seatPreset.rows; } else { const n=db.students.length; seatSt.groups=Math.max(2,Math.min(8,Math.ceil(n/7))); } if(db.seatOptions){seatSt.byGroup=db.seatOptions.byGroup;seatSt.front=db.seatOptions.front;} seatSt._init=1; } }
+function seatSet(k,v){
+  if(k==='rows')seatSt.rows=Math.max(0,Math.min(12,parseInt(v)||0));
+  else if(k==='groups')seatSt.groups=Math.max(2,Math.min(12,parseInt(v)||8));
+  else seatSt[k]=v;
+  db.seatOptions={byGroup:seatSt.byGroup,front:seatSt.front};
+  if(k==='rows'||k==='groups'){db.seatPreset={groups:seatSt.groups,rows:seatSt.rows};seatAuto();}
+  else save();
+  render();
+}
+function seatDate(date){ return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0'); }
+function seatNextMonth(date){ const next=new Date(date.getFullYear(),date.getMonth()+1,1); next.setDate(Math.min(date.getDate(),new Date(next.getFullYear(),next.getMonth()+1,0).getDate())); return seatDate(next); }
+function seatHistoryHTML(){
+  const history=db.seatHistory||[],last=history[history.length-1];
+  if(!last)return '<div class="seat-tip no-print">每月换座一次；点击“全部重排”后自动记录次数、日期和下次建议换座日期。</div>';
+  const due=seatDate(new Date())>=last.nextDate;
+  return '<div class="seat-tip" style="text-align:left;padding:8px 16px">📌 第'+history.length+'次重排 · '+esc(last.date)+'<br>下次建议换座：'+esc(last.nextDate)+(due?' · 已到换座日期':'')
+    +'<details class="no-print"><summary style="cursor:pointer;margin-top:6px">换座记录（'+history.length+'次）</summary>'
+    +history.map(function(h,i){return '<div>第'+(i+1)+'次 · '+esc(h.date)+'</div>';}).reverse().join('')+'</details></div>';
+}
 function seatShuffle(list){
   const out=list.slice();
   for(let i=out.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=out[i]; out[i]=out[j]; out[j]=t; }
   return out;
 }
-function seatRearrange(){ seatAuto(true); render(); toast('座位已重新排列'); }
+function seatZone(index,total){ return index<(total-1)/2?-1:(index>(total-1)/2?1:0); }
+function seatRearrange(){
+  seatEnsure();
+  const old=db.seat, cols=old.matrix.length, rows=old.rows;
+  if(!db.students.length){ toast('请先添加学生'); return; }
+  if(!cols||!rows){ toast('请先设置座位组数和排数'); return; }
+  // Move whole columns to a random column on the opposite side when grouping is enabled.
+  const targetCols=[];
+  [-1,0,1].forEach(function(zone){
+    const from=[],to=[];
+    for(let c=0;c<cols;c++){ if(seatZone(c,cols)===zone)from.push(c); if(seatZone(c,cols)===-zone)to.push(c); }
+    const shuffled=seatShuffle(to); from.forEach(function(c,i){targetCols[c]=shuffled[i];});
+  });
+  const positions=new Map(), slots=[];
+  old.matrix.forEach(function(col,c){ for(let r=0;r<rows;r++){ if(col[r])positions.set(col[r],{c:c,r:r}); slots.push({c:c,r:r}); } });
+  const labels=old.groups.slice();
+  if(seatSt.byGroup)old.groups.forEach(function(g,c){labels[targetCols[c]]=g;});
+  // Randomized bipartite matching satisfies every student's zone constraints without duplicates.
+  const choices=db.students.map(function(s){
+    const prev=positions.get(s.id);
+    const special=seatSt.front&&s.special;
+    const candidates=seatShuffle(slots.map(function(slot,i){return i;}).filter(function(i){
+      const slot=slots[i];
+      if(prev){
+        if(seatSt.byGroup ? slot.c!==targetCols[prev.c] : seatZone(slot.c,cols)!==-seatZone(prev.c,cols))return false;
+        if(!special&&seatZone(slot.r,rows)!==-seatZone(prev.r,rows))return false;
+      } else if(seatSt.byGroup&&labels.indexOf(s.group||'未分组')>=0&&labels[slot.c]!==(s.group||'未分组'))return false;
+      return !special||slot.r>=Math.max(0,rows-5);
+    }));
+    if(special&&prev)candidates.sort(function(a,b){return Number(seatZone(slots[b].r,rows)===-seatZone(prev.r,rows))-Number(seatZone(slots[a].r,rows)===-seatZone(prev.r,rows));});
+    return candidates;
+  });
+  const occupants=Array(slots.length).fill(-1);
+  function place(student,seen){
+    for(const slot of choices[student]){
+      if(seen[slot])continue; seen[slot]=true;
+      if(occupants[slot]===-1||place(occupants[slot],seen)){occupants[slot]=student;return true;}
+    }
+    return false;
+  }
+  const sequence=seatShuffle(db.students.map(function(s,i){return i;})).sort(function(a,b){return choices[a].length-choices[b].length;});
+  for(const student of sequence){
+    if(!place(student,[])){
+      toast(seatSt.front&&db.students.some(function(s){return s.special;})?'特殊生前5排与换区或座位容量冲突，请调整排数或取消“特殊生前5排”后重试':'当前分组或座位容量无法满足换区，请增加排数或取消“按分组”后重试');
+      return;
+    }
+  }
+  const matrix=Array.from({length:cols},function(){return Array(rows).fill(null);});
+  occupants.forEach(function(student,i){if(student>=0){const slot=slots[i];matrix[slot.c][slot.r]=db.students[student].id;}});
+  const next={groups:labels,matrix:matrix,rows:rows},now=new Date();
+  if(!db.seatHistory)db.seatHistory=[];
+  db.seatHistory.push({date:seatDate(now),nextDate:seatNextMonth(now),at:now.toISOString(),before:JSON.parse(JSON.stringify(old)),after:JSON.parse(JSON.stringify(next))});
+  db.seat=next; seatSel=null; save(); render(); toast('已换区随机排座，并记录第'+db.seatHistory.length+'次重排');
+}
 function seatAuto(randomize){
   const cols=seatSt.groups; const groups={}; const order=[];
   if(seatSt.byGroup){ db.students.forEach(function(s){ const g=s.group||'未分组'; if(!groups[g]){groups[g]=[]; order.push(g);} groups[g].push(s); }); }
@@ -1032,12 +1104,14 @@ function seatAddUnseated(sid){
 function seatPlace(c,r,sid){ db.seat.matrix[c][r]=sid; save(); try{closeSheet();}catch(e){} render(); toast('已入座'); }
 function seatExportPNG(){
   const p=seatProject(); const groups=p.groups, matrix=p.matrix, rows=p.rows; const cols=groups.length;
-  const cw=120,ch=44,hh=34,pad=24,titleH=52,podH=62;
+  const history=db.seatHistory||[],last=history[history.length-1];
+  const cw=120,ch=44,hh=34,pad=24,titleH=last?78:52,podH=62;
   const W=pad*2+cols*cw, H=titleH+hh+rows*ch+podH+pad;
   const mk=makeCanvas(W,H); const cn=mk[0],ctx=mk[1];
   ctx.fillStyle='#eef5ee'; ctx.fillRect(0,0,W,H);
   ctx.fillStyle='#07c160'; ctx.font='bold 23px sans-serif'; ctx.textAlign='center';
   ctx.fillText(db.className+' 座位表', W/2, 36);
+  if(last){ctx.fillStyle='#576b95';ctx.font='14px sans-serif';ctx.fillText('第'+history.length+'次重排 · '+last.date+' · 下次建议 '+last.nextDate,W/2,60,W-24);}
   matrix.forEach(function(col,ci){ col.forEach(function(s,ri){ const x=pad+ci*cw,y=titleH+hh+ri*ch;
     ctx.fillStyle=s?(s.special?'#fdf3c2':'#fff'):'#f2f2f2'; ctx.fillRect(x+3,y+3,cw-6,ch-6);
     if(s){ ctx.strokeStyle='#cfcfcf'; ctx.strokeRect(x+3,y+3,cw-6,ch-6); ctx.fillStyle=s.special?'#a9791a':'#333'; ctx.font='15px sans-serif'; ctx.fillText(s.name+(s.special?'☆':''), x+cw/2, y+ch/2+5); } });
@@ -1052,7 +1126,7 @@ function seatExportPNG(){
   ctx.fillStyle='#333'; ctx.font='bold 17px sans-serif'; ctx.fillText('讲台', W/2, py+22);
   downloadPNG(cn.toDataURL('image/png'), db.className+'-座位表.png'); toast('已导出座位表图片');
 }
-function seatPrint(){ printHTML(db.className+' 座位表', seatTableHTML()); }
+function seatPrint(){ printHTML(db.className+' 座位表', seatHistoryHTML()+seatTableHTML()); }
 
 /* ================== 值日表生成 ================== */
 let dutySt={groups:9,byPlan:true,_init:0};
